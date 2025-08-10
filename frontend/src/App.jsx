@@ -5,6 +5,7 @@ import './App.css'
 import Navbar from './components/Navbar'
 // import Navbar from './components/Navbar'
 import Home from './pages/Home';
+import FAQS from "./pages/FAQS";
 
 function App() {
   const [count, setCount] = useState(0)
@@ -13,6 +14,7 @@ function App() {
     <>
       <Navbar />
       <Home/>
+       <FAQS />
     </>
   )
 }
