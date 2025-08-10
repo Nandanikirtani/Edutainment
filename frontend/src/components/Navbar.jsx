@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {  FaSignInAlt, FaUserPlus } from 'react-icons/fa';
 import { FiMenu } from "react-icons/fi"; // Hamburger icon
 import { IoMdClose } from 'react-icons/io';
+import { Link } from 'react-router-dom';
 
 
 export default function Navbar() {
@@ -34,32 +35,32 @@ export default function Navbar() {
             {/* Menu Items (Desktop) */}
             <div className="hidden md:flex text-lg space-x-8">
               {['Home', 'About Us', 'FAQs', 'Contact Us'].map((item, idx) => (
-                <a
+                <Link
                   key={idx}
-                  href="#"
+                  to={`/${item.toLowerCase().replace(/\s+/g, '')}`}
                   className="relative text-gray-700 hover:text-[#0C7489] px-4 py-1 rounded-2xl after:content-[''] after:block after:w-0 after:h-[2px] after:bg-[#0C7489] after:transition-all after:duration-300 hover:after:w-full"
                 >
                   {item}
-                </a>
+                </Link>
               ))}
             </div>
 
             {/* Right Side Buttons (Desktop) */}
             <div className="hidden md:flex space-x-4">
-              <a
-                href="#"
+              <Link
+                to="/login"
                 className="flex items-center gap-2 px-4 py-2 bg-[#0C7489] text-white rounded hover:bg-[#0a515f] transform hover:scale-105 transition-all duration-200"
               >
                 <FaSignInAlt />
                 Login
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                to="/signup"
                 className="flex items-center gap-2 px-4 py-2 border border-[#0C7489] text-[#0C7489] rounded hover:bg-indigo-50 transform hover:scale-105 transition-all duration-200"
               >
                 <FaUserPlus />
                 Create New Account
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -77,31 +78,31 @@ export default function Navbar() {
 
       {/* Mobile Menu with animation */}
       <div
-        className={`md:hidden px-4 pb-4 space-y-2 transition-all duration-300 overflow-hidden ${
+        className={`md:hidden px-4 pb-4 space-y-2 z-50 transition-all duration-300 overflow-hidden ${
           isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-        }`}
+        }` }
       >
         {['Home', 'About Us', 'FAQs', 'Contact Us'].map((item, idx) => (
-          <a
+          <Link
+            to={`/${item.toLowerCase().replace(/\s+/g, '')}`}
             key={idx}
-            href="#"
             className="block px-4 py-2 text-lg text-gray-700 hover:text-[#0C7489]"
           >
             {item}
-          </a>
+          </Link>
         ))}
-        <a
-          href="#"
+        <Link
+          to="/login"
           className="block px-4 py-2 text-lg bg-[#0C7489] text-white rounded hover:bg-[#0a515f]"
         >
           Login
-        </a>
-        <a
-          href="#"
+        </Link>
+        <Link
+          to="/signup"
           className="block px-4 py-2 border border-[#0C7489] text-[#0C7489] rounded hover:bg-indigo-50"
         >
           Create New Account
-        </a>
+        </Link>
       </div>
     </nav>
   );
