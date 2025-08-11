@@ -58,7 +58,6 @@ const LoginForm = ({ role, onLogin }) => {
   const submit = (e) => {
     e.preventDefault();
     setLoading(true);
-    // Mock delay to show animation
     setTimeout(() => {
       setLoading(false);
       onLogin({ role, email });
@@ -172,7 +171,7 @@ const SignupForm = ({ role, onSignup }) => {
 
 // ---------- Main Auth card ----------
 export default function AuthPages() {
-  const [mode, setMode] = useState("login"); // or 'signup'
+  const [mode, setMode] = useState("login");
   const [role, setRole] = useState("student");
   const [message, setMessage] = useState(null);
 
@@ -205,16 +204,16 @@ export default function AuthPages() {
         initial={{ scale: 0.96, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.45 }}
-        className="relative z-10 w-full max-w-6xl mx-auto bg-[#0C7489] backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden"
+        className="relative z-10 w-full max-w-5xl mx-auto bg-[#0C7489] backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2">
           {/* Left - welcome area */}
-          <div className="p-6 sm:p-8 md:p-12 flex flex-col justify-center text-white bg-gradient-to-b from-transparent via-white/3 to-transparent">
+          <div className="p-6 sm:p-8 lg:p-12 flex flex-col justify-center text-white bg-gradient-to-b from-transparent via-white/3 to-transparent">
             <motion.h2
               initial={{ y: -8, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="text-2xl sm:text-3xl font-extrabold"
+              className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-center lg:text-left"
             >
               Welcome back
             </motion.h2>
@@ -222,13 +221,13 @@ export default function AuthPages() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="mt-2 text-sm sm:text-md text-white/80 max-w-sm"
+              className="mt-2 text-sm sm:text-base text-white/80 max-w-sm mx-auto lg:mx-0 text-center lg:text-left"
             >
               Access your dashboard and manage your classes, assignments, and
               admin tasks — beautifully animated and role-aware.
             </motion.p>
 
-            <div className="mt-6">
+            <div className="mt-6 w-full">
               <RoleTabs role={role} setRole={setRole} />
 
               <p className="text-center mt-6 sm:mt-10 text-sm">
@@ -259,7 +258,7 @@ export default function AuthPages() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="mt-6 p-3 rounded-md bg-white/6 text-white text-sm"
+                  className="mt-6 p-3 rounded-md bg-white/6 text-white text-sm text-center"
                 >
                   {message.text}
                 </motion.div>
@@ -268,17 +267,17 @@ export default function AuthPages() {
           </div>
 
           {/* Right - form */}
-          <div className="p-6 sm:p-8 md:p-12 bg-white flex items-center">
+          <div className="p-6 sm:p-8 lg:p-12 bg-white flex items-center">
             <div className="w-full max-w-md mx-auto text-black">
               <motion.div
                 layout
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className="bg-transparent"
               >
-                <h3 className="text-lg sm:text-xl font-bold mb-2">
+                <h3 className="text-lg sm:text-xl font-bold mb-2 text-center lg:text-left">
                   {mode === "login" ? "Sign in" : "Create account"}
                 </h3>
-                <p className="text-xs sm:text-sm text-[#0C7489] mb-4">
+                <p className="text-xs sm:text-sm text-[#0C7489] mb-4 text-center lg:text-left">
                   Continue as <span className="font-semibold">{role}</span>
                 </p>
 
@@ -298,10 +297,10 @@ export default function AuthPages() {
                   or continue with
                 </div>
                 <div className="mt-3 flex flex-wrap gap-3">
-                  <button className="flex-1 py-2 rounded-lg bg-white/6 border border-black text-black">
+                  <button className="flex-1 min-w-[45%] py-2 rounded-lg bg-white border border-black text-black">
                     Google
                   </button>
-                  <button className="flex-1 py-2 rounded-lg bg-white/6 border border-black text-black">
+                  <button className="flex-1 min-w-[45%] py-2 rounded-lg bg-white border border-black text-black">
                     GitHub
                   </button>
                 </div>
