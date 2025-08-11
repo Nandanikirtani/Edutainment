@@ -53,13 +53,6 @@ export default function Navbar() {
                 <FaSignInAlt />
                 Login
               </Link>
-              <Link
-                to="/signup"
-                className="flex items-center gap-2 px-4 py-2 border border-[#0C7489] text-[#0C7489] rounded hover:bg-indigo-50 transform hover:scale-105 transition-all duration-200"
-              >
-                <FaUserPlus />
-                Create New Account
-              </Link>
             </div>
           </div>
 
