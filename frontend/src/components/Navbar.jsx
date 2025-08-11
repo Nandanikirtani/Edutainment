@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {  FaSignInAlt, FaUserPlus } from 'react-icons/fa';
+import { FaSignInAlt, FaUserPlus } from 'react-icons/fa';
 import { FiMenu } from "react-icons/fi"; // Hamburger icon
 import { IoMdClose } from 'react-icons/io';
 import { Link } from 'react-router-dom';
@@ -20,9 +20,8 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-shadow duration-300 ${
-        scrolled ? 'shadow-lg bg-white/80 backdrop-blur-md' : 'bg-white/50 backdrop-blur-sm'
-      }`}
+      className={`fixed top-0 left-0 w-full z-50 transition-shadow duration-300 ${scrolled ? 'shadow-lg bg-white/80 backdrop-blur-md' : 'bg-white/50 backdrop-blur-sm'
+        }`}
     >
       <div className=" mx-auto px-4">
         <div className="flex justify-between items-center h-16">
@@ -65,7 +64,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-700 focus:outline-none"
@@ -78,19 +77,36 @@ export default function Navbar() {
 
       {/* Mobile Menu with animation */}
       <div
-        className={`md:hidden px-4 pb-4 space-y-2 z-50 transition-all duration-300 overflow-hidden ${
-          isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-        }` }
+        className={`md:hidden px-4 pb-4 space-y-2 z-50 transition-all duration-300 overflow-hidden ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          }`}
       >
-        {['Home', 'About Us', 'FAQs', 'Contact Us'].map((item, idx) => (
-          <Link
-            to={`/${item.toLowerCase().replace(/\s+/g, '')}`}
-            key={idx}
-            className="block px-4 py-2 text-lg text-gray-700 hover:text-[#0C7489]"
-          >
-            {item}
-          </Link>
-        ))}
+        <Link
+          to="/"
+          className="block px-4 py-2 text-lg text-gray-700 hover:text-[#0C7489]"
+        >
+          Home
+        </Link>
+
+        <Link
+          to="/aboutus"
+          className="block px-4 py-2 text-lg text-gray-700 hover:text-[#0C7489]"
+        >
+          About Us
+        </Link>
+
+        <Link
+          to="/faqs"
+          className="block px-4 py-2 text-lg text-gray-700 hover:text-[#0C7489]"
+        >
+          FAQs
+        </Link>
+
+        <Link
+          to="/contactus"
+          className="block px-4 py-2 text-lg text-gray-700 hover:text-[#0C7489]"
+        >
+          Contact Us
+        </Link>
         <Link
           to="/login"
           className="block px-4 py-2 text-lg bg-[#0C7489] text-white rounded hover:bg-[#0a515f]"

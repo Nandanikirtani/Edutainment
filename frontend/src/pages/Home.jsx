@@ -1,4 +1,14 @@
 import React from "react";
+import { motion } from "framer-motion";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (delay = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, delay },
+  }),
+};
 
 const Home = () => {
   return (
@@ -6,7 +16,15 @@ const Home = () => {
       {/* Hero Section */}
       <section className="flex flex-col md:flex-row items-center justify-between px-8 md:px-16 py-12">
         {/* Text Content */}
-        <div className="md:w-1/2 space-y-6">
+        <motion.div
+          className="md:w-1/2 space-y-6"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0, x: -50 },
+            visible: { opacity: 1, x: 0, transition: { duration: 0.8 } },
+          }}
+        >
           <h2 className="text-4xl font-bold leading-snug">
             Unlock Your <span className="text-teal-600">Potential</span>
             <br />
@@ -20,95 +38,103 @@ const Home = () => {
             content and hands-on experience.
           </p>
           <div className="flex gap-4">
-            <button className="bg-teal-600 text-white px-6 py-3 rounded-full hover:bg-teal-700">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              className="bg-teal-600 text-white px-6 py-3 rounded-full hover:bg-teal-700"
+            >
               Get Started
-            </button>
-            <button className="border border-gray-400 px-6 py-3 rounded-full hover:bg-gray-100">
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              className="border border-gray-400 px-6 py-3 rounded-full hover:bg-gray-100"
+            >
               Browse Courses
-            </button>
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Image */}
-        <div className="md:w-1/2 mt-8 md:mt-0">
+        <motion.div
+          className="md:w-1/2 mt-8 md:mt-0"
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+        >
           <img
             src="/public/hero-illustration.png"
             alt="Learning Illustration"
             className="w-full h-auto"
           />
-        </div>
+        </motion.div>
       </section>
+      
 
       {/* Top Picks Section */}
-<section className="px-8 md:px-16 py-12 text-center">
-  <h3 className="text-2xl font-bold">Top Picks Just for You</h3>
-  <p className="text-black-600 mt-2">
-    Unlock the thrill of learning—go big, dive deep, and never lose the spark!
-  </p>
+      <section className="px-8 md:px-16 py-12 text-center">
+        <motion.h3
+          className="text-2xl font-bold"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeUp}
+        >
+          Top Picks Just for You
+        </motion.h3>
+        <motion.p
+          className="text-black-600 mt-2"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          custom={0.2}
+          variants={fadeUp}
+        >
+          Unlock the thrill of learning—go big, dive deep, and never lose the spark!
+        </motion.p>
 
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-    {/* Card 1 */}
-    <div className="border rounded-lg shadow-sm p-4 hover:shadow-lg transition">
-      <img
-        src="/public/cpp.png"
-        alt="C++"
-        className="rounded-lg mb-4 w-full h-40 object-cover"
-      />
-      <p className="mb-2">
-        C++ programming online course [complete beginning to advance]
-      </p>
-      <span className="text-sm text-gray-500">Beginner to Advance</span>
-      <div className="mt-4">
-        <button className="bg-teal-600 text-white px-4 py-2 rounded-full hover:bg-teal-700">
-          Explore now
-        </button>
-      </div>
-    </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+          {[ // Card data
+            { img: "cpp.png", title: "C++ programming online course [complete beginning to advance]" },
+            { img: "java.png", title: "Java Programming Online Course [Complete Beginner to Advanced]" },
+            { img: "html.png", title: "HTML online course [Complete Beginner to Advanced]" }
+          ].map((card, index) => (
+            <motion.div
+              key={index}
+              className="border rounded-lg shadow-sm p-4 hover:shadow-lg transition"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              custom={index * 0.2}
+              variants={fadeUp}
+            >
+              <img
+                src={`/public/${card.img}`}
+                alt={card.title}
+                className="rounded-lg mb-4 w-full h-40 object-cover"
+              />
+              <p className="mb-2">{card.title}</p>
+              <span className="text-sm text-gray-500">Beginner to Advance</span>
+              <div className="mt-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-teal-600 text-white px-4 py-2 rounded-full hover:bg-teal-700"
+                >
+                  Explore now
+                </motion.button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
 
-    {/* Card 2 */}
-    <div className="border rounded-lg shadow-sm p-4 hover:shadow-lg transition">
-      <img
-        src="/public/java.png"
-        alt="Java"
-        className="rounded-lg mb-4 w-full h-40 object-cover"
-      />
-      <p className="mb-2">
-        Java Programming Online Course [Complete Beginner to Advanced]
-      </p>
-      <span className="text-sm text-gray-500">Beginner to Advance</span>
-      <div className="mt-4">
-        <button className="bg-teal-600 text-white px-4 py-2 rounded-full hover:bg-teal-700">
-          Explore now
-        </button>
-      </div>
-    </div>
-
-    {/* Card 3 */}
-    <div className="border rounded-lg shadow-sm p-4 hover:shadow-lg transition">
-      <img
-        src="/public/html.png"
-        alt="HTML"
-        className="rounded-lg mb-4 w-full h-40 object-cover"
-      />
-      <p className="mb-2">
-        HTML online course [Complete Beginner to Advanced]
-      </p>
-      <span className="text-sm text-gray-500">Beginner to Advance</span>
-      <div className="mt-4">
-        <button className="bg-teal-600 text-white px-4 py-2 rounded-full hover:bg-teal-700">
-          Explore now
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div className="mt-6">
-    <button className="border border-gray-400 px-6 py-3 rounded-full hover:bg-gray-100">
-      Explore All Programs
-    </button>
-  </div>
-</section>
-{/* What Makes Us Different */}
+        <motion.div
+          className="mt-6"
+          whileHover={{ scale: 1.05 }}
+        >
+          <button className="border border-gray-400 px-6 py-3 rounded-full hover:bg-gray-100">
+            Explore All Programs
+          </button>
+        </motion.div>
+      </section>
+      {/* What Makes Us Different */}
       <section className="px-8 md:px-16 py-12">
         <h3 className="text-2xl font-bold mb-8">What Makes Us Different?</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -135,29 +161,36 @@ const Home = () => {
           </div>
         </div>
       </section>
-      {/* Robot & Feature Buttons Section */}
-<section className="px-8 md:px-16 py-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-  <div>
-    <img
-      src="/public/robot-student.png"
-      alt="AI Learning Assistant"
-      className="rounded-lg w-full h-80 object-cover"
-    />
-  </div>
-  <div className="flex flex-col gap-4">
-    <button className="flex items-center gap-3 bg-teal-700 text-white px-6 py-3 rounded-lg text-lg hover:bg-teal-800">
-      <i className="fas fa-question-circle"></i> Doubt Sessions
-    </button>
-    <button className="flex items-center gap-3 border border-teal-700 text-teal-700 px-6 py-3 rounded-lg text-lg hover:bg-teal-50">
-      <i className="fas fa-user-tie"></i> Mentorship
-    </button>
-    <button className="flex items-center gap-3 border border-teal-700 text-teal-700 px-6 py-3 rounded-lg text-lg hover:bg-teal-50">
-      <i className="fas fa-briefcase"></i> Placement Assistance
-    </button>
-  </div>
-</section>
 
-{/* Student Spotlight Section */}
+      {/* Robot & Feature Buttons Section */}
+      <section className="px-8 md:px-16 py-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <motion.div
+          animate={{ y: [0, -10, 0] }}
+          transition={{ repeat: Infinity, duration: 4 }}
+        >
+          <img
+            src="/public/robot-student.png"
+            alt="AI Learning Assistant"
+            className="rounded-lg w-full h-80 object-cover"
+          />
+        </motion.div>
+        <div className="flex flex-col gap-4">
+          {["Doubt Sessions", "Mentorship", "Placement Assistance"].map((btn, i) => (
+            <motion.button
+              key={i}
+              whileHover={{ scale: 1.05 }}
+              className={`flex items-center gap-3 px-6 py-3 rounded-lg text-lg ${
+                i === 0
+                  ? "bg-teal-700 text-white hover:bg-teal-800"
+                  : "border border-teal-700 text-teal-700 hover:bg-teal-50"
+              }`}
+            >
+              {btn}
+            </motion.button>
+          ))}
+        </div>
+      </section>
+   {/* Student Spotlight Section */}
 <section className="px-8 md:px-16 py-12 bg-white">
   <h3 className="text-xl font-bold flex items-center gap-2 text-teal-700 mb-8">
     📖 Student Spotlight

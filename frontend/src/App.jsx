@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { HashRouter as Router, Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
-import About from './pages/About'
 import Home from './pages/Home'
 import FAQS from './pages/FAQS'
+import About from './pages/About'
 import './App.css'
 import AuthPages from './pages/AuthPages'
 
@@ -15,7 +15,7 @@ function App() {
       <Navbar />
       <div className='pt-20'>
         <Routes>
-          <Route path="/home" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/aboutus" element={<About />} />
           <Route path="/faqs" element={<FAQS />} />
           <Route path="/login" element={<AuthPages />} />
