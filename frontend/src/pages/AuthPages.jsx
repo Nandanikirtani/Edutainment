@@ -202,18 +202,15 @@ export default function AuthPages() {
         initial={{ scale: 0.96, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.45 }}
-        className="relative z-10 w-full max-w-5xl mx-auto bg-[#0C7489] backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden"
         className="relative z-10 w-full max-w-4xl bg-[#0C7489] rounded-2xl shadow-2xl overflow-hidden"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-2">
           {/* Left - welcome area */}
-          <div className="p-6 sm:p-8 lg:p-12 flex flex-col justify-center text-white bg-gradient-to-b from-transparent via-white/3 to-transparent">
+          <div className="p-6 sm:p-8 md:p-12 flex flex-col justify-center text-white bg-gradient-to-b from-transparent via-white/3 to-transparent">
             <motion.h2
               initial={{ y: -8, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-center lg:text-left"
-
               className="text-3xl font-extrabold"
             >
               Welcome back
@@ -222,15 +219,12 @@ export default function AuthPages() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="mt-2 text-sm sm:text-base text-white/80 max-w-sm mx-auto lg:mx-0 text-center lg:text-left"
               className="mt-2 text-md sm:text-base text-white/80 max-w-sm"
             >
               Access your dashboard and manage your classes, assignments, and
               admin tasks — beautifully animated and role-aware.
             </motion.p>
 
-            <div className="mt-6 w-full">
-              <RoleTabs role={role} setRole={setRole} />
             <div className="mt-6 ">
               <RoleTabs  role={role} setRole={setRole} />
 
@@ -262,7 +256,7 @@ export default function AuthPages() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="mt-6 p-3 rounded-md bg-white/6 text-white text-sm text-center"
+                  className="mt-6 p-3 rounded-md bg-white/6 text-white text-sm"
                 >
                   {message.text}
                 </motion.div>
@@ -271,8 +265,6 @@ export default function AuthPages() {
           </div>
 
           {/* Right - form */}
-          <div className="p-6 sm:p-8 lg:p-12 bg-white flex items-center">
-            <div className="w-full max-w-md mx-auto text-black">
           <div className="p-6 sm:p-8 md:p-12 bg-white flex items-center">
             <div className="w-full max-w-sm mx-auto text-black">
               <motion.div
@@ -280,10 +272,10 @@ export default function AuthPages() {
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className="bg-transparent"
               >
-                <h3 className="text-lg sm:text-xl font-bold mb-2 text-center lg:text-left">
+                <h3 className="text-lg sm:text-xl font-bold mb-2">
                   {mode === "login" ? "Sign in" : "Create account"}
                 </h3>
-                <p className="text-xs sm:text-sm text-[#0C7489] mb-4 text-center lg:text-left">
+                <p className="text-xs sm:text-sm text-[#0C7489] mb-4">
                   Continue as <span className="font-semibold">{role}</span>
                 </p>
 
@@ -303,10 +295,10 @@ export default function AuthPages() {
                   or continue with
                 </div>
                 <div className="mt-3 flex flex-wrap gap-3">
-                  <button className="flex-1 min-w-[45%] py-2 rounded-lg bg-white border border-black text-black">
+                  <button className="flex-1 py-2 rounded-lg bg-white/6 border border-black text-black">
                     Google
                   </button>
-                  <button className="flex-1 min-w-[45%] py-2 rounded-lg bg-white border border-black text-black">
+                  <button className="flex-1 py-2 rounded-lg bg-white/6 border border-black text-black">
                     GitHub
                   </button>
                 </div>
