@@ -10,12 +10,12 @@ const RoleTabs = ({ role, setRole }) => {
   ];
 
   return (
-    <div className="flex rounded-full bg-[#0C7489] p-1 gap-1 w-full max-w-md mx-auto">
+    <div className="flex flex-wrap rounded-full bg-[#0C7489] p-1 gap-1 w-full justify-center overflow-hidden">
       {roles.map((r) => (
         <button
           key={r.id}
           onClick={() => setRole(r.id)}
-          className={`relative z-10 flex-1 py-2 text-sm font-medium transition-all rounded-full
+          className={`relative z-10 flex-1 min-w-[70px] py-2 text-xs sm:text-sm font-medium transition-all rounded-full
             ${
               role === r.id
                 ? "bg-white text-slate-900 shadow-lg"
@@ -42,7 +42,7 @@ const Input = ({ id, label, type = "text", value, onChange }) => {
         type={type}
         value={value}
         onChange={onChange}
-        className="mt-1 block w-full rounded-lg bg-white/5 border border-black text-black px-3 py-2 placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-white/30"
+        className="mt-1 block w-full rounded-lg bg-white border border-black text-black px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-[#0C7489]"
         placeholder={label}
       />
     </label>
@@ -90,7 +90,7 @@ const LoginForm = ({ role, onLogin }) => {
 
       <div className="flex flex-wrap items-center justify-between text-xs text-black gap-2">
         <label className="flex items-center gap-2">
-          <input type="checkbox" className="accent-white/70" />{" "}
+          <input type="checkbox" className="accent-[#0C7489]" />{" "}
           <span>Remember me</span>
         </label>
         <button type="button" className="underline">
@@ -178,26 +178,24 @@ export default function AuthPages() {
   const handleLogin = ({ role, email }) => {
     setMessage({
       type: "success",
-      text: `Mock login success as ${role}: ${email}`,
     });
   };
   const handleSignup = ({ role, name, email }) => {
     setMessage({
       type: "success",
-      text: `Mock signup success for ${name} (${role}) — ${email}`,
     });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 p-4 sm:p-6">
+    <div className="min-h-screen p-16 pt-24 md:pt-0 bg-white flex items-center justify-center relative overflow-x-hidden px-4">
       {/* animated decorative blobs */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.16 }}
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-0 overflow-hidden"
       >
-        <div className="absolute -left-20 -top-28 w-40 sm:w-72 h-40 sm:h-72 rounded-full bg-indigo-500 blur-3xl mix-blend-screen" />
-        <div className="absolute -right-28 -bottom-20 w-56 sm:w-96 h-56 sm:h-96 rounded-full bg-pink-500 blur-3xl mix-blend-screen" />
+        <div className="absolute -left-32 -top-32 w-60 sm:w-72 h-60 sm:h-72 rounded-full bg-indigo-500 blur-3xl mix-blend-screen" />
+        <div className="absolute -right-32 -bottom-32 w-72 sm:w-96 h-72 sm:h-96 rounded-full bg-pink-500 blur-3xl mix-blend-screen" />
       </motion.div>
 
       <motion.div
@@ -205,6 +203,7 @@ export default function AuthPages() {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.45 }}
         className="relative z-10 w-full max-w-5xl mx-auto bg-[#0C7489] backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden"
+        className="relative z-10 w-full max-w-4xl bg-[#0C7489] rounded-2xl shadow-2xl overflow-hidden"
       >
         <div className="grid grid-cols-1 lg:grid-cols-2">
           {/* Left - welcome area */}
@@ -214,6 +213,8 @@ export default function AuthPages() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1 }}
               className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-center lg:text-left"
+
+              className="text-3xl font-extrabold"
             >
               Welcome back
             </motion.h2>
@@ -222,6 +223,7 @@ export default function AuthPages() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
               className="mt-2 text-sm sm:text-base text-white/80 max-w-sm mx-auto lg:mx-0 text-center lg:text-left"
+              className="mt-2 text-md sm:text-base text-white/80 max-w-sm"
             >
               Access your dashboard and manage your classes, assignments, and
               admin tasks — beautifully animated and role-aware.
@@ -229,8 +231,10 @@ export default function AuthPages() {
 
             <div className="mt-6 w-full">
               <RoleTabs role={role} setRole={setRole} />
+            <div className="mt-6 ">
+              <RoleTabs  role={role} setRole={setRole} />
 
-              <p className="text-center mt-6 sm:mt-10 text-sm">
+              <p className="text-center mt-6 sm:mt-10 text-md">
                 {mode === "signup" ? (
                   <>
                     Already have an account?{" "}
@@ -269,6 +273,8 @@ export default function AuthPages() {
           {/* Right - form */}
           <div className="p-6 sm:p-8 lg:p-12 bg-white flex items-center">
             <div className="w-full max-w-md mx-auto text-black">
+          <div className="p-6 sm:p-8 md:p-12 bg-white flex items-center">
+            <div className="w-full max-w-sm mx-auto text-black">
               <motion.div
                 layout
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}

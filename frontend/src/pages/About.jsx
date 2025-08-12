@@ -59,7 +59,7 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-hidden">
+    <div className="min-h-screen pt-16 bg-gray-50 overflow-hidden">
       {/* Hero Section */}
       <section className="relative py-20 text-center bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 text-white">
         <h1 className="text-6xl font-bold mb-6">About <span className="text-yellow-300">Edutainment</span></h1>

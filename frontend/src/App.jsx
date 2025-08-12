@@ -6,6 +6,7 @@ import FAQS from './pages/FAQS'
 import About from './pages/About'
 import './App.css'
 import AuthPages from './pages/AuthPages'
+import Footer from './components/Footer'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -13,7 +14,7 @@ function App() {
   return (
     <Router>
       <Navbar />
-      <div className='pt-20'>
+      {/* <div className='pt-10'> */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/aboutus" element={<About />} />
@@ -21,7 +22,8 @@ function App() {
           <Route path="/login" element={<AuthPages />} />
           <Route path="/signup" element={<AuthPages />} />
         </Routes>
-      </div>
+      {/* </div> */}
+      <Footer />
     </Router>
   )
 }
