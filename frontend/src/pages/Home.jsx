@@ -12,7 +12,7 @@ const fadeUp = {
 
 const Home = () => {
   return (
-    <div className="bg-white min-h-screen font-sans">
+    <div className="bg-white pt-16 min-h-screen font-sans">
       {/* Hero Section */}
       <section className="flex flex-col md:flex-row items-center justify-between px-8 md:px-16 py-12">
         {/* Text Content */}

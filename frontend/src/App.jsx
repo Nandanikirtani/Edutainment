@@ -6,6 +6,7 @@ import FAQS from './pages/FAQS'
 import About from './pages/About'
 import './App.css'
 import AuthPages from './pages/AuthPages'
+import Footer from './components/Footer'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -22,6 +23,7 @@ function App() {
           <Route path="/signup" element={<AuthPages />} />
         </Routes>
       </div>
+      <Footer />
     </Router>
   )
 }

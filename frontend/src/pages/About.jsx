@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   BookOpen, Award, FileText, MessageCircle, ClipboardList, Laptop, Lightbulb, Users,
    Heart
@@ -10,16 +11,14 @@ const About = () => {
   const [openIndex, setOpenIndex] = useState(null);
 
   const faqs = [
-    { question: "How do I get started with EduNavigator?", answer: "Getting started is easy! Simply sign up for a free account, browse our course catalog, and enroll in courses that interest you. Many of our courses offer free previews so you can get a feel for the content before committing." },
-    { question: "Are the certificates recognized by employers?", answer: "Yes! Our certificates are widely recognized by industry professionals and employers. We partner with leading companies and educational institutions to ensure our certifications meet industry standards and add real value to your career." },
-    { question: "Can I learn at my own pace?", answer: "Absolutely! All our courses are designed for self-paced learning. You can start and stop whenever you want, and your progress is automatically saved. Most courses remain accessible for life after enrollment." },
-    { question: "What payment methods do you accept?", answer: "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers. We also offer flexible payment plans for premium courses and enterprise subscriptions." },
-    { question: "Do you offer refunds?", answer: "Yes, we offer a 30-day money-back guarantee on all paid courses. If you're not satisfied with a course for any reason, you can request a full refund within 30 days of purchase." },
-    { question: "Can I access courses on mobile devices?", answer: "Our platform is fully responsive and works great on all devices. We also have dedicated mobile apps for iOS and Android that provide an optimized learning experience on the go." },
-    { question: "How do I contact support?", answer: "You can reach our support team 24/7 through live chat, email (support@edunavigator.com), or phone. We also have an extensive help center with articles and tutorials to help you get the most out of our platform." },
-    { question: "Do you offer group discounts?", answer: "Yes! We offer special pricing for teams, schools, and organizations. Contact our enterprise team for custom pricing based on your group size and needs. We also provide dedicated account management for larger organizations." },
-    { question: "What makes EduNavigator different from other platforms?", answer: "We focus on practical, real-world skills taught by industry experts. Our courses include hands-on projects, personalized feedback, and career guidance. Plus, our community features let you connect with peers and mentors in your field." },
-    { question: "Can I become an instructor on EduNavigator?", answer: "We're always looking for qualified instructors! If you have expertise in a particular field and passion for teaching, you can apply to become an instructor. We provide training, marketing support, and competitive revenue sharing." }
+    { question: " What is Edutainment?", answer: "Edutainment combines education and entertainment to make learning more engaging and fun. It uses interactive videos, games, quizzes, and storytelling to help learners understand concepts better while enjoying the process." },
+    { question: " Who can benefit from Edutainment learning?", answer: "Students of all ages, professionals, and even lifelong learners can benefit from edutainment. It’s especially helpful for children, as it keeps them focused while learning through play." },
+    { question: " How is Edutainment different from traditional e-Learning?", answer: "Traditional e-Learning often focuses on lessons and tests, while edutainment uses interactive games, simulations, and stories to make the same content more enjoyable and memorable." },
+    { question: " Do I need any special devices or apps to use Edutainment content?", answer: "Usually, a computer, tablet, or smartphone with internet access is enough. Some platforms also offer mobile apps for offline learning." },
+    { question: " Will Edutainment help me improve my academic performance?", answer: "Yes. Studies show that learners retain more information when they’re engaged and having fun, which can lead to better understanding, improved memory, and higher grades." },
+    { question: " How does gamification help in learning?", answer: "Gamification adds elements like points, badges, and leaderboards to learning activities. This motivates learners to progress, compete healthily, and enjoy the learning journey." },
+    { question: " Is Edutainment effective for skill-based learning too?", answer: "Yes. Beyond academics, edutainment can teach coding, public speaking, problem-solving, teamwork, and other life skills through simulations and interactive activities." },
+    { question: " How does gamification help in learning?", answer: "Gamification adds elements like points, badges, and leaderboards to learning activities. This motivates learners to progress, compete healthily, and enjoy the learning journey." },
   ];
 
   const toggleFAQ = (index) => {
@@ -71,23 +70,33 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-hidden">
-      {/* Hero */}
-      <section className="relative py-20 text-center bg-[#0C7489] text-white">
-        <h1 className="text-6xl font-bold mb-6">About <span className="text-yellow-300">Edutainment</span></h1>
-        <p className="text-xl max-w-3xl mx-auto mb-8">"Blending education with entertainment to make learning engaging, interactive, and truly unforgettable for everyone."</p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button className="px-6 py-3 bg-white text-blue-600 rounded-lg font-semibold">Join Our Community</button>
-          <button className="px-6 py-3 border border-white rounded-lg font-semibold">Watch Our Story</button>
-        </div>
-      </section>
+  <div className="min-h-screen bg-gray-50 overflow-hidden">
+
+  {/* Hero Section */}
+  <section className="relative py-16 sm:py-20 px-4 sm:px-6 lg:px-8 text-center bg-[#0C7489] text-white">
+    <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6">
+      About <span className="text-yellow-300">Edutainment</span>
+    </h1>
+    <p className="text-base sm:text-lg md:text-xl max-w-3xl mx-auto mb-6 sm:mb-8">
+      "Blending education with entertainment to make learning engaging, interactive, and truly unforgettable for everyone."
+    </p>
+    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+      <button className="px-5 py-2 sm:px-6 sm:py-3 bg-white text-blue-600 rounded-lg font-semibold hover:scale-105 transition-transform duration-200">
+        Join Our Community
+      </button>
+      <button className="px-5 py-2 sm:px-6 sm:py-3 border border-white rounded-lg font-semibold hover:scale-105 transition-transform duration-200">
+        Watch Our Story
+      </button>
+    </div>
+  </section>
+
 
       {/* Stats */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-8 px-4">
           <Stat value={`${counters.students.toLocaleString()}+`} label="Active Learners" color="text-blue-600" />
           <Stat value={`${counters.teachers}+`} label="Guiding Experts" color="text-purple-600" />
-          <Stat value={`${counters.Badges}+`} label="Milestones Earned" color="text-pink-600" />
+          <Stat value={`${counters.Badges}+`} label="Badges Given" color="text-pink-600" />
           <Stat value={`${counters.Quizes}+`} label="Smart Quizzes" color="text-green-500" />
         </div>
       </section>
@@ -139,31 +148,48 @@ const About = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              {openIndex === index && (
-                <div
-                  id={`faq-answer-${index}`}
-                  role="region"
-                  aria-labelledby={`faq-question-${index}`}
-                  className="pb-4 text-gray-700"
-                >
-                  {faq.answer}
-                </div>
-              )}
+              <AnimatePresence>
+  {openIndex === index && (
+    <motion.div
+      id={`faq-answer-${index}`}
+      role="region"
+      aria-labelledby={`faq-question-${index}`}
+      className="text-gray-700"
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: "auto", opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="pb-4">{faq.answer}</div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
             </div>
           ))}
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-[#0C7489] text-center text-white">
-        <h2 className="text-5xl font-bold mb-6">Ready to Transform Education?</h2>
-        <p className="text-xl mb-8">"Join us in shaping the future of digital learning—where ideas grow and minds excel every day."</p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button className="px-6 py-3 bg-white text-blue-600 rounded-lg font-semibold">Start Learning Today</button>
-          <button className="px-6 py-3 border border-white rounded-lg font-semibold">Become a Teacher</button>
-        </div>
-      </section>
+      {/* Call to Action Section */}
+  <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-[#0C7489] text-center text-white">
+    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
+      Ready to Transform Education?
+    </h2>
+    <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto">
+      "Join us in shaping the future of digital learning—where ideas grow and minds excel every day."
+    </p>
+    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+      <button className="px-5 py-2 sm:px-6 sm:py-3 bg-white text-blue-600 rounded-lg font-semibold hover:scale-105 transition-transform duration-200">
+        Start Learning Today
+      </button>
+      <button className="px-5 py-2 sm:px-6 sm:py-3 border border-white rounded-lg font-semibold hover:scale-105 transition-transform duration-200">
+        Become a Teacher
+      </button>
     </div>
+  </section>
+
+</div>
   );
 };
 
