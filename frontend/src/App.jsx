@@ -14,7 +14,7 @@ function App() {
   return (
     <Router>
       <Navbar />
-      {/* <div className='pt-10'> */}
+      <div className='pt-20'>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/aboutus" element={<About />} />
@@ -22,7 +22,7 @@ function App() {
           <Route path="/login" element={<AuthPages />} />
           <Route path="/signup" element={<AuthPages />} />
         </Routes>
-      {/* </div> */}
+      </div>
       <Footer />
     </Router>
   )
