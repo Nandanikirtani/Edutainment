@@ -3,6 +3,7 @@ import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-d
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import FAQS from './pages/FAQS'
+import Courses from './pages/Courses'
 import About from './pages/About'
 import './App.css'
 import AuthPages from './pages/AuthPages'
@@ -25,6 +26,7 @@ function AppContent() {
           <Route path="/" element={<Home />} />
           <Route path="/aboutus" element={<About />} />
           <Route path="/faqs" element={<FAQS />} />
+           <Route path="/courses" element={<Courses />} />
           <Route path="/login" element={<AuthPages />} />
           <Route path="/signup" element={<AuthPages />} />
           <Route path="/student/sidebar" element={<Studentsidebar />} />

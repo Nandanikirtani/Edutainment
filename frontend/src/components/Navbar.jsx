@@ -20,7 +20,7 @@ export default function Navbar() {
   const menuItems = [
     { name: 'Home', path: '/' },
     { name: 'About Us', path: '/aboutus' },
-    { name: 'FAQs', path: '/faqs' },
+    { name: 'Courses', path: '/courses' },
     { name: 'Contact Us', path: '/contactus' }
   ];
 
