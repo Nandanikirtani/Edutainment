@@ -33,7 +33,7 @@ export default function Navbar() {
           <div className="flex items-center space-x-10 justify-between me-6">
             {/* Menu Items (Desktop) */}
             <div className="hidden md:flex text-lg space-x-8">
-              {['Home', 'About Us', 'FAQs', 'Contact Us'].map((item, idx) => (
+              {['Home', 'About Us', 'Courses'].map((item, idx) => (
                 <Link
                   key={idx}
                   to={`/${item.toLowerCase().replace(/\s+/g, '')}`}
