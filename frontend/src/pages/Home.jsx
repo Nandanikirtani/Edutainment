@@ -92,37 +92,38 @@ const Home = () => {
         </motion.p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-          {[ // Card data
-            { img: "cpp.png", title: "C++ programming online course [complete beginning to advance]" },
-            { img: "java.png", title: "Java Programming Online Course [Complete Beginner to Advanced]" },
-            { img: "html.png", title: "HTML online course [Complete Beginner to Advanced]" }
-          ].map((card, index) => (
-            <motion.div
-              key={index}
-              className="border rounded-lg shadow-sm p-4 hover:shadow-lg transition"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              custom={index * 0.2}
-              variants={fadeUp}
-            >
-              <img
-                src={`/public/${card.img}`}
-                alt={card.title}
-                className="rounded-lg mb-4 w-full h-40 object-cover"
-              />
-              <p className="mb-2">{card.title}</p>
-              <span className="text-sm text-gray-500">Beginner to Advance</span>
-              <div className="mt-4">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  className="bg-teal-600 text-white px-4 py-2 rounded-full hover:bg-teal-700"
-                >
-                  Explore now
-                </motion.button>
-              </div>
-            </motion.div>
-          ))}
+          {[
+  { title: "AI Meets C Programming", level: "Dr Chandni", image: "/ai-c.png" },
+  { title: "OOPs Using Java", level: "Dr. Mamta Arora", image: "/java.png" },
+  { title: "Generative AI", level: "Dr. Ganga", image: "/gen-ai.png" }
+].map((card, index) => (
+  <motion.div
+    key={index}
+    className="border rounded-lg shadow-sm p-4 hover:shadow-lg transition"
+    initial="hidden"
+    whileInView="visible"
+    viewport={{ once: true }}
+    custom={index * 0.2}
+    variants={fadeUp}
+  >
+    <img
+      src={card.image}  // ✅ use image property directly
+      alt={card.title}
+      className="rounded-lg mb-4 w-full h-40 object-cover"
+    />
+    <p className="mb-2">{card.title}</p>
+    <span className="text-sm text-gray-500">{card.level}</span>  {/* show doctor name */}
+    <div className="mt-4">
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        className="bg-teal-600 text-white px-4 py-2 rounded-full hover:bg-teal-700"
+      >
+        Explore now
+      </motion.button>
+    </div>
+  </motion.div>
+))}
+
         </div>
 
         <motion.div
