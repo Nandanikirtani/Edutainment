@@ -9,6 +9,7 @@ import './App.css'
 import AuthPages from './pages/AuthPages'
 import Footer from './components/Footer'
 import Studentsidebar from './components/Studentsidebar'
+import Dashboard from './pages/Dashboard'
 
 function AppContent() {
   const location = useLocation()
@@ -29,7 +30,7 @@ function AppContent() {
            <Route path="/courses" element={<Courses />} />
           <Route path="/login" element={<AuthPages />} />
           <Route path="/signup" element={<AuthPages />} />
-          <Route path="/student/sidebar" element={<Studentsidebar />} />
+          <Route path="/student" element={<Studentsidebar />} />
         </Routes>
       </div>
       {!hideLayout && <Footer />}
