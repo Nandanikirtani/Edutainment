@@ -70,7 +70,8 @@ function Courses() {
         variants={fadeUp}
         custom={0}
       >
-        <h1 className="text-3xl font-bold">Our Courses</h1>
+        <h1 className="text-5xl font-bold text-left w-full mt-4 mb-6">Our Courses</h1>
+
 
         {/* Search Bar with Suggestions */}
         <div className="relative w-full sm:w-80">
