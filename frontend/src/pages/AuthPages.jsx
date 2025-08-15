@@ -118,13 +118,13 @@ const SignupForm = ({ role, onSignup }) => {
   const [loading, setLoading] = useState(false);
 
   const submit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      onSignup({ role, name, email });
-    }, 900);
-  };
+  e.preventDefault();
+  setLoading(true);
+  onSignup({ role, name, email, password }); // use the prop, not handleSignup directly
+  setLoading(false);
+};
+
+
 
   return (
     <motion.form
@@ -180,11 +180,28 @@ export default function AuthPages() {
       type: "success",
     });
   };
-  const handleSignup = ({ role, name, email }) => {
-    setMessage({
-      type: "success",
+ const handleSignup = async ({ role, name, email, password }) => {
+  setMessage({ type: "loading", text: "Creating account..." });
+
+  try {
+    const res = await fetch("http://localhost:5000/api/users/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role, name, email, password }),
     });
-  };
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setMessage({ type: "success", text: "User registered successfully!" });
+    } else {
+      setMessage({ type: "error", text: data.error || "Registration failed" });
+    }
+  } catch (err) {
+    console.error(err);
+    setMessage({ type: "error", text: "Error connecting to server" });
+  }
+};
 
   return (
     <div className="min-h-screen p-16 pt-24 md:pt-0 bg-white flex items-center justify-center relative overflow-x-hidden px-4">

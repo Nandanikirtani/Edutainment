@@ -7,29 +7,18 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Dependency directories
-node_modules/
- 
-# Build outputs
-dist/
-dist-ssr/
-
-# Local environment files
+node_modules
+dist
+dist-ssr
 *.local
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea/
+.idea
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-
-# Prevent package files from being committed
-package.json
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
