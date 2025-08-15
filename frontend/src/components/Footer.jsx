@@ -20,10 +20,10 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold text-white">Courses</h3>
             <ul className="mt-4 space-y-2 text-sm">
-              <li><a href="#" className="hover:text-white">Web Development</a></li>
-              <li><a href="#" className="hover:text-white">Data Science</a></li>
-              <li><a href="#" className="hover:text-white">UI/UX Design</a></li>
-              <li><a href="#" className="hover:text-white">Business Analytics</a></li>
+              <li><a href="#" className="hover:text-white">AI Meets C Programming</a></li>
+              <li><a href="#" className="hover:text-white">OOPs Using Java</a></li>
+              <li><a href="#" className="hover:text-white">Responsible AI</a></li>
+              <li><a href="#" className="hover:text-white">Data Analysis</a></li>
             </ul>
           </div>
 
@@ -41,7 +41,7 @@ export default function Footer() {
           {/* Contact & Social */}
           <div>
             <h3 className="text-lg font-semibold text-white">Get in Touch</h3>
-            <p className="mt-4 text-sm">support@edulearn.com</p>
+            <p className="mt-4 text-sm">support@edutainment.com</p>
             <p className="text-sm">+1 (234) 567-890</p>
             <div className="flex space-x-4 mt-4">
               <a href="#" className="hover:text-white"><FaFacebook size={18} /></a>
@@ -54,7 +54,7 @@ export default function Footer() {
 
         {/* Divider */}
         <div className="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-500">
-          © {new Date().getFullYear()} EduLearn. All rights reserved.
+          © {new Date().getFullYear()} Edutainment. All rights reserved.
         </div>
       </div>
     </footer>
