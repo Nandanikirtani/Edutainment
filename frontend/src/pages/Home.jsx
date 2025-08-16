@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -44,12 +45,15 @@ const Home = () => {
             >
               Get Started
             </motion.button>
+           <Link to="/courses">
             <motion.button
               whileHover={{ scale: 1.05 }}
               className="border border-gray-400 px-6 py-3 rounded-full hover:bg-gray-100"
             >
               Browse Courses
             </motion.button>
+          </Link>
+
           </div>
         </motion.div>
 
@@ -68,20 +72,38 @@ const Home = () => {
         </motion.div>
       </section>
       
+      <section className="px-8 md:px-16 py-12">
+        <div className="flex flex-col md:flex-row justify-between items-center">
+          <motion.h3
+            className="text-2xl font-bold text-center md:text-left"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+          >
+            Top Picks Just for You
+          </motion.h3>
 
-      {/* Top Picks Section */}
-      <section className="px-8 md:px-16 py-12 text-center">
-        <motion.h3
-          className="text-2xl font-bold"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeUp}
-        >
-          Top Picks Just for You
-        </motion.h3>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            custom={0.2}
+            variants={fadeUp}
+            className="mt-4 md:mt-0"
+          >
+            <Link
+              to="/courses"
+              className="border border-gray-400 px-6 py-2 rounded-full hover:bg-gray-100 transition"
+            >
+              View All Courses
+            </Link>
+          </motion.div>
+        </div>
+
         <motion.p
-          className="text-black-600 mt-2"
+          className="text-black-600 mt-2 text-center md:text-left"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
@@ -93,48 +115,40 @@ const Home = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
           {[
-  { title: "AI Meets C Programming", level: "Dr Chandni", image: "/ai-c.png" },
-  { title: "OOPs Using Java", level: "Dr. Mamta Arora", image: "/java.png" },
-  { title: "Generative AI", level: "Dr. Ganga", image: "/gen-ai.png" }
-].map((card, index) => (
-  <motion.div
-    key={index}
-    className="border rounded-lg shadow-sm p-4 hover:shadow-lg transition"
-    initial="hidden"
-    whileInView="visible"
-    viewport={{ once: true }}
-    custom={index * 0.2}
-    variants={fadeUp}
-  >
-    <img
-      src={card.image}  // ✅ use image property directly
-      alt={card.title}
-      className="rounded-lg mb-4 w-full h-40 object-cover"
-    />
-    <p className="mb-2">{card.title}</p>
-    <span className="text-sm text-gray-500">{card.level}</span>  {/* show doctor name */}
-    <div className="mt-4">
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        className="bg-teal-600 text-white px-4 py-2 rounded-full hover:bg-teal-700"
-      >
-        Explore now
-      </motion.button>
-    </div>
-  </motion.div>
-))}
-
+            { title: "AI Meets C Programming", level: "Dr Chandni", image: "/ai-c.png" },
+            { title: "OOPs Using Java", level: "Dr. Mamta Arora", image: "/java.png" },
+            { title: "Generative AI", level: "Dr. Ganga", image: "/gen-ai.png" }
+          ].map((card, index) => (
+            <motion.div
+              key={index}
+              className="border rounded-lg shadow-sm hover:shadow-lg transition flex flex-col items-center p-4"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              custom={index * 0.2}
+              variants={fadeUp}
+            >
+              <img
+                src={card.image}
+                alt={card.title}
+                className="rounded-t-lg mb-4 w-full h-40 object-cover"
+              />
+              <p className="font-semibold text-lg text-center">{card.title}</p>
+              <span className="text-sm text-gray-500 text-center">{card.level}</span>
+              <div className="mt-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-teal-600 text-white px-6 py-2 rounded-full hover:bg-teal-700"
+                >
+                  Explore now
+                </motion.button>
+              </div>
+            </motion.div>
+          ))}
         </div>
-
-        <motion.div
-          className="mt-6"
-          whileHover={{ scale: 1.05 }}
-        >
-          <button className="border border-gray-400 px-6 py-3 rounded-full hover:bg-gray-100">
-            Explore All Programs
-          </button>
-        </motion.div>
       </section>
+
+
       {/* What Makes Us Different */}
       <section className="px-8 md:px-16 py-12">
         <h3 className="text-2xl font-bold mb-8">What Makes Us Different?</h3>
