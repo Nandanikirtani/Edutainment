@@ -60,7 +60,7 @@ const LoginForm = ({ role, onLogin }) => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      onLogin({ role, email });
+      onLogin({ email, password }); // use the prop, not handleLogin directly
     }, 800);
   };
 
@@ -175,11 +175,30 @@ export default function AuthPages() {
   const [role, setRole] = useState("student");
   const [message, setMessage] = useState(null);
 
-  const handleLogin = ({ role, email }) => {
-    setMessage({
-      type: "success",
+  const handleLogin = async ({ email, password }) => {
+  try {
+    setMessage({ type: "loading", text: "Logging in..." });
+
+    const res = await fetch("http://localhost:5000/api/users/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
     });
-  };
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setMessage({ type: "success", text: "Login successful!" });
+      // You can also save token or redirect here if backend returns token
+      // localStorage.setItem("token", data.token);
+    } else {
+      setMessage({ type: "error", text: data.error || "Login failed" });
+    }
+  } catch (err) {
+    setMessage({ type: "error", text: "Network error, please try again" });
+  }
+};
+
  const handleSignup = async ({ role, name, email, password }) => {
   setMessage({ type: "loading", text: "Creating account..." });
 
