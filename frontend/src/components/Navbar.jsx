@@ -16,12 +16,12 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Menu items with proper routes
+  // Menu items with proper rloutes
   const menuItems = [
     { name: 'Home', path: '/' },
     { name: 'About Us', path: '/aboutus' },
     { name: 'Courses', path: '/courses' },
-    { name: 'Contact Us', path: '/contactus' }
+    // { name: 'My Profile', path: '/myprofile' } 
   ];
 
   return (
