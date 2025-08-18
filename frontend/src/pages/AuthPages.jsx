@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
-// ---------- Small helper components ----------
 const RoleTabs = ({ role, setRole }) => {
   const roles = [
     { id: "student", label: "Student" },
@@ -60,7 +60,7 @@ const LoginForm = ({ role, onLogin }) => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      onLogin({ email, password }); // use the prop, not handleLogin directly
+      onLogin({ email, password }); // use the prop
     }, 800);
   };
 
@@ -118,13 +118,11 @@ const SignupForm = ({ role, onSignup }) => {
   const [loading, setLoading] = useState(false);
 
   const submit = (e) => {
-  e.preventDefault();
-  setLoading(true);
-  onSignup({ role, name, email, password }); // use the prop, not handleSignup directly
-  setLoading(false);
-};
-
-
+    e.preventDefault();
+    setLoading(true);
+    onSignup({ role, name, email, password });
+    setLoading(false);
+  };
 
   return (
     <motion.form
@@ -174,53 +172,57 @@ export default function AuthPages() {
   const [mode, setMode] = useState("login");
   const [role, setRole] = useState("student");
   const [message, setMessage] = useState(null);
+  const navigate = useNavigate(); // 👈 yeh add kiya
 
   const handleLogin = async ({ email, password }) => {
-  try {
-    setMessage({ type: "loading", text: "Logging in..." });
+    try {
+      setMessage({ type: "loading", text: "Logging in..." });
 
-    const res = await fetch("http://localhost:5000/api/users/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+      const res = await fetch("http://localhost:5000/api/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      setMessage({ type: "success", text: "Login successful!" });
-      // You can also save token or redirect here if backend returns token
-      // localStorage.setItem("token", data.token);
-    } else {
-      setMessage({ type: "error", text: data.error || "Login failed" });
+      if (res.ok) {
+        setMessage({ type: "success", text: "Login successful!" });
+
+        // 👇 Redirect to dashboard
+        setTimeout(() => {
+          navigate("/student"); 
+        }, 1000);
+      } else {
+        setMessage({ type: "error", text: data.error || "Login failed" });
+      }
+    } catch (err) {
+      setMessage({ type: "error", text: "Network error, please try again" });
     }
-  } catch (err) {
-    setMessage({ type: "error", text: "Network error, please try again" });
-  }
-};
+  };
 
- const handleSignup = async ({ role, name, email, password }) => {
-  setMessage({ type: "loading", text: "Creating account..." });
+  const handleSignup = async ({ role, name, email, password }) => {
+    setMessage({ type: "loading", text: "Creating account..." });
 
-  try {
-    const res = await fetch("http://localhost:5000/api/users/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ role, name, email, password }),
-    });
+    try {
+      const res = await fetch("http://localhost:5000/api/users/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role, name, email, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      setMessage({ type: "success", text: "User registered successfully!" });
-    } else {
-      setMessage({ type: "error", text: data.error || "Registration failed" });
+      if (res.ok) {
+        setMessage({ type: "success", text: "User registered successfully!" });
+      } else {
+        setMessage({ type: "error", text: data.error || "Registration failed" });
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage({ type: "error", text: "Error connecting to server" });
     }
-  } catch (err) {
-    console.error(err);
-    setMessage({ type: "error", text: "Error connecting to server" });
-  }
-};
+  };
 
   return (
     <div className="min-h-screen p-16 pt-24 md:pt-0 bg-white flex items-center justify-center relative overflow-x-hidden px-4">
@@ -262,7 +264,7 @@ export default function AuthPages() {
             </motion.p>
 
             <div className="mt-6 ">
-              <RoleTabs  role={role} setRole={setRole} />
+              <RoleTabs role={role} setRole={setRole} />
 
               <p className="text-center mt-6 sm:mt-10 text-md">
                 {mode === "signup" ? (

@@ -194,30 +194,6 @@ export default function Dashboard() {
               </div>
             </aside>
           </div>
-
-          {/* Courses
-          <section className="mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold">My Courses</h3>
-              <button className="text-sm text-indigo-500">See all</button>
-            </div>
-            <div className="grid grid-cols-3 gap-4">
-              {courses.map((c, i) => (
-                <div key={i} className="bg-white rounded-2xl p-4 shadow-md">
-                  <div className="h-28 rounded-lg overflow-hidden mb-3 bg-gray-200">
-                    <img src={c.image || "/placeholder-course.jpg"} alt={c.course_name} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="font-semibold">{c.course_name}</div>
-                  <div className="text-xs text-gray-400">{c.level}</div>
-                  <div className="mt-3 text-right">
-                    <button className="px-3 py-1 text-sm bg-cyan-100 rounded-full">Explore now</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section> */}
-
-          {/* Lower section: Work progress, Working status, Task Percentage */}
           <div className="grid grid-cols-3 gap-6">
             <div className="col-span-1 bg-white rounded-2xl p-4 shadow-md">
               <h4 className="font-bold mb-4">Work Progress</h4>
