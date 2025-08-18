@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Dashboard from "../pages/Dashboard";
 import {
   FaTachometerAlt,
   FaBook,
@@ -32,17 +33,7 @@ export default function Studentsidebar() {
       case "dashboard":
         return (
           <>
-            <h1 className="text-2xl font-bold mb-4" style={{ color: "#0C7489" }}>
-              Dashboard
-            </h1>
-            <p className="text-gray-700 mb-4">Welcome back! Here’s your overview.</p>
-            <button
-              className="px-4 py-2 rounded text-white"
-              style={{ backgroundColor: "#0C7489" }}
-              onClick={() => setActive("achievements")}
-            >
-              Go to Achievements
-            </button>
+            <Dashboard/>
           </>
         );
       case "courses":
