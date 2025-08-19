@@ -30,7 +30,6 @@ function Courses() {
 
   const handleSearch = (value) => {
     setSearchTerm(value);
-
     if (value.trim() === "") {
       setSuggestions([]);
     } else {
@@ -48,7 +47,6 @@ function Courses() {
       course.level.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Animation variant
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
     visible: (delay = 0) => ({
@@ -59,21 +57,15 @@ function Courses() {
   };
 
   return (
-    <motion.div
-      className="min-h-screen bg-gray-50 pt-28 px-6"
-      initial="hidden"
-      animate="visible"
-    >
+    <motion.div className="min-h-screen bg-gray-50 pt-28 px-6" initial="hidden" animate="visible">
       {/* Header with Title + Search */}
       <motion.div
         className="flex flex-col sm:flex-row justify-between items-center max-w-6xl mx-auto mb-8 gap-4"
-        variants={fadeUp}
-        custom={0}
+        variants={fadeUp} custom={0}
       >
         <h1 className="text-5xl font-bold text-left w-full mt-4 mb-6">Our Courses</h1>
 
-
-        {/* Search Bar with Suggestions */}
+        {/* Search Bar */}
         <div className="relative w-full sm:w-80">
           <FaSearch className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" />
           <input
@@ -83,8 +75,6 @@ function Courses() {
             onChange={(e) => handleSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
-
-          {/* Suggestions Dropdown */}
           {suggestions.length > 0 && (
             <ul className="absolute left-0 right-0 bg-white border rounded-lg shadow-md mt-1 z-10 max-h-48 overflow-y-auto">
               {suggestions.map((course, idx) => (
@@ -104,11 +94,7 @@ function Courses() {
         </div>
       </motion.div>
 
-      <motion.p
-        className="text-center text-gray-600 mb-10"
-        variants={fadeUp}
-        custom={0.2}
-      >
+      <motion.p className="text-center text-gray-600 mb-10" variants={fadeUp} custom={0.2}>
         Unlock the thrill of learning—go big, dive deep, and never lose the spark!
       </motion.p>
 
@@ -119,14 +105,11 @@ function Courses() {
             <motion.div
               key={idx}
               className="bg-white rounded-xl shadow-md border p-4 flex flex-col items-center hover:shadow-lg transition duration-300"
-              variants={fadeUp}
-              custom={0.3 + idx * 0.05}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
+              variants={fadeUp} custom={0.3 + idx * 0.05} initial="hidden" whileInView="visible" viewport={{ once: true }}
             >
+              {/* Correct image path for Vite + GitHub Pages */}
               <img
-                src={course.image}
+                src={import.meta.env.BASE_URL + course.image}
                 alt={course.title}
                 className="w-full h-48 object-cover rounded-md mb-4"
               />
@@ -141,13 +124,9 @@ function Courses() {
             </motion.div>
           ))
         ) : (
-          <motion.p
-            className="text-center text-gray-500 col-span-full"
-            variants={fadeUp}
-            custom={0.2}
-          >
+          <motion.p className="text-center text-gray-500 col-span-full" variants={fadeUp} custom={0.2}>
             No courses found.
-          </motion.p>
+          </motion.p> 
         )}
       </div>
     </motion.div>
