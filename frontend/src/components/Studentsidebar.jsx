@@ -10,6 +10,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
+import Achievement from "../pages/Achievement";
 
 export default function Studentsidebar() {
   const [active, setActive] = useState("dashboard");
@@ -48,10 +49,7 @@ export default function Studentsidebar() {
       case "achievements":
         return (
           <>
-            <h1 className="text-2xl font-bold mb-4" style={{ color: "#0C7489" }}>
-              Achievements
-            </h1>
-            <p className="text-gray-700">Badges, certificates, and milestones.</p>
+            <Achievement/>
           </>
         );
       case "assignments":
