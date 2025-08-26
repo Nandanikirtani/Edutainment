@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Dashboard from "../pages/Dashboard";
+import Courses from "../pages/Courses";
 import {
   FaTachometerAlt,
   FaBook,
@@ -9,12 +11,14 @@ import {
   FaSignOutAlt,
   FaChevronLeft,
   FaChevronRight,
+  FaHome,
 } from "react-icons/fa";
 
 export default function Studentsidebar() {
   const [active, setActive] = useState("dashboard");
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
 
   const NAV_TOP = [
     { key: "dashboard", label: "Dashboard", icon: <FaTachometerAlt /> },
@@ -31,27 +35,13 @@ export default function Studentsidebar() {
   const renderContent = () => {
     switch (active) {
       case "dashboard":
-        return (
-          <>
-            <Dashboard/>
-          </>
-        );
+        return <Dashboard />;
       case "courses":
-        return (
-          <>
-            <h1 className="text-2xl font-bold mb-4" style={{ color: "#0C7489" }}>
-              My Courses
-            </h1>
-            <p className="text-gray-700">All your enrolled courses appear here.</p>
-          </>
-        );
+        return <Courses />;
       case "achievements":
         return (
           <>
-            <h1 className="text-2xl font-bold mb-4" style={{ color: "#0C7489" }}>
-              Achievements
-            </h1>
-            <p className="text-gray-700">Badges, certificates, and milestones.</p>
+            <Achievement/>
           </>
         );
       case "assignments":
@@ -60,7 +50,9 @@ export default function Studentsidebar() {
             <h1 className="text-2xl font-bold mb-4" style={{ color: "#0C7489" }}>
               Assignments
             </h1>
-            <p className="text-gray-700">View and submit your pending assignments here.</p>
+            <p className="text-gray-700">
+              View and submit your pending assignments here.
+            </p>
           </>
         );
       case "profile":
@@ -81,7 +73,8 @@ export default function Studentsidebar() {
     <button
       onClick={() => {
         if (item.key === "logout") {
-          alert("Logged out!");
+          localStorage.removeItem("email");
+          navigate("/login");
         } else {
           setActive(item.key);
         }
@@ -104,15 +97,22 @@ export default function Studentsidebar() {
         ${collapsed ? "w-16" : "w-64"} ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
         <div>
-          {/* Header + Collapse */}
-          <div className="flex items-center justify-between h-14 px-3 border-b">
-            {!collapsed && <span className="font-bold">Student Portal</span>}
+          {/* Header + Collapse + Back to Home */}
+          <div className="flex flex-col gap-2 p-3 border-b">
             <button
-              className="p-1 border rounded"
-              onClick={() => setCollapsed(!collapsed)}
+              onClick={() => navigate("/")}
+              className="flex items-center gap-2 text-gray-700 hover:text-white hover:bg-gray-700 px-2 py-1 rounded"
             >
-              {collapsed ? <FaChevronRight /> : <FaChevronLeft />}
+              <FaHome />
+              {!collapsed && <span>Back to Home</span>}
             </button>
+
+            <div className="flex items-center justify-between h-14">
+              {!collapsed && <span className="font-bold">Student Portal</span>}
+              <button className="p-1 border rounded" onClick={() => setCollapsed(!collapsed)}>
+                {collapsed ? <FaChevronRight /> : <FaChevronLeft />}
+              </button>
+            </div>
           </div>
 
           {/* Nav Top */}
