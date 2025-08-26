@@ -178,7 +178,7 @@ export default function AuthPages() {
     try {
       setMessage({ type: "loading", text: "Logging in..." });
 
-      const res = await fetch("http://localhost:5000/api/users/login", {
+      const res = await fetch("http://localhost:5000/api/v1/user/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -201,28 +201,31 @@ export default function AuthPages() {
     }
   };
 
-  const handleSignup = async ({ role, name, email, password }) => {
-    setMessage({ type: "loading", text: "Creating account..." });
+  const handleSignup = async ({ name, email, password }) => {
+  setMessage({ type: "loading", text: "Creating account..." });
 
-    try {
-      const res = await fetch("http://localhost:5000/api/users/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role, name, email, password }),
-      });
+  try {
+    const res = await fetch("http://localhost:5000/api/v1/user/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fullName: name,   // <-- backend expects fullName
+        email,
+        password
+      }),
+    });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        setMessage({ type: "success", text: "User registered successfully!" });
-      } else {
-        setMessage({ type: "error", text: data.error || "Registration failed" });
-      }
-    } catch (err) {
-      console.error(err);
-      setMessage({ type: "error", text: "Error connecting to server" });
+    const data = await res.json();
+    if (res.ok) {
+      setMessage({ type: "success", text: "User registered successfully!" });
+    } else {
+      setMessage({ type: "error", text: data.message || "Registration failed" });
     }
-  };
+  } catch (err) {
+    setMessage({ type: "error", text: "Error connecting to server" });
+  }
+};
+
 
   return (
     <div className="min-h-screen p-16 pt-24 md:pt-0 bg-white flex items-center justify-center relative overflow-x-hidden px-4">

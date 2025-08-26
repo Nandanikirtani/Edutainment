@@ -1,64 +1,162 @@
-import db from "../../db.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { User } from "../models/User.model.js";
+import jwt from "jsonwebtoken";
 
-export const registerUser = (req, res) => {
-  const { name, email, password } = req.body;
+// ---------------- REGISTER USER ----------------
+const registerUser = asyncHandler(async (req, res) => {
+  const { fullName, email, password } = req.body;
 
-  if (!name || !email || !password) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
-  if (typeof name !== "string" || typeof email !== "string" || typeof password !== "string") {
-    return res.status(400).json({ error: "Invalid input types" });
-  }
-  if (name.length < 3 || email.length < 5 || password.length < 6) {
-    return res.status(400).json({ error: "Input values are too short" });
-  }
-  if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(email)) {
-    return res.status(400).json({ error: "Invalid email format" });
-  }
-  if (password.includes(" ")) {
-    return res.status(400).json({ error: "Password cannot contain spaces" });
-  }
-  if (password.length > 20) {
-    return res.status(400).json({ error: "Password is too long" });
-  }
-  if (name.length > 50 || email.length > 100) {
-    return res.status(400).json({ error: "Input values are too long" });
+  // Validation
+  if (![fullName, email, password].every(f => f && typeof f === "string" && f.trim() !== "")) {
+    throw new ApiError(400, "All fields are required: fullName, email, password");
   }
 
+  if (!email.includes("@") || email.startsWith("@") || email.endsWith("@")) {
+    throw new ApiError(400, "Enter a valid email");
+  }
 
-  const query = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+  // Check if user exists
+  const existedUser = await User.findOne({ email });
+  if (existedUser) throw new ApiError(400, "User already exists");
 
-  db.query(query, [name, email, password], (err, result) => {
-    if (err) {
-      console.error("DB error:", err);
-      return res.status(500).json({ error: "Database error" });
-    }
+  // Create user
+  const user = await User.create({ fullName, email, password });
+  const createdUser = await User.findById(user._id).select("-password -refreshToken");
 
-    res.status(200).json({ message: "User registered successfully", id: result.insertId });
+  return res.status(201).json({
+    success: true,
+    data: createdUser,
+    message: "User registered successfully",
   });
+});
+
+// ---------------- HELPER: Generate Access & Refresh Tokens ----------------
+const generateTokens = async (user) => {
+  const accessToken = jwt.sign(
+    { _id: user._id, email: user.email, fullName: user.fullName },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+  );
+
+  const refreshToken = jwt.sign(
+    { _id: user._id },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+  );
+
+  user.refreshToken = refreshToken;
+  await user.save({ validateBeforeSave: false });
+
+  return { accessToken, refreshToken };
 };
 
-export const loginUser = (req, res) => {
+// ---------------- LOGIN USER ----------------
+const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required" });
+  if (!email || !password) throw new ApiError(400, "Email and password are required");
+
+  const user = await User.findOne({ email });
+  if (!user) throw new ApiError(404, "User not found");
+
+  const isPasswordValid = await user.isPasswordCorrect(password);
+  if (!isPasswordValid) throw new ApiError(401, "Invalid password");
+
+  const { accessToken, refreshToken } = await generateTokens(user);
+  const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+
+  const cookieOptions = { httpOnly: true, secure: true };
+  return res
+    .status(200)
+    .cookie("refreshToken", refreshToken, cookieOptions)
+    .cookie("accessToken", accessToken, cookieOptions)
+    .json({
+      success: true,
+      data: loggedInUser,
+      accessToken,
+      refreshToken,
+      message: "User logged in successfully",
+    });
+});
+
+// ---------------- LOGOUT USER ----------------
+const logoutUser = asyncHandler(async (req, res) => {
+  if (req.user) {
+    await User.findByIdAndUpdate(req.user._id, { refreshToken: null });
   }
-  if (typeof email !== "string" || typeof password !== "string") {
-    return res.status(400).json({ error: "Invalid input types" });
+
+  const cookieOptions = { httpOnly: true, secure: true };
+  return res
+    .status(200)
+    .cookie("refreshToken", null, cookieOptions)
+    .cookie("accessToken", null, cookieOptions)
+    .json({ success: true, data: null, message: "User logged out successfully" });
+});
+
+// ---------------- REFRESH ACCESS TOKEN ----------------
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
+  if (!incomingRefreshToken) throw new ApiError(401, "Refresh token is required");
+
+  try {
+    const decoded = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const user = await User.findById(decoded._id);
+    if (!user) throw new ApiError(404, "User not found");
+
+    if (user.refreshToken !== incomingRefreshToken) throw new ApiError(401, "Invalid refresh token");
+
+    const { accessToken, refreshToken } = await generateTokens(user);
+    const cookieOptions = { httpOnly: true, secure: true };
+
+    return res
+      .status(200)
+      .cookie("refreshToken", refreshToken, cookieOptions)
+      .cookie("accessToken", accessToken, cookieOptions)
+      .json({
+        success: true,
+        data: null,
+        accessToken,
+        refreshToken,
+        message: "Access token refreshed successfully",
+      });
+  } catch (err) {
+    throw new ApiError(500, "Failed to refresh access token");
   }
+});
 
-  const query = "SELECT * FROM users WHERE email = ? AND password = ?";
+// ---------------- GET USER PROFILE ----------------
+const getUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select("-password -refreshToken");
+  if (!user) throw new ApiError(404, "User not found");
 
-  db.query(query, [email, password], (err, results) => {
-    if (err) {
-      console.error("DB error:", err);
-      return res.status(500).json({ error: "Database error" });
-    }
-    if (results.length === 0) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
-
-    res.status(200).json({ message: "Login successful", user: results[0] });
+  res.status(200).json({
+    success: true,
+    data: user,
+    message: "User profile fetched successfully"
   });
-}
+});
+
+// ---------------- UPDATE USER PROFILE ----------------
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const { fullName, email, password } = req.body;
+  const user = await User.findById(req.user._id);
+  if (!user) throw new ApiError(404, "User not found");
+
+  user.fullName = fullName || user.fullName;
+  user.email = email || user.email;
+  if (password) {
+    user.password = password;
+  }
+  await user.save();
+
+  const updatedUser = await User.findById(user._id).select("-password -refreshToken");
+
+  res.status(200).json({
+    success: true,
+    data: updatedUser,
+    message: "User profile updated successfully"
+  });
+});
+
+export { registerUser, loginUser, getUserProfile, logoutUser, refreshAccessToken, updateUserProfile };

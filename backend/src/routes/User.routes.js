@@ -1,10 +1,17 @@
-import express from "express";
-import { registerUser } from "../controllers/User.controller.js";
-import { loginUser } from "../controllers/User.controller.js";
+import { Router } from "express";
+import { registerUser,loginUser,logoutUser,refreshAccessToken,getUserProfile,updateUserProfile } from "../controllers/User.controller.js";
+import { verifyJWT } from "../middlewares/verifyJWT.js";
 
-const router = express.Router();
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
+const router = Router()
 
-export default router;
+router.route("/register").post(registerUser)
+router.route("/login").post(loginUser)
+router.route("/logout").post(logoutUser)
+router.route("/refresh-token").post( refreshAccessToken);
+router.route("/profile").get(verifyJWT, getUserProfile);
+router.put("/profile", verifyJWT, updateUserProfile); // Uncomment if you have a profile route    
+
+
+
+export default router
