@@ -21,6 +21,8 @@ export default function Navbar() {
     { name: 'Home', path: '/' },
     { name: 'About Us', path: '/aboutus' },
     { name: 'Courses', path: '/courses' },
+    { name: 'Campus life', path: '/campuslife' },
+  
     // { name: 'My Profile', path: '/myprofile' } 
   ];
 
