@@ -1,213 +1,470 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+// HomePage.jsx
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import styled from "styled-components";
+import { Play } from "lucide-react";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (delay = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, delay },
-  }),
+/* ================= HeroSlider Styles ================= */
+const SliderContainer = styled.div`
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  font-family: "Arial", sans-serif;
+  background: black;
+`;
+
+const MainImage = styled(motion.img)`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const Overlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.35);
+`;
+
+const PlayButton = styled(motion.button)`
+  position: absolute;
+  top: 25%;
+  left: 10%;
+  background: linear-gradient(135deg, #ff0000, #ff4d4d);
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 16px 32px;
+  border-radius: 50px;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.4);
+
+  &:hover {
+    background: linear-gradient(135deg, #e60000, #ff6666);
+    transform: scale(1.08);
+  }
+`;
+
+const PreviewContainer = styled.div`
+  position: absolute;
+  bottom: 100px;
+  display: flex;
+  gap: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+`;
+
+const PreviewImage = styled(motion.img)`
+  width: 250px;
+  height: 150px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 3px solid transparent;
+  cursor: pointer;
+`;
+const CareerBanner = styled.img`
+  width: 100%;
+  height: auto;
+  display: block;
+`;
+/* ================= CoursesSection Styles ================= */
+const SectionContainer = styled.div`
+  padding: 50px 20px;
+  background-color: #000;
+  color: white;
+  font-family: "Arial", sans-serif;
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+`;
+
+const CoursesGrid = styled.div`
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
+const CourseCard = styled(motion.div)`
+  position: relative;
+  width: 300px;
+  height: 180px;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  background-color: #111;
+  transition: transform 0.3s, box-shadow 0.3s;
+  perspective: 1000px;
+`;
+
+const Rank = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9);
+  z-index: 5;
+`;
+
+const CardImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const CardOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  color: white;
+`;
+
+const CardTitle = styled.h3`
+  font-size: 18px;
+  margin: 0;
+`;
+
+const CardTag = styled.span`
+  font-size: 12px;
+  color: yellow;
+  margin-right: 10px;
+`;
+
+/* ================= Arts & Humanities Section Styles ================= */
+const ArtsContainer = styled.div`
+  padding: 50px 20px;
+  background: #111;
+  color: white;
+  font-family: "Arial", sans-serif;
+  text-align: center;
+`;
+
+const ArtsTitle = styled.h2`
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 30px;
+`;
+
+const ArtsGrid = styled.div`
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
+const ArtsCard = styled(motion.div)`
+  position: relative;
+  width: 280px;
+  height: 170px;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  background-color: #222;
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.4);
+`;
+
+const ArtsImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const ArtsOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+`;
+
+const ArtsText = styled.h3`
+  margin: 0;
+  font-size: 18px;
+`;
+
+/* ================= ExtraSection Styles ================= */
+const ExtraSectionContainer = styled.div`
+  padding: 50px 20px;
+  background-color: #000;
+  color: white;
+  font-family: "Arial", sans-serif;
+`;
+
+const ExtraSectionTitle = styled.h2`
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+`;
+
+const ExtraGrid = styled.div`
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
+const ExtraCard = styled(motion.div)`
+  position: relative;
+  width: 300px;
+  height: 180px;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  perspective: 1000px;
+`;
+
+const ExtraCardInner = styled(motion.div)`
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+`;
+
+const ExtraCardFront = styled.div`
+  width: 100%;
+  height: 100%;
+  position: relative;
+`;
+
+const ExtraCardImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const ExtraCardOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  color: white;
+`;
+
+const ExtraCardTitle = styled.h3`
+  font-size: 18px;
+  margin: 0;
+`;
+
+const ExtraCardTag = styled.span`
+  font-size: 12px;
+  color: #ffcc00;
+  margin-right: 10px;
+`;
+
+const BackTitle = styled.h3`
+  font-size: 20px;
+  margin-bottom: 5px;
+  color: #fff;
+`;
+
+const BackTag = styled.span`
+  font-size: 14px;
+  color: #ffd700;
+  margin-bottom: 10px;
+`;
+
+const BackDesc = styled.p`
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.4;
+`;
+
+/* ================= Data ================= */
+const sliderImages = [
+  { id: 1, url: "1.png" },
+  { id: 2, url: "2.png" },
+  { id: 3, url: "3.png" },
+];
+
+const coursesData = [
+  { id: 1, title: "AR/VR COURSES", tag: "New / Free", img: "AR.jpeg" },
+  { id: 2, title: "Machine Learning", tag: "Everybody", img: "Machine_LEARNING.jpeg" },
+  { id: 3, title: "AI Tutorial", tag: "Simplilearn", img: "AI.jpeg" },
+  { id: 4, title: "Java", tag: "Pay per view", img: "java.png" },
+];
+
+const artsData = [
+  { id: 1, title: "Philosophy", img: "A1.png" },
+  { id: 2, title: "History", img: "A2.png" },
+  { id: 3, title: "Literature", img: "A3.png" },
+  { id: 4, title: "Sociology", img: "A4.png" },
+];
+
+const extraData = [
+  { id: 1, title: "B.Tech Automobile", tag: "Engineering", img: "C1.jpeg" },
+  { id: 2, title: "MBA Programs", tag: "Business", img: "C2.jpeg" },
+  { id: 3, title: "Psychology", tag: "Behavioral Science", img: "C3.jpeg" },
+  { id: 4, title: "Mass Comm.", tag: "Media", img: "C4.jpeg" },
+];
+
+/* ================= Motion Variants ================= */
+const gridVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.14, when: "beforeChildren" } },
 };
 
-const Home = () => {
-  const baseURL = import.meta.env.BASE_URL;
+const cardVariant = {
+  hidden: { opacity: 0, y: -40, scale: 0.98 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
+};
+
+const MotionCoursesGrid = motion(CoursesGrid);
+const MotionArtsGrid = motion(ArtsGrid);
+const MotionExtraGrid = motion(ExtraGrid);
+
+/* ================= Components ================= */
+const HeroSlider = () => {
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % sliderImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="bg-white pt-16 min-h-screen font-sans">
-      {/* Hero Section */}
-      <section className="flex flex-col md:flex-row items-center justify-between px-8 md:px-16 py-12">
-        {/* Text Content */}
-        <motion.div
-          className="md:w-1/2 space-y-6"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: { opacity: 0, x: -50 },
-            visible: { opacity: 1, x: 0, transition: { duration: 0.8 } },
-          }}
-        >
-          <h2 className="text-4xl font-bold leading-snug">
-            Unlock Your <span className="text-teal-600">Potential</span>
-            <br />
-            Learn{" "}
-            <span className="text-teal-600">
-              Anything, Anytime, Anywhere.
-            </span>
-          </h2>
-          <p className="text-black-700 text-lg">
-            Join thousands of learners building their future with top-quality
-            content and hands-on experience.
-          </p>
-          <div className="flex gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              className="bg-teal-600 text-white px-6 py-3 rounded-full hover:bg-teal-700"
-            >
-              Get Started
-            </motion.button>
-            <Link to="/courses">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                className="border border-gray-400 px-6 py-3 rounded-full hover:bg-gray-100"
-              >
-                Browse Courses
-              </motion.button>
-            </Link>
-          </div>
-        </motion.div>
-
-        {/* Image */}
-        <motion.div
-          className="md:w-1/2 mt-8 md:mt-0"
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <img
-            src={`${baseURL}hero-illustration.png`}
-            alt="Learning Illustration"
-            className="w-full h-auto"
+    <SliderContainer>
+      <AnimatePresence mode="wait">
+        <MainImage
+          key={sliderImages[current].id}
+          src={sliderImages[current].url}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1 }}
+        />
+      </AnimatePresence>
+      <Overlay />
+      <PlayButton whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+        <Play size={22} /> Play
+      </PlayButton>
+      <PreviewContainer>
+        {sliderImages.map((img, index) => (
+          <PreviewImage
+            key={img.id}
+            src={img.url}
+            whileHover={{ scale: 1.1 }}
+            animate={{ borderColor: index === current ? "red" : "transparent", scale: index === current ? 1.05 : 1 }}
+            transition={{ duration: 0.4 }}
+            onClick={() => setCurrent(index)}
           />
-        </motion.div>
-      </section>
+        ))}
+      </PreviewContainer>
+    </SliderContainer>
+  );
+};
+/* ================= Career Section Component ================= */
+const CareerSection = () => {
+  return <CareerBanner src="carrer.png" alt="Career Banner" />;
+};
 
-      {/* Top Picks */}
-      <section className="px-8 md:px-16 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <motion.h3
-            className="text-2xl font-bold text-center md:text-left"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-          >
-            Top Picks Just for You
-          </motion.h3>
-
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            custom={0.2}
-            variants={fadeUp}
-            className="mt-4 md:mt-0"
-          >
-            <Link
-              to="/courses"
-              className="border border-gray-400 px-6 py-2 rounded-full hover:bg-gray-100 transition"
-            >
-              View All Courses
-            </Link>
-          </motion.div>
-        </div>
-
-        <motion.p
-          className="text-black-600 mt-2 text-center md:text-left"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          custom={0.2}
-          variants={fadeUp}
-        >
-          Unlock the thrill of learning—go big, dive deep, and never lose the spark!
-        </motion.p>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-          {[
-            { title: "AI Meets C Programming", level: "Dr Chandni", image: "ai-c.png" },
-            { title: "OOPs Using Java", level: "Dr. Mamta Arora", image: "java.png" },
-            { title: "Generative AI", level: "Dr. Ganga", image: "gen-ai.png" }
-          ].map((card, index) => (
-            <motion.div
-              key={index}
-              className="border rounded-lg shadow-sm hover:shadow-lg transition flex flex-col items-center p-4"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              custom={index * 0.2}
-              variants={fadeUp}
-            >
-              <img
-                src={`${baseURL}${card.image}`}
-                alt={card.title}
-                className="rounded-t-lg mb-4 w-full h-40 object-cover"
-              />
-              <p className="font-semibold text-lg text-center">{card.title}</p>
-              <span className="text-sm text-gray-500 text-center">{card.level}</span>
-              <div className="mt-4">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  className="bg-teal-600 text-white px-6 py-2 rounded-full hover:bg-teal-700"
-                >
-                  Explore now
-                </motion.button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Robot & Spotlight Sections */}
-      <section className="px-8 md:px-16 py-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-        <motion.div
-          animate={{ y: [0, -10, 0] }}
-          transition={{ repeat: Infinity, duration: 4 }}
-        >
-          <img
-            src={`${baseURL}robot-student.png`}
-            alt="AI Learning Assistant"
-            className="rounded-lg w-full h-80 object-cover"
-          />
-        </motion.div>
-        <div className="flex flex-col gap-4">
-          {["Doubt Sessions", "Mentorship", "Placement Assistance"].map((btn, i) => (
-            <motion.button
-              key={i}
-              whileHover={{ scale: 1.05 }}
-              className={`flex items-center gap-3 px-6 py-3 rounded-lg text-lg ${
-                i === 0
-                  ? "bg-teal-700 text-white hover:bg-teal-800"
-                  : "border border-teal-700 text-teal-700 hover:bg-teal-50"
-              }`}
-            >
-              {btn}
-            </motion.button>
-          ))}
-        </div>
-      </section>
-
-      {/* Student Spotlight */}
-      <section className="px-8 md:px-16 py-12 bg-white">
-        <h3 className="text-xl font-bold flex items-center gap-2 text-teal-700 mb-8">
-          📖 Student Spotlight
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            { name: "MAYANK GOEL", img: "mayank.jpg", review: "This app makes studying feel effortless! The interactive content keeps me engaged, and I actually understand topics deeply." },
-            { name: "ALOK GUPTA", img: "alok.jpg", review: "Learning with this app is fun, effective, and never boring. My grades have improved, and I feel more confident in my knowledge!" },
-            { name: "MANPREET SINGH", img: "manpreet.jpg", review: "The explanations are clear, the quizzes are fun, and I finally feel confident before exams." },
-            { name: "SAMMARTH KHURANA", img: "sammarth.jpg", review: "This app has made studying so much easier! The interactive content keeps me motivated every day." },
-            { name: "SIMRAN SHARMA", img: "simran.jpg", review: "I used to struggle with staying focused, but now I actually enjoy learning. It's like having a personal tutor with me." },
-            { name: "HITESH VERMA", img: "hitesh.jpg", review: "Finally, an app that makes complex subjects simple! The explanations are clear, and the learning feels effortless." }
-          ].map((student, idx) => (
-            <div key={idx} className="border border-yellow-300 rounded-lg p-4 shadow-sm">
-              <div className="flex items-center gap-3 mb-2">
-                <img src={`${baseURL}${student.img}`} alt={student.name} className="w-10 h-10 rounded-full object-cover" />
-                <div>
-                  <p className="font-bold">{student.name}</p>
-                  <p className="text-yellow-500 text-sm">⭐⭐⭐⭐⭐ 5.0</p>
-                </div>
-              </div>
-              <p className="text-gray-700">{student.review}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-    </div>
+const CoursesSection = () => {
+  return (
+    <SectionContainer>
+      <SectionTitle>Trending Courses</SectionTitle>
+      <MotionCoursesGrid variants={gridVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }}>
+        {coursesData.map((course, index) => (
+          <CourseCard key={course.id} variants={cardVariant} whileHover={{ scale: 1.08, rotateX: -5, rotateY: 5, boxShadow: "0px 20px 40px rgba(255,0,0,0.5)" }}>
+            <Rank>{index + 1}</Rank>
+            <CardImage src={course.img} alt={course.title} />
+            <CardOverlay>
+              <CardTag>{course.tag}</CardTag>
+              <CardTitle>{course.title}</CardTitle>
+            </CardOverlay>
+          </CourseCard>
+        ))}
+      </MotionCoursesGrid>
+    </SectionContainer>
   );
 };
 
-export default Home;
+const ArtsSection = () => {
+  return (
+    <ArtsContainer>
+      <ArtsTitle>Arts & Humanities</ArtsTitle>
+      <MotionArtsGrid variants={gridVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+        {artsData.map((item, index) => (
+          <ArtsCard key={item.id} variants={cardVariant} whileHover={{ scale: 1.05, y: -5, boxShadow: "0px 15px 30px rgba(0,0,0,0.6)" }}>
+            <ArtsImage src={item.img} alt={item.title} />
+            <ArtsOverlay>
+              <ArtsText>{item.title}</ArtsText>
+            </ArtsOverlay>
+          </ArtsCard>
+        ))}
+      </MotionArtsGrid>
+    </ArtsContainer>
+  );
+};
+
+/* ================= ExtraSection Component ================= */
+const ExtraSection = () => {
+  return (
+    <ExtraSectionContainer>
+      <ExtraSectionTitle>Programs Offered</ExtraSectionTitle>
+      <MotionExtraGrid
+        variants={gridVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.25 }}
+      >
+        {extraData.map((item, index) => (
+          <ExtraCard key={item.id} variants={cardVariant}>
+            <ExtraCardInner
+              whileHover={{
+                scale: 1.05,
+                boxShadow: "0 0 20px 5px rgba(255, 204, 0, 0.6)", // Glow
+              }}
+              transition={{
+                duration: 0.3,
+                ease: "easeInOut",
+                repeat: 1,
+                repeatType: "mirror", // Pulse effect
+              }}
+            >
+              <ExtraCardFront>
+                <ExtraCardImage src={item.img} alt={item.title} />
+                <ExtraCardOverlay>
+                  <ExtraCardTag>{item.tag}</ExtraCardTag>
+                  <ExtraCardTitle>{item.title}</ExtraCardTitle>
+                </ExtraCardOverlay>
+              </ExtraCardFront>
+            </ExtraCardInner>
+          </ExtraCard>
+        ))}
+      </MotionExtraGrid>
+    </ExtraSectionContainer>
+  );
+};
+
+const HomePage = () => {
+  return (
+    <>
+      <HeroSlider />
+      <CareerSection /> 
+      <CoursesSection />
+      <ArtsSection />
+      <ExtraSection />
+    </>
+  );
+};
+
+export default HomePage;
