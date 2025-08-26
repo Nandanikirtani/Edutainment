@@ -227,20 +227,10 @@ const ExtraCard = styled(motion.div)`
   border-radius: 14px;
   overflow: hidden;
   cursor: pointer;
+  background-color: #111;
+  transition: all 0.3s ease-in-out;
   perspective: 1000px;
-`;
-
-const ExtraCardInner = styled(motion.div)`
-  width: 100%;
-  height: 100%;
-  border-radius: 14px;
-  overflow: hidden;
-`;
-
-const ExtraCardFront = styled.div`
-  width: 100%;
-  height: 100%;
-  position: relative;
+  border: 1px solid transparent; /* Default border */
 `;
 
 const ExtraCardImage = styled.img`
@@ -268,7 +258,6 @@ const ExtraCardTag = styled.span`
   color: #ffcc00;
   margin-right: 10px;
 `;
-
 const BackTitle = styled.h3`
   font-size: 20px;
   margin-bottom: 5px;
@@ -427,34 +416,34 @@ const ExtraSection = () => {
         viewport={{ once: true, amount: 0.25 }}
       >
         {extraData.map((item, index) => (
-          <ExtraCard key={item.id} variants={cardVariant}>
-            <ExtraCardInner
-              whileHover={{
-                scale: 1.05,
-                boxShadow: "0 0 20px 5px rgba(255, 204, 0, 0.6)", // Glow
-              }}
-              transition={{
-                duration: 0.3,
-                ease: "easeInOut",
-                repeat: 1,
-                repeatType: "mirror", // Pulse effect
-              }}
-            >
-              <ExtraCardFront>
-                <ExtraCardImage src={item.img} alt={item.title} />
-                <ExtraCardOverlay>
-                  <ExtraCardTag>{item.tag}</ExtraCardTag>
-                  <ExtraCardTitle>{item.title}</ExtraCardTitle>
-                </ExtraCardOverlay>
-              </ExtraCardFront>
-            </ExtraCardInner>
+          <ExtraCard
+            key={item.id}
+            variants={cardVariant}
+            whileHover={{
+              scale: 1.1, // Zoom
+              rotateX: -5, // 3D tilt
+              rotateY: 5,
+              boxShadow: "0 0 25px 8px rgba(245, 26, 26, 0.8)", // Glow
+              border: "3px solid #ff0000"
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 250,
+              damping: 18,
+            }}
+            whileTap={{ scale: 1.05 }} // Slight shrink on click/tap
+          >
+            <ExtraCardImage src={item.img} alt={item.title} />
+            <ExtraCardOverlay>
+              <ExtraCardTag>{item.tag}</ExtraCardTag>
+              <ExtraCardTitle>{item.title}</ExtraCardTitle>
+            </ExtraCardOverlay>
           </ExtraCard>
         ))}
       </MotionExtraGrid>
     </ExtraSectionContainer>
   );
 };
-
 const HomePage = () => {
   return (
     <>
