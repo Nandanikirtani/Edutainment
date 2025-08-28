@@ -22,7 +22,7 @@ export default function Navbar() {
     { name: 'About Us', path: '/aboutus' },
     { name: 'Courses', path: '/courses' },
     { name: 'Alumini', path: '/alumini' },
-    { name: 'Campus Life', path: '/campus' },
+    { name: 'Campuslife', path: '/campus' },
     { name: 'Podcast', path: '/podcast' },
     // { name: 'My Profile', path: '/myprofile' } 
   ];
