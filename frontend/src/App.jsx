@@ -10,6 +10,11 @@ import AuthPages from './pages/AuthPages'
 import Footer from './components/Footer'
 import Studentsidebar from './components/Studentsidebar'
 import Dashboard from './pages/Dashboard'
+import CampusLife from './pages/Campus life'
+import Podcast1 from './pages/Podcast1';       // ✅ keep inside pages folder
+import Podcast2 from './pages/Podcast2';
+import Podcast3 from './pages/Podcast3';
+import Podcast4 from './pages/Podcast4';
 
 function AppContent() {
   const location = useLocation()
@@ -31,6 +36,12 @@ function AppContent() {
           <Route path="/login" element={<AuthPages />} />
           <Route path="/signup" element={<AuthPages />} />
           <Route path="/student" element={<Studentsidebar />} />
+          <Route path="/campuslife" element={<CampusLife />} />
+          <Route path="/podcast1" element={<Podcast1 />} />
+          <Route path="/podcast2" element={<Podcast2 />} />
+          <Route path="/podcast3" element={<Podcast3 />} />
+          <Route path="/podcast4" element={<Podcast4 />} />
+            
         </Routes>
       </div>
       {!hideLayout && <Footer />}

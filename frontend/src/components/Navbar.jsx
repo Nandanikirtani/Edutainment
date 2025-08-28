@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { FaSignInAlt, FaUserPlus } from 'react-icons/fa';
+import { FaSignInAlt, FaUser } from 'react-icons/fa';
 import { FiMenu } from "react-icons/fi";
 import { IoMdClose } from 'react-icons/io';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
+
+  const userEmail = localStorage.getItem("email"); // check if user is logged in
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Menu items with proper rloutes
   const menuItems = [
     { name: 'Home', path: '/' },
     { name: 'About Us', path: '/aboutus' },
