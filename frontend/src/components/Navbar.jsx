@@ -34,7 +34,7 @@ export default function Navbar() {
       }`}
     >
       <div className="mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <img className='m-4 h-10 w-30' src="https://www.htbrandstudio.com/wp-content/uploads/2018/04/MANAV-RACHNA-logo-square.png" alt="" />
          

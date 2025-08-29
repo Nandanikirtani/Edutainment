@@ -191,7 +191,7 @@ export default function AuthPages() {
 
         // 👇 Redirect to dashboard
         setTimeout(() => {
-          navigate("/student"); 
+          navigate("/"); 
         }, 1000);
       } else {
         setMessage({ type: "error", text: data.error || "Login failed" });

@@ -3,6 +3,19 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import { Play } from "lucide-react";
+import { createGlobalStyle } from "styled-components";
+
+const GlobalStyle = createGlobalStyle`
+  body, html {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  img {
+    display: block;
+  }
+`;
 
 /* ================= HeroSlider Styles ================= */
 const SliderContainer = styled.div`
@@ -15,12 +28,13 @@ const SliderContainer = styled.div`
 `;
 
 const MainImage = styled(motion.img)`
+margin: 0;
+  padding: 0;
   position: absolute;
   width: 100%;
   height: 100%;
   object-fit: cover;
 `;
-
 const Overlay = styled.div`
   position: absolute;
   top: 0;
@@ -73,6 +87,8 @@ const PreviewImage = styled(motion.img)`
   cursor: pointer;
 `;
 const CareerBanner = styled.img`
+margin-top: 0;
+  padding-top: 0;
   width: 100%;
   height: auto;
   display: block;
@@ -168,6 +184,7 @@ const ArtsGrid = styled.div`
   flex-wrap: wrap;
   justify-content: center;
 `;
+
 
 const ArtsCard = styled(motion.div)`
   position: relative;
@@ -447,6 +464,7 @@ const ExtraSection = () => {
 const HomePage = () => {
   return (
     <>
+      <GlobalStyle /> 
       <HeroSlider />
       <CareerSection /> 
       <CoursesSection />
