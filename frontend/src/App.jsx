@@ -1,30 +1,22 @@
-import { useState } from 'react'
-import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
-import Navbar from './components/Navbar'
-import Home from './pages/Home'
-import FAQS from './pages/FAQS'
-import Courses from './pages/Courses'
-import About from './pages/About'
-import './App.css'
-import AuthPages from './pages/AuthPages'
-import Footer from './components/Footer'
-import Studentsidebar from './components/Studentsidebar'
-import Dashboard from './pages/Dashboard'
-import Campuslife from './pages/Campuslife'
-// import Podcast1 from './pages/Podcast1';       // ✅ keep inside pages folder
-// import Podcast2 from './pages/Podcast2';
-// import Podcast3 from './pages/Podcast3';
-// import Podcast4 from './pages/Podcast4';
-import PodcastContent from './components/PodcastContent'
-import AwardDetail from "./components/AwardDetail";
+import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import FAQS from './pages/FAQS';
+import Courses from './pages/Courses';
+import About from './pages/About';
+import AuthPages from './pages/AuthPages';
+import Studentsidebar from './components/Studentsidebar';
+import Campuslife from './pages/Campuslife';
+import PodcastContent from './components/PodcastContent';
+import AwardDetail from './components/AwardDetail';
+import Profile from './pages/Profile';
+import './App.css';
 
 function AppContent() {
-  const location = useLocation()
-
-  // Routes where Navbar and Footer should be hidden
-  const hideLayoutRoutes = ['/student']
-
-  const hideLayout = hideLayoutRoutes.includes(location.pathname)
+  const location = useLocation();
+  const hideLayoutRoutes = ['/student'];
+  const hideLayout = hideLayoutRoutes.includes(location.pathname);
 
   return (
     <>
@@ -38,11 +30,8 @@ function AppContent() {
           <Route path="/login" element={<AuthPages />} />
           <Route path="/signup" element={<AuthPages />} />
           <Route path="/student" element={<Studentsidebar />} />
-          <Route path="/campus" element={<Campuslife />} />
-          {/* <Route path="/podcast1" element={<Podcast1 />} />
-          <Route path="/podcast2" element={<Podcast2 />} />
-          <Route path="/podcast3" element={<Podcast3 />} />
-          <Route path="/podcast4" element={<Podcast4 />} /> */}
+          <Route path="/campus" element={<Campuslife />} /><Route path="/campus" element={<Campuslife />} />
+          <Route path="/profile" element={<Profile />} />
           <Route
             path="/podcast"
             element={
@@ -55,19 +44,17 @@ function AppContent() {
             }
           />
           <Route path="/award/:id" element={<AwardDetail />} />
-            
         </Routes>
       </div>
       {!hideLayout && <Footer />}
     </>
-  )
+  );
 }
-
 
 export default function App() {
   return (
     <Router>
       <AppContent />
     </Router>
-  )
+  );
 }

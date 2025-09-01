@@ -28,7 +28,7 @@ const SliderContainer = styled.div`
 `;
 
 const MainImage = styled(motion.img)`
-margin: 0;
+  margin: 0;
   padding: 0;
   position: absolute;
   width: 100%;
@@ -86,13 +86,20 @@ const PreviewImage = styled(motion.img)`
   border: 3px solid transparent;
   cursor: pointer;
 `;
+
+// ============ CHANGE 1: ADDED THIS CONTAINER AND UPDATED THE BANNER STYLE ============
+const CareerContainer = styled.div`
+  background-color: #000; /* Match the theme background */
+  padding: 25px 20px; /* Top/Bottom 25px, Left/Right 20px. Adjust as you like. */
+`;
+
 const CareerBanner = styled.img`
-margin-top: 0;
-  padding-top: 0;
   width: 100%;
   height: auto;
   display: block;
+  border-radius: 10px; /* Optional: gives the image soft corners */
 `;
+
 /* ================= CoursesSection Styles ================= */
 const SectionContainer = styled.div`
   padding: 50px 20px;
@@ -378,9 +385,14 @@ const HeroSlider = () => {
     </SliderContainer>
   );
 };
-/* ================= Career Section Component ================= */
+
+// ============ CHANGE 2: UPDATED THIS COMPONENT TO USE THE WRAPPER ============
 const CareerSection = () => {
-  return <CareerBanner src="carrer.png" alt="Career Banner" />;
+  return (
+    <CareerContainer>
+      <CareerBanner src="carrer.png" alt="Career Banner" />
+    </CareerContainer>
+  );
 };
 
 const CoursesSection = () => {
