@@ -14,16 +14,16 @@ const RoleTabs = ({ role, setRole }) => {
   ];
 
   return (
-    <div className="flex flex-wrap rounded-full bg-[#0C7489] p-1 gap-1 w-full justify-center overflow-hidden">
+    <div className="flex flex-wrap rounded-full text-black bg-white p-1 gap-1 w-full justify-center overflow-hidden">
       {roles.map((r) => (
         <button
           key={r.id}
           onClick={() => setRole(r.id)}
-          className={`relative z-10 flex-1 min-w-[70px] py-2 text-xs sm:text-sm font-medium transition-all rounded-full
+          className={`relative z-10  flex-1 min-w-[70px] py-2 text-xs sm:text-sm font-medium transition-all rounded-full
             ${
               role === r.id
-                ? "bg-white text-slate-900 shadow-lg"
-                : "text-white hover:bg-white/5"
+                ? "bg-red-200 text-black shadow-lg"
+                : " hover:bg-white/5"
             }`}
           aria-pressed={role === r.id}
         >
@@ -101,7 +101,7 @@ const LoginForm = ({ role, onLogin }) => {
       </div>
       <button
         type="submit"
-        className="w-full py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-pink-500 text-white font-semibold shadow-lg"
+        className="w-full py-2 rounded-lg bg-gradient-to-r from-green-400 to-teal-500 text-white font-semibold shadow-lg"
         disabled={loading}
       >
         {loading
@@ -201,14 +201,14 @@ export default function AuthPages() {
   };
 
   return (
-    <div className="min-h-screen p-16 pt-24 md:pt-0 bg-white flex items-center justify-center relative overflow-x-hidden px-4">
+    <div className="min-h-screen p-16 pt-24 md:pt-0 bg-black flex items-center justify-center relative overflow-x-hidden px-4">
       {/* Background blobs */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.16 }}
         className="pointer-events-none absolute inset-0 overflow-hidden"
       >
-        <div className="absolute -left-32 -top-32 w-60 sm:w-72 h-60 sm:h-72 rounded-full bg-indigo-500 blur-3xl mix-blend-screen" />
+        <div className="absolute -left-32 -top-32 w-60 sm:w-72 h-60 sm:h-72 rounded-full bg-red-500 blur-3xl mix-blend-screen" />
         <div className="absolute -right-32 -bottom-32 w-72 sm:w-96 h-72 sm:h-96 rounded-full bg-pink-500 blur-3xl mix-blend-screen" />
       </motion.div>
 
@@ -216,7 +216,7 @@ export default function AuthPages() {
         initial={{ scale: 0.96, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.45 }}
-        className="relative z-10 w-full max-w-4xl bg-[#0C7489] rounded-2xl shadow-2xl overflow-hidden"
+        className="relative z-10 w-full max-w-4xl bg-gradient-to-b from-red-500 to-red-700  rounded-2xl shadow-2xl overflow-hidden"
       >
         <div className="grid grid-cols-1 md:grid-cols-2">
           {/* Left */}
