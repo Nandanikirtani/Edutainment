@@ -3,6 +3,19 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import { Play } from "lucide-react";
+import { createGlobalStyle } from "styled-components";
+
+const GlobalStyle = createGlobalStyle`
+  body, html {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  img {
+    display: block;
+  }
+`;
 
 /* ================= HeroSlider Styles ================= */
 const SliderContainer = styled.div`
@@ -15,12 +28,13 @@ const SliderContainer = styled.div`
 `;
 
 const MainImage = styled(motion.img)`
+  margin: 0;
+  padding: 0;
   position: absolute;
   width: 100%;
   height: 100%;
   object-fit: cover;
 `;
-
 const Overlay = styled.div`
   position: absolute;
   top: 0;
@@ -72,11 +86,20 @@ const PreviewImage = styled(motion.img)`
   border: 3px solid transparent;
   cursor: pointer;
 `;
+
+// ============ CHANGE 1: ADDED THIS CONTAINER AND UPDATED THE BANNER STYLE ============
+const CareerContainer = styled.div`
+  background-color: #000; /* Match the theme background */
+  padding: 25px 20px; /* Top/Bottom 25px, Left/Right 20px. Adjust as you like. */
+`;
+
 const CareerBanner = styled.img`
   width: 100%;
   height: auto;
   display: block;
+  border-radius: 10px; /* Optional: gives the image soft corners */
 `;
+
 /* ================= CoursesSection Styles ================= */
 const SectionContainer = styled.div`
   padding: 50px 20px;
@@ -168,6 +191,7 @@ const ArtsGrid = styled.div`
   flex-wrap: wrap;
   justify-content: center;
 `;
+
 
 const ArtsCard = styled(motion.div)`
   position: relative;
@@ -361,9 +385,14 @@ const HeroSlider = () => {
     </SliderContainer>
   );
 };
-/* ================= Career Section Component ================= */
+
+// ============ CHANGE 2: UPDATED THIS COMPONENT TO USE THE WRAPPER ============
 const CareerSection = () => {
-  return <CareerBanner src="carrer.png" alt="Career Banner" />;
+  return (
+    <CareerContainer>
+      <CareerBanner src="carrer.png" alt="Career Banner" />
+    </CareerContainer>
+  );
 };
 
 const CoursesSection = () => {
@@ -447,6 +476,7 @@ const ExtraSection = () => {
 const HomePage = () => {
   return (
     <>
+      <GlobalStyle /> 
       <HeroSlider />
       <CareerSection /> 
       <CoursesSection />

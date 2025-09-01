@@ -1,7 +1,11 @@
+// src/pages/AuthPages.jsx
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
+import { loginUser, registerUser } from "../api/auth.js"; // API helper file
 
+// ---------- Role Tabs ----------
 const RoleTabs = ({ role, setRole }) => {
   const roles = [
     { id: "student", label: "Student" },
@@ -30,6 +34,7 @@ const RoleTabs = ({ role, setRole }) => {
   );
 };
 
+// ---------- Input ----------
 const Input = ({ id, label, type = "text", value, onChange }) => {
   return (
     <label className="block text-sm w-full">
@@ -58,10 +63,8 @@ const LoginForm = ({ role, onLogin }) => {
   const submit = (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      onLogin({ email, password }); // use the prop
-    }, 800);
+    onLogin({ email, password, role })
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -87,7 +90,6 @@ const LoginForm = ({ role, onLogin }) => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-
       <div className="flex flex-wrap items-center justify-between text-xs text-black gap-2">
         <label className="flex items-center gap-2">
           <input type="checkbox" className="accent-[#0C7489]" />{" "}
@@ -97,7 +99,6 @@ const LoginForm = ({ role, onLogin }) => {
           Forgot?
         </button>
       </div>
-
       <button
         type="submit"
         className="w-full py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-pink-500 text-white font-semibold shadow-lg"
@@ -120,8 +121,8 @@ const SignupForm = ({ role, onSignup }) => {
   const submit = (e) => {
     e.preventDefault();
     setLoading(true);
-    onSignup({ role, name, email, password });
-    setLoading(false);
+    onSignup({ name, email, password, role })
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -153,7 +154,6 @@ const SignupForm = ({ role, onSignup }) => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-
       <button
         type="submit"
         className="w-full py-2 rounded-lg bg-gradient-to-r from-green-400 to-teal-500 text-slate-900 font-semibold shadow-lg"
@@ -167,69 +167,42 @@ const SignupForm = ({ role, onSignup }) => {
   );
 };
 
-// ---------- Main Auth card ----------
+// ---------- Main Auth Card ----------
 export default function AuthPages() {
   const [mode, setMode] = useState("login");
   const [role, setRole] = useState("student");
   const [message, setMessage] = useState(null);
-  const navigate = useNavigate(); // 👈 yeh add kiya
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleLogin = async ({ email, password }) => {
+  // --------- Login ----------
+  const handleLogin = async ({ email, password, role }) => {
+    setMessage({ type: "loading", text: "Logging in..." });
     try {
-      setMessage({ type: "loading", text: "Logging in..." });
-
-      const res = await fetch("http://localhost:5000/api/v1/user/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setMessage({ type: "success", text: "Login successful!" });
-
-        // 👇 Redirect to dashboard
-        setTimeout(() => {
-          navigate("/student"); 
-        }, 1000);
-      } else {
-        setMessage({ type: "error", text: data.error || "Login failed" });
-      }
+      const userData = await loginUser(email, password);
+      login({ ...userData, role });
+      setMessage({ type: "success", text: "Login successful!" });
+      setTimeout(() => navigate("/"), 800);
     } catch (err) {
-      setMessage({ type: "error", text: "Network error, please try again" });
+      setMessage({ type: "error", text: err.message });
     }
   };
 
-  const handleSignup = async ({ name, email, password }) => {
-  setMessage({ type: "loading", text: "Creating account..." });
-
-  try {
-    const res = await fetch("http://localhost:5000/api/v1/user/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fullName: name,   // <-- backend expects fullName
-        email,
-        password
-      }),
-    });
-
-    const data = await res.json();
-    if (res.ok) {
-      setMessage({ type: "success", text: "User registered successfully!" });
-    } else {
-      setMessage({ type: "error", text: data.message || "Registration failed" });
+  // --------- Signup ----------
+  const handleSignup = async ({ name, email, password, role }) => {
+    setMessage({ type: "loading", text: "Creating account..." });
+    try {
+      await registerUser({ fullName: name, email, password, role });
+      setMessage({ type: "success", text: "Account created successfully!" });
+      setMode("login");
+    } catch (err) {
+      setMessage({ type: "error", text: err.message });
     }
-  } catch (err) {
-    setMessage({ type: "error", text: "Error connecting to server" });
-  }
-};
-
+  };
 
   return (
     <div className="min-h-screen p-16 pt-24 md:pt-0 bg-white flex items-center justify-center relative overflow-x-hidden px-4">
-      {/* animated decorative blobs */}
+      {/* Background blobs */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.16 }}
@@ -246,7 +219,7 @@ export default function AuthPages() {
         className="relative z-10 w-full max-w-4xl bg-[#0C7489] rounded-2xl shadow-2xl overflow-hidden"
       >
         <div className="grid grid-cols-1 md:grid-cols-2">
-          {/* Left - welcome area */}
+          {/* Left */}
           <div className="p-6 sm:p-8 md:p-12 flex flex-col justify-center text-white bg-gradient-to-b from-transparent via-white/3 to-transparent">
             <motion.h2
               initial={{ y: -8, opacity: 0 }}
@@ -305,7 +278,7 @@ export default function AuthPages() {
             </div>
           </div>
 
-          {/* Right - form */}
+          {/* Right */}
           <div className="p-6 sm:p-8 md:p-12 bg-white flex items-center">
             <div className="w-full max-w-sm mx-auto text-black">
               <motion.div

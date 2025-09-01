@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import { useState } from 'react'
 // import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 // import Navbar from './components/Navbar'
@@ -86,14 +87,27 @@ import Podcast4 from './pages/Podcast4'
 import Alumini from './pages/Alumini'
 import IconDetail from './pages/IconDetail'
 import AwardDetail from './pages/AwardDetail'
+=======
+import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import FAQS from './pages/FAQS';
+import Courses from './pages/Courses';
+import About from './pages/About';
+import AuthPages from './pages/AuthPages';
+import Studentsidebar from './components/Studentsidebar';
+import Campuslife from './pages/Campuslife';
+import PodcastContent from './components/PodcastContent';
+import AwardDetail from './components/AwardDetail';
+import Profile from './pages/Profile';
+import './App.css';
+>>>>>>> 01459a8f54e1f31e3670270dda9a3777428c4ebd
 
 function AppContent() {
-  const location = useLocation()
-
-  // Routes where Navbar and Footer should be hidden
-  const hideLayoutRoutes = ['/student']
-
-  const hideLayout = hideLayoutRoutes.includes(location.pathname)
+  const location = useLocation();
+  const hideLayoutRoutes = ['/student'];
+  const hideLayout = hideLayoutRoutes.includes(location.pathname);
 
   return (
     <>
@@ -107,6 +121,7 @@ function AppContent() {
           <Route path="/login" element={<AuthPages />} />
           <Route path="/signup" element={<AuthPages />} />
           <Route path="/student" element={<Studentsidebar />} />
+<<<<<<< HEAD
           <Route path="/campuslife" element={<CampusLife />} />
           <Route path="/podcast1" element={<Podcast1 />} />
           <Route path="/podcast2" element={<Podcast2 />} />
@@ -117,11 +132,27 @@ function AppContent() {
           <Route path="/alumini" element={<Alumini />} />
           <Route path="/award/:id" element={<AwardDetail />} />
           <Route path="/icon/:id" element={<IconDetail />} />
+=======
+          <Route path="/campus" element={<Campuslife />} /><Route path="/campus" element={<Campuslife />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route
+            path="/podcast"
+            element={
+              <PodcastContent
+                title="The #1 Thing Industry Wants in Engineers"
+                speaker="Ft. Dr. Venkatesh Radhakrishnan"
+                desc="Learn the key skills and mindset industry demands."
+                bgImage="/podcast1.jpg"
+              />
+            }
+          />
+          <Route path="/award/:id" element={<AwardDetail />} />
+>>>>>>> 01459a8f54e1f31e3670270dda9a3777428c4ebd
         </Routes>
       </div>
       {!hideLayout && <Footer />}
     </>
-  )
+  );
 }
 
 export default function App() {
@@ -129,5 +160,9 @@ export default function App() {
     <Router>
       <AppContent />
     </Router>
+<<<<<<< HEAD
   )
+=======
+  );
+>>>>>>> 01459a8f54e1f31e3670270dda9a3777428c4ebd
 }

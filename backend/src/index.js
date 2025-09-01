@@ -1,24 +1,26 @@
 import express from "express";
 import dotenv from "dotenv";
 import connectDb from "./db/index.js";
-import { app } from "./app.js"; 
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import userRoutes from "./routes/User.routes.js";
 
-dotenv.config({
-  path: "./.env",   // make sure file name is correct
-});
+dotenv.config();
 
-// const app = express();  // ✅ define app before using it
+const app = express();
 
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
+app.use(cookieParser());
 
+app.use("/api/v1/user", userRoutes);
 
-// connect to DB
+app.get("/", (req, res) => res.send("Backend running!"));
+
 connectDb()
   .then(() => {
-    app.listen(process.env.PORT || 8000, () => {
-      console.log(`✅ Server is running at PORT: ${process.env.PORT || 8000}`);
+    app.listen(process.env.PORT || 5000, () => {
+      console.log(`Server running on PORT: ${process.env.PORT || 5000}`);
     });
   })
-  .catch((err) => {
-    console.error("❌ MongoDb connection failed:", err);
-  });
+  .catch(err => console.error("MongoDB connection failed:", err));
