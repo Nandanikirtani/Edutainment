@@ -12,6 +12,7 @@ import PodcastContent from './components/PodcastContent';
 import AwardDetail from './components/AwardDetail';
 import Profile from './pages/Profile';
 import './App.css';
+import  Podcast  from './pages/Podcast';
 
 function AppContent() {
   const location = useLocation();
@@ -32,6 +33,7 @@ function AppContent() {
           <Route path="/student" element={<Studentsidebar />} />
           <Route path="/campus" element={<Campuslife />} /><Route path="/campus" element={<Campuslife />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/podcast" element={<Podcast />} />
           <Route
             path="/podcast"
             element={
