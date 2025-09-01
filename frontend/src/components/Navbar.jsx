@@ -43,7 +43,7 @@ export default function Navbar() {
     logout();
     setShowDropdown(false);
     setIsOpen(false);
-    navigate("/login");
+    navigate("#/home");
   };
 
   const handleThemeToggle = () => setIsDarkMode(!isDarkMode);
