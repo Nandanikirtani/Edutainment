@@ -4,7 +4,23 @@ import { motion } from "framer-motion";
 import { Play } from "lucide-react";
 import PodcastContent from "../components/PodcastContent";
 
+// ================= Motion Variants =================
+const gridVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.15, when: "beforeChildren" } },
+};
 
+const cardVariant = {
+  hidden: { opacity: 0, y: 40, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+// ================= Data =================
 const podcasts = [
   {
     img: import.meta.env.BASE_URL + "podcast1.jpg",
@@ -103,10 +119,17 @@ export default function CampusLife() {
           </motion.div>
 
           {/* 🔹 Podcast Thumbnails */}
-          <div className="mt-12 flex gap-6 flex-wrap justify-center">
+          <motion.div
+            variants={gridVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.25 }}
+            className="mt-12 flex gap-6 flex-wrap justify-center"
+          >
             {podcasts.map((p, idx) => (
               <motion.img
                 key={idx}
+                variants={cardVariant}
                 src={p.img}
                 alt={`podcast-${idx}`}
                 onClick={() => {
@@ -117,7 +140,7 @@ export default function CampusLife() {
                 whileHover={{ scale: 1.05 }}
               />
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
 
@@ -141,105 +164,124 @@ export default function CampusLife() {
       {/* 🔹 What's happening @MRU */}
       <div className="py-12 px-6">
         <h2 className="text-2xl font-bold mb-6">What's happening @MRU</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <motion.div
+          variants={gridVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.25 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
           {happenings.map((item, idx) => (
             <motion.img
               key={idx}
+              variants={cardVariant}
               src={item.img}
               alt={`happening-${idx}`}
               className="w-full h-40 object-cover rounded-lg cursor-pointer transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
               whileHover={{ scale: 1.05 }}
             />
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* 🔹 Icons of Manav Rachna */}
       <div className="py-12 px-6">
         <h2 className="text-2xl font-bold mb-6">Icons of Manav Rachna</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <motion.div
+          variants={gridVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.25 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
           {icons.map((icon, idx) => (
             <motion.img
               key={idx}
+              variants={cardVariant}
               src={icon.img}
               alt={`icon-${idx}`}
               className="w-full h-52 object-cover rounded-md cursor-pointer transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
               whileHover={{ scale: 1.05 }}
             />
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* 🔹 MRE Awards */}
-<div className="py-12 px-6">
-  <h2 className="text-2xl font-bold mb-6">MRE Awards</h2>
-  <div className="max-w-6xl mx-auto flex items-center justify-between relative">
-    {/* Left Button */}
-    <button
-      onClick={() =>
-        setAwardIndex((prev) => (prev === 0 ? awards.length - 1 : prev - 1))
-      }
-      className="absolute -left-10 bg-yellow-500 text-black px-3 py-2 rounded-full z-10"
-    >
-      ◀
-    </button>
+      <div className="py-12 px-6">
+        <h2 className="text-2xl font-bold mb-6">MRE Awards</h2>
+        <div className="max-w-6xl mx-auto flex items-center justify-between relative">
+          {/* Left Button */}
+          <button
+            onClick={() =>
+              setAwardIndex((prev) => (prev === 0 ? awards.length - 1 : prev - 1))
+            }
+            className="absolute -left-10 bg-yellow-500 text-black px-3 py-2 rounded-full z-10"
+          >
+            ◀
+          </button>
 
-    {/* Card Layout */}
-    <motion.div
-      key={awardIndex}
-      initial={{ opacity: 0, x: 100 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.6 }}
-      className="flex flex-col md:flex-row items-center gap-6 border-2 border-yellow-500 rounded-2xl p-6 w-full"
-    >
-      {/* Left Text */}
-      <div className="flex-1 text-center md:text-left">
-        <h3 className="text-xl font-semibold mb-2 text-gray-300">
-          Lifetime Achievement Award to Shri Rajan Nanda
-        </h3>
-        <p className="text-gray-400 text-sm">
-          Honored for his exemplary contribution to society and leadership
-          excellence.
-        </p>
+          {/* Card Layout */}
+          <motion.div
+            key={awardIndex}
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-col md:flex-row items-center gap-6 border-2 border-yellow-500 rounded-2xl p-6 w-full"
+          >
+            {/* Left Text */}
+            <div className="flex-1 text-center md:text-left">
+              <h3 className="text-xl font-semibold mb-2 text-gray-300">
+                Lifetime Achievement Award to Shri Rajan Nanda
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Honored for his exemplary contribution to society and leadership
+                excellence.
+              </p>
+            </div>
+
+            {/* Right Image */}
+            <motion.img
+              src={awards[awardIndex].img}
+              alt={`award-${awardIndex}`}
+              className="flex-1 w-full md:w-80 h-60 object-cover rounded-lg transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,215,0,0.7)]"
+              whileHover={{ scale: 1.05 }}
+            />
+          </motion.div>
+
+          {/* Right Button */}
+          <button
+            onClick={() =>
+              setAwardIndex((prev) => (prev === awards.length - 1 ? 0 : prev + 1))
+            }
+            className="absolute -right-10 bg-yellow-500 text-black px-3 py-2 rounded-full z-10"
+          >
+            ▶
+          </button>
+        </div>
       </div>
-
-      {/* Right Image */}
-      <motion.img
-        src={awards[awardIndex].img}
-        alt={`award-${awardIndex}`}
-        className="flex-1 w-full md:w-80 h-60 object-cover rounded-lg transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,215,0,0.7)]"
-        whileHover={{ scale: 1.05 }}
-      />
-    </motion.div>
-
-    {/* Right Button */}
-    <button
-      onClick={() =>
-        setAwardIndex((prev) => (prev === awards.length - 1 ? 0 : prev + 1))
-      }
-      className="absolute -right-10 bg-yellow-500 text-black px-3 py-2 rounded-full z-10"
-    >
-      
-      ▶
-    </button>
-  </div>
-</div>
-
 
       {/* 🔹 Courses Offered */}
       <div className="py-12 px-6">
         <h2 className="text-2xl font-bold mb-6">Courses Offered</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <motion.div
+          variants={gridVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.25 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
           {courses.map((course, idx) => (
             <motion.img
               key={idx}
+              variants={cardVariant}
               src={course.img}
               alt={`course-${idx}`}
               className="w-full h-40 object-cover rounded-lg cursor-pointer transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
               whileHover={{ scale: 1.05 }}
             />
           ))}
-        </div>
+        </motion.div>
       </div>
     </div>
   );
