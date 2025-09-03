@@ -35,7 +35,7 @@ export default function Navbar() {
   const menuItems = [
     { name: "Home", path: "/" },
     { name: "Alumini", path: "/alumini" },
-    { name: "Campuslife", path: "/campus" },
+    { name: "Campus life", path: "/campus" },
     { name: "Podcast", path: "/podcast" },
   ];
 

@@ -1,13 +1,13 @@
 const API_BASE = "http://localhost:5000/api/v1/user";
 
 // ------------- Login -------------
-export const loginUser = async (email, password) => {
+export const loginUser = async (email, password,role) => {
   try {
     const res = await fetch(`${API_BASE}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password,role }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Login failed");
@@ -18,12 +18,12 @@ export const loginUser = async (email, password) => {
 };
 
 // ------------- Register -------------
-export const registerUser = async ({ fullName, email, password }) => {
+export const registerUser = async ({ fullName, email, password,role }) => {
   try {
     const res = await fetch(`${API_BASE}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fullName, email, password }),
+      body: JSON.stringify({ fullName, email, password,role }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Registration failed");

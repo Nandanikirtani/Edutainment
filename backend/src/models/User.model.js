@@ -5,14 +5,25 @@ import jwt from "jsonwebtoken";
 const userSchema = new Schema(
   {
     fullName: { type: String, required: true, trim: true },
-    email: { type: String, required: true, lowercase: true, unique: true, trim: true },
+    email: {
+      type: String,
+      required: true,
+      lowercase: true,
+      trim: true,
+    },
     password: { type: String, required: true },
-    phone: { type: String, default: "" },
-    dob: { type: Date },
+    role: {
+      type: String,
+      enum: ["student", "teacher", "admin"], // ✅ role required
+      required: true,
+    },
     refreshToken: { type: String },
   },
   { timestamps: true }
 );
+
+// ✅ make (email + role) unique together
+userSchema.index({ email: 1, role: 1 }, { unique: true });
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
@@ -26,7 +37,12 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
-    { _id: this._id, email: this.email, fullName: this.fullName },
+    {
+      _id: this._id,
+      email: this.email,
+      fullName: this.fullName,
+      role: this.role, // ✅ include role
+    },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
   );
