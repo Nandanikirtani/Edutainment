@@ -5,17 +5,35 @@ import jwt from "jsonwebtoken";
 
 // ------------- Register -------------
 export const registerUser = asyncHandler(async (req, res) => {
-  const { fullName, email, password } = req.body;
-  if (!fullName || !email || !password) throw new ApiError(400, "All fields are required");
+  const { fullName, email, password, role } = req.body;
 
-  const existedUser = await User.findOne({ email });
-  if (existedUser) throw new ApiError(400, "User already exists");
+  // check required fields
+  if (!fullName || !email || !password || !role) {
+    throw new ApiError(400, "All fields are required including role");
+  }
 
-  const user = await User.create({ fullName, email, password });
+  // validate role
+  const allowedRoles = ["student", "teacher", "admin"];
+  if (!allowedRoles.includes(role)) {
+    throw new ApiError(400, "Invalid role");
+  }
+
+  // check if user already exists with same email + role
+  const existedUser = await User.findOne({ email, role });
+  if (existedUser) throw new ApiError(400, "User already exists with this role");
+
+  // create user
+  const user = await User.create({ fullName, email, password, role });
+
   const createdUser = await User.findById(user._id).select("-password -refreshToken");
 
-  res.status(201).json({ success: true, data: createdUser, message: "User registered successfully" });
+  res.status(201).json({
+    success: true,
+    data: createdUser,
+    message: "User registered successfully",
+  });
 });
+
 
 // ------------- Generate Tokens -------------
 const generateTokens = async (user) => {

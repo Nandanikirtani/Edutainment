@@ -179,7 +179,7 @@ export default function AuthPages() {
   const handleLogin = async ({ email, password, role }) => {
     setMessage({ type: "loading", text: "Logging in..." });
     try {
-      const userData = await loginUser(email, password);
+      const userData = await loginUser(email, password,role);
       login({ ...userData, role });
       setMessage({ type: "success", text: "Login successful!" });
       setTimeout(() => navigate("/"), 800);
