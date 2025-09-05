@@ -13,17 +13,33 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [username, setUsername] = useState("");
+
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  // Navbar shadow on scroll
+  // ✅ Load username from localStorage
+  useEffect(() => {
+    const storedName = localStorage.getItem("username");
+    if (storedName) setUsername(storedName);
+
+    const handleStorage = () => {
+      const updatedName = localStorage.getItem("username");
+      setUsername(updatedName || "");
+    };
+
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  // ✅ Navbar shadow on scroll
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Dark mode toggle
+  // ✅ Dark mode toggle
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
@@ -110,8 +126,12 @@ export default function Navbar() {
                           <FaUserCircle size={24} />
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-gray-900 dark:text-white font-semibold">{user?.name || "User Name"}</span>
-                          <span className="text-gray-500 dark:text-gray-400 text-sm">{user?.email || "user@example.com"}</span>
+                          <span className="text-gray-900 dark:text-white font-semibold">
+                            {username || "User Name"}
+                          </span>
+                          <span className="text-gray-500 dark:text-gray-400 text-sm">
+                            {user?.email || "user@example.com"}
+                          </span>
                         </div>
                       </div>
 

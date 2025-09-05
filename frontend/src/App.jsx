@@ -33,7 +33,8 @@ function AppContent() {
           <Route path="/student" element={<Studentsidebar />} />
           <Route path="/campus" element={<Campuslife />} /><Route path="/campus" element={<Campuslife />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/podcast" element={<Podcast />} />
+          {/* <Route path="/profile" element={<Courses />} /> */}
+
           <Route
             path="/podcast"
             element={
