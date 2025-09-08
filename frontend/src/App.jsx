@@ -37,6 +37,8 @@ function AppContent() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/podcast" element={<Podcast />} />
           <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
+          {/* <Route path="/profile" element={<Courses />} /> */}
+
           <Route
             path="/podcast"
             element={

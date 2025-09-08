@@ -1,14 +1,21 @@
 const API_BASE = "http://localhost:5000/api/v1/user";
 
 // ------------- Login -------------
-export const loginUser = async (email, password,role) => {
+export const loginUser = async (email, password, role) => {
   try {
     const res = await fetch(`${API_BASE}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ email, password,role }),
+      body: JSON.stringify({ email, password, role }),
     });
+
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await res.text();
+      throw new Error("Invalid response: " + text);
+    }
+
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Login failed");
     return data.data;
@@ -18,13 +25,20 @@ export const loginUser = async (email, password,role) => {
 };
 
 // ------------- Register -------------
-export const registerUser = async ({ fullName, email, password,role }) => {
+export const registerUser = async ({ fullName, email, password, role }) => {
   try {
     const res = await fetch(`${API_BASE}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fullName, email, password,role }),
+      body: JSON.stringify({ fullName, email, password, role }),
     });
+
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await res.text();
+      throw new Error("Invalid response: " + text);
+    }
+
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Registration failed");
     return data.data;
@@ -36,7 +50,17 @@ export const registerUser = async ({ fullName, email, password,role }) => {
 // ------------- Get Profile -------------
 export const getProfile = async () => {
   try {
-    const res = await fetch(`${API_BASE}/profile`, { method: "GET", credentials: "include" });
+    const res = await fetch(`${API_BASE}/profile`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await res.text();
+      throw new Error("Invalid response: " + text);
+    }
+
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Failed to fetch profile");
     return data.data;
@@ -54,6 +78,13 @@ export const updateProfile = async (updates) => {
       credentials: "include",
       body: JSON.stringify(updates),
     });
+
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await res.text();
+      throw new Error("Invalid response: " + text);
+    }
+
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Profile update failed");
     return data.data;
@@ -71,6 +102,13 @@ export const changePassword = async (oldPassword, newPassword) => {
       credentials: "include",
       body: JSON.stringify({ oldPassword, newPassword }),
     });
+
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await res.text();
+      throw new Error("Invalid response: " + text);
+    }
+
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Password change failed");
     return data.message;

@@ -20,4 +20,4 @@ const upload = multer({ storage });
 // Route with JWT authentication + file upload
 router.post("/upload", verifyJWT, upload.single("video"), uploadVideo);
 
-export default router;
+export default router;  

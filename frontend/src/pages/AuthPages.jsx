@@ -180,6 +180,9 @@ export default function AuthPages() {
     setMessage({ type: "loading", text: "Logging in..." });
     try {
       const userData = await loginUser(email, password,role);
+      console.log("Login response:", userData); 
+      localStorage.setItem("token", userData.accessToken);
+      // localStorage.setItem("token", userData.token);
       login({ ...userData, role });
       setMessage({ type: "success", text: "Login successful!" });
       if (role === "teacher") {

@@ -12,9 +12,12 @@ export default function FacultyDashboard() {
   const [videoFile, setVideoFile] = useState(null);
   const [videoTitle, setVideoTitle] = useState("");
   const [videoDescription, setVideoDescription] = useState("");
+  const [uploading, setUploading] = useState(false); // ⏳ state for video upload
 
   const [quizTitle, setQuizTitle] = useState("");
-  const [questions, setQuestions] = useState([{ question: "", options: ["", "", "", ""], answer: "" }]);
+  const [questions, setQuestions] = useState([
+    { question: "", options: ["", "", "", ""], answer: "" },
+  ]);
   const [message, setMessage] = useState("");
 
   const token = localStorage.getItem("token");
@@ -47,26 +50,34 @@ export default function FacultyDashboard() {
     formData.append("video", videoFile);
 
     try {
+      setUploading(true); // start
       const res = await fetch("http://localhost:5000/api/v1/videos/upload", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Upload failed");
+
       setMessage("✅ Video uploaded successfully for admin approval!");
       setVideoFile(null);
       setVideoTitle("");
       setVideoDescription("");
       setVideoCount((prev) => prev + 1);
     } catch (err) {
-      setMessage(err.message);
+      setMessage(`❌ ${err.message}`);
+    } finally {
+      setUploading(false); // reset
     }
   };
 
   // ---------- Quiz Handling ----------
   const addQuestion = () =>
-    setQuestions([...questions, { question: "", options: ["", "", "", ""], answer: "" }]);
+    setQuestions([
+      ...questions,
+      { question: "", options: ["", "", "", ""], answer: "" },
+    ]);
 
   const updateQuestion = (index, field, value) => {
     const updated = [...questions];
@@ -82,27 +93,39 @@ export default function FacultyDashboard() {
     try {
       const res = await fetch("http://localhost:5000/api/v1/quizzes", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ title: quizTitle, questions }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Quiz upload failed");
       setMessage("✅ Quiz uploaded successfully for admin approval!");
       setQuizTitle("");
-      setQuestions([{ question: "", options: ["", "", "", ""], answer: "" }]);
+      setQuestions([
+        { question: "", options: ["", "", "", ""], answer: "" },
+      ]);
       setQuizCount((prev) => prev + 1);
     } catch (err) {
-      setMessage(err.message);
+      setMessage(`❌ ${err.message}`);
     }
   };
 
   // ---------- Handle Loading & No Login ----------
   if (loading) return <div className="text-center mt-20">Loading profile...</div>;
-  if (!user) return <div className="text-center mt-20 text-red-600">Please login to view dashboard</div>;
+  if (!user)
+    return (
+      <div className="text-center mt-20 text-red-600">
+        Please login to view dashboard
+      </div>
+    );
 
   return (
     <div className="min-h-screen p-8 bg-gray-100">
-      <h1 className="text-4xl font-bold mb-6 text-center text-blue-700">Faculty Dashboard</h1>
+      <h1 className="text-4xl font-bold mb-6 text-center text-blue-700">
+        Faculty Dashboard
+      </h1>
 
       {/* Profile Box */}
       <div className="max-w-4xl mx-auto mb-6 bg-white rounded-2xl shadow-xl p-6 flex items-center gap-6">
@@ -124,7 +147,9 @@ export default function FacultyDashboard() {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2 font-semibold transition-all ${
-                activeTab === tab ? "text-blue-600 border-b-4 border-blue-600" : "text-gray-500"
+                activeTab === tab
+                  ? "text-blue-600 border-b-4 border-blue-600"
+                  : "text-gray-500"
               }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -173,13 +198,28 @@ export default function FacultyDashboard() {
               />
               <input type="file" accept="video/*" onChange={handleVideoChange} required />
               {videoFile && (
-                <video src={URL.createObjectURL(videoFile)} controls className="w-full rounded-lg mt-2 shadow-lg" />
+                <video
+                  src={URL.createObjectURL(videoFile)}
+                  controls
+                  className="w-full rounded-lg mt-2 shadow-lg"
+                />
               )}
               <button
                 type="submit"
-                className="flex items-center gap-3 px-6 py-3 bg-red-500 text-white rounded-xl shadow-lg hover:bg-red-600 transition-all"
+                disabled={uploading}
+                className={`flex items-center gap-3 px-6 py-3 rounded-xl shadow-lg transition-all ${
+                  uploading
+                    ? "bg-gray-400 cursor-not-allowed text-white"
+                    : "bg-red-500 hover:bg-red-600 text-white"
+                }`}
               >
-                <FaUpload /> Upload Video
+                {uploading ? (
+                  <span className="animate-pulse">⏳ Uploading...</span>
+                ) : (
+                  <>
+                    <FaUpload /> Upload Video
+                  </>
+                )}
               </button>
             </form>
           </motion.div>
@@ -201,7 +241,10 @@ export default function FacultyDashboard() {
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-400"
               />
               {questions.map((q, i) => (
-                <div key={i} className="border-l-4 border-green-400 p-4 rounded-lg bg-gray-50">
+                <div
+                  key={i}
+                  className="border-l-4 border-green-400 p-4 rounded-lg bg-gray-50"
+                >
                   <input
                     type="text"
                     placeholder={`Question ${i + 1}`}
