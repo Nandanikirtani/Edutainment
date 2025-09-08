@@ -196,7 +196,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden px-4 pb-4 space-y-2 z-50 transition-all duration-300 overflow-hidden
+        className={`md:hidden px-4 pb-4 space-y-2 z-50 transition-all items-center duration-300 overflow-hidden
           ${isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
       >
         {menuItems.map((item, idx) => (
@@ -204,8 +204,10 @@ export default function Navbar() {
             key={idx}
             to={item.path}
             onClick={() => setIsOpen(false)}
-            className="block px-4 py-2 text-lg text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-red-600 rounded transition-all duration-200"
-          >
+            className="relative text-gray-900 dark:text-white text-lg font-semibold
+                 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 
+                 after:h-[2px] after:bg-red-600 after:transition-all after:duration-500 
+                 hover:after:w-full hover:text-red-600 dark:hover:text-red-400">
             {item.name}
           </Link>
         ))}
