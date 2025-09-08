@@ -4,6 +4,7 @@ import connectDb from "./db/index.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/User.routes.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 dotenv.config();
 
