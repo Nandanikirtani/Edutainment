@@ -54,24 +54,43 @@ const generateTokens = async (user) => {
 
 // ------------- Login -------------
 export const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) throw new ApiError(400, "Email and password required");
+  const { email, password, role } = req.body;
 
-  const user = await User.findOne({ email });
-  if (!user) throw new ApiError(404, "User not found");
+  if (!email || !password || !role) {
+    throw new ApiError(400, "Email, password, and role are required");
+  }
 
-  const isValid = await user.isPasswordCorrect(password);
-  if (!isValid) throw new ApiError(401, "Invalid password");
+  // Find user by email AND role
+  const user = await User.findOne({ email, role });
+  if (!user) {
+    throw new ApiError(401, "Invalid credentials or role");
+  }
 
-  const { accessToken, refreshToken } = await generateTokens(user);
-  const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+  const isMatch = await user.isPasswordCorrect(password);
+  if (!isMatch) {
+    throw new ApiError(401, "Invalid credentials");
+  }
 
-  res
-    .status(200)
-    .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true })
-    .cookie("accessToken", accessToken, { httpOnly: true, secure: true })
-    .json({ success: true, data: loggedInUser, accessToken, refreshToken, message: "User logged in successfully" });
+  // Generate tokens
+  const accessToken = user.generateAccessToken();
+  const refreshToken = user.generateRefreshToken();
+
+  user.refreshToken = refreshToken;
+  await user.save();
+
+  res.json({
+    success: true,
+    data: {
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+      accessToken,
+      refreshToken,
+    },
+  });
 });
+
 
 // ------------- Logout -------------
 export const logoutUser = asyncHandler(async (req, res) => {

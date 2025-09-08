@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRouter from "./routes/User.routes.js";
+import videoRouter from "./routes/Video.routes.js";
+
+
 
 const app = express();
 
@@ -24,5 +27,7 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(cookieParser());
 
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/videos", videoRouter);
+app.use("/uploads", express.static("uploads"));
 
 export { app };

@@ -182,7 +182,13 @@ export default function AuthPages() {
       const userData = await loginUser(email, password,role);
       login({ ...userData, role });
       setMessage({ type: "success", text: "Login successful!" });
-      setTimeout(() => navigate("/"), 800);
+      if (role === "teacher") {
+      navigate("/faculty/dashboard");
+    } else if (role === "student") {
+      navigate("/");
+    } else if (role === "admin") {
+      navigate("/admin/dashboard");
+    }
     } catch (err) {
       setMessage({ type: "error", text: err.message });
     }

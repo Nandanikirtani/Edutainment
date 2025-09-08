@@ -4,6 +4,9 @@ import connectDb from "./db/index.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/User.routes.js";
+import videoRouter from "./routes/Video.routes.js";
+
+
 
 dotenv.config();
 
@@ -14,6 +17,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/videos", videoRouter);
+
 
 app.get("/", (req, res) => res.send("Backend running!"));
 

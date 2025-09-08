@@ -11,8 +11,10 @@ import Campuslife from './pages/Campuslife';
 import PodcastContent from './components/PodcastContent';
 import AwardDetail from './components/AwardDetail';
 import Profile from './pages/Profile';
-import './App.css';
 import  Podcast  from './pages/Podcast';
+import FacultyDashboard from './pages/FacultyDashboard';
+import './App.css';
+
 
 function AppContent() {
   const location = useLocation();
@@ -34,6 +36,7 @@ function AppContent() {
           <Route path="/campus" element={<Campuslife />} /><Route path="/campus" element={<Campuslife />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/podcast" element={<Podcast />} />
+          <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
           <Route
             path="/podcast"
             element={
