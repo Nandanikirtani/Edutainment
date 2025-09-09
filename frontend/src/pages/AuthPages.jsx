@@ -1,9 +1,8 @@
-// src/pages/AuthPages.jsx
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-import { loginUser, registerUser } from "../api/auth.js"; // API helper file
+import { loginUser, registerUser, verifyOtp } from "../api/auth.js";
 
 // ---------- Role Tabs ----------
 const RoleTabs = ({ role, setRole }) => {
@@ -54,64 +53,90 @@ const Input = ({ id, label, type = "text", value, onChange }) => {
   );
 };
 
-// ---------- Forms ----------
-const LoginForm = ({ role, onLogin }) => {
-  const [email, setEmail] = useState("");
+// ---------- Login Form ----------
+const LoginForm = ({ role, onLogin, onOtpVerify, otpStep, email, setEmail }) => {
   const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
 
   const submit = (e) => {
     e.preventDefault();
     setLoading(true);
-    onLogin({ email, password, role })
-      .finally(() => setLoading(false));
+
+    if (!otpStep) {
+      // Step 1: Password login
+      onLogin({ email, password, role }).finally(() => setLoading(false));
+    } else {
+      // Step 2: OTP verify
+      onOtpVerify({ email, otp }).finally(() => setLoading(false));
+    }
   };
 
   return (
     <motion.form
-      key={`login-${role}`}
+      key={`login-${role}-${otpStep ? "otp" : "password"}`}
       onSubmit={submit}
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       className="space-y-4"
     >
-      <Input
-        id="login-email"
-        label="Email"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <Input
-        id="login-password"
-        label="Password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <div className="flex flex-wrap items-center justify-between text-xs text-black gap-2">
-        <label className="flex items-center gap-2">
-          <input type="checkbox" className="accent-[#0C7489]" />{" "}
-          <span>Remember me</span>
-        </label>
-        <button type="button" className="underline">
-          Forgot?
-        </button>
-      </div>
+      {!otpStep ? (
+        <>
+          <Input
+            id="login-email"
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Input
+            id="login-password"
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <div className="flex flex-wrap items-center justify-between text-xs text-black gap-2">
+            <label className="flex items-center gap-2">
+              <input type="checkbox" className="accent-[#0C7489]" />{" "}
+              <span>Remember me</span>
+            </label>
+            <button type="button" className="underline">
+              Forgot?
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <Input
+            id="otp"
+            label="Enter OTP"
+            type="text"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
+        </>
+      )}
+
       <button
         type="submit"
         className="w-full py-2 rounded-lg bg-gradient-to-r from-green-400 to-teal-500 text-white font-semibold shadow-lg"
         disabled={loading}
       >
         {loading
-          ? "Signing in..."
+          ? otpStep
+            ? "Verifying..."
+            : "Signing in..."
+          : otpStep
+          ? "Verify OTP"
           : `Sign in as ${role.charAt(0).toUpperCase() + role.slice(1)}`}
       </button>
     </motion.form>
   );
 };
 
+// ---------- Signup Form ----------
 const SignupForm = ({ role, onSignup }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -121,8 +146,7 @@ const SignupForm = ({ role, onSignup }) => {
   const submit = (e) => {
     e.preventDefault();
     setLoading(true);
-    onSignup({ name, email, password, role })
-      .finally(() => setLoading(false));
+    onSignup({ name, email, password, role }).finally(() => setLoading(false));
   };
 
   return (
@@ -172,15 +196,30 @@ export default function AuthPages() {
   const [mode, setMode] = useState("login");
   const [role, setRole] = useState("student");
   const [message, setMessage] = useState(null);
+  const [otpStep, setOtpStep] = useState(false);
+  const [loginEmail, setLoginEmail] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  // --------- Login ----------
+  // --------- Step 1: Login with password ----------
   const handleLogin = async ({ email, password, role }) => {
-    setMessage({ type: "loading", text: "Logging in..." });
+    setLoginEmail(email);
+    setMessage({ type: "loading", text: "Checking credentials..." });
     try {
-      const userData = await loginUser(email, password,role);
-      login({ ...userData, role });
+      await loginUser(email, password, role); // backend sends OTP
+      setOtpStep(true);
+      setMessage({ type: "info", text: "OTP sent to your email. Please verify." });
+    } catch (err) {
+      setMessage({ type: "error", text: err.message });
+    }
+  };
+
+  // --------- Step 2: Verify OTP ----------
+  const handleOtpVerify = async ({ email, otp }) => {
+    setMessage({ type: "loading", text: "Verifying OTP..." });
+    try {
+      const userData = await verifyOtp(email, otp);
+      login(userData); // save in context
       setMessage({ type: "success", text: "Login successful!" });
       setTimeout(() => navigate("/"), 800);
     } catch (err) {
@@ -287,27 +326,28 @@ export default function AuthPages() {
                 className="bg-transparent"
               >
                 <h3 className="text-lg sm:text-xl font-bold mb-2">
-                  {mode === "login" ? "Sign in" : "Create account"}
+                  {mode === "login" ? (otpStep ? "Enter OTP" : "Sign in") : "Create account"}
                 </h3>
                 <p className="text-xs sm:text-sm text-[#0C7489] mb-4">
                   Continue as <span className="font-semibold">{role}</span>
                 </p>
 
-                <motion.div
-                  key={mode}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
+                <motion.div key={mode} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   {mode === "login" ? (
-                    <LoginForm role={role} onLogin={handleLogin} />
+                    <LoginForm
+                      role={role}
+                      onLogin={handleLogin}
+                      onOtpVerify={handleOtpVerify}
+                      otpStep={otpStep}
+                      email={loginEmail}
+                      setEmail={setLoginEmail} // ✅ pass setter
+                    />
                   ) : (
                     <SignupForm role={role} onSignup={handleSignup} />
                   )}
                 </motion.div>
 
-                <div className="mt-4 text-center text-xs text-black">
-                  or continue with
-                </div>
+                <div className="mt-4 text-center text-xs text-black">or continue with</div>
                 <div className="mt-3 flex flex-wrap gap-3">
                   <button className="flex-1 py-2 rounded-lg bg-white/6 border border-black text-black">
                     Google
@@ -319,8 +359,7 @@ export default function AuthPages() {
 
                 <div className="mt-4 text-xs text-black text-center">
                   <span>
-                    By continuing you agree to our <u>Terms</u> and{" "}
-                    <u>Privacy</u>.
+                    By continuing you agree to our <u>Terms</u> and <u>Privacy</u>.
                   </span>
                 </div>
               </motion.div>
@@ -331,3 +370,13 @@ export default function AuthPages() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
