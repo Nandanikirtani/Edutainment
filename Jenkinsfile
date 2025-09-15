@@ -6,7 +6,7 @@ pipeline {
         DOCKER_BIN = '/usr/local/bin'
         PATH = "${NODEJS_HOME}:${DOCKER_BIN}:${env.PATH}"
         DOCKER_HUB_CREDENTIALS = 'docker-hub-creds'   
-        DOCKER_IMAGE_NAME = 'jashank06/edutainment'
+        DOCKER_IMAGE_NAME = 'jashank06/edutainment_1'
         DOCKER_TAG = "latest"
     }
 
@@ -39,7 +39,7 @@ pipeline {
 
         stage('Archive Artifacts') {
             steps {
-                archiveArtifacts artifacts: 'frontend/build/**', allowEmptyArchive: true, fingerprint: true
+                archiveArtifacts artifacts: 'frontend/dist/**', allowEmptyArchive: true, fingerprint: true
             }
         }
 
