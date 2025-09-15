@@ -4,7 +4,7 @@ pipeline {
     environment {
         PATH = "/usr/local/bin/docker-compose"
         NODEJS_HOME = '/Users/mac/.nvm/versions/node/v22.11.0/bin'
-        PATH = "${NODEJS_HOME}:${env.PATH}"
+        // PATH = "${NODEJS_HOME}:${env.PATH}"
         DOCKER_HUB_CREDENTIALS = 'docker-hub-creds' 
         DOCKER_IMAGE_NAME = 'your-dockerhub-username/freelancing_project'
         DOCKER_TAG = "latest"
