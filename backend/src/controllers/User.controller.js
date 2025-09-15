@@ -40,12 +40,12 @@ const generateTokens = async (user) => {
   const accessToken = jwt.sign(
     { _id: user._id, email: user.email, fullName: user.fullName },
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+    { expiresIn: "1d" } // Temporarily set expiry to 1 day for easier debugging
   );
   const refreshToken = jwt.sign(
     { _id: user._id },
     process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+    { expiresIn: "7d" } // Temporarily set expiry to 7 days for easier debugging
   );
   user.refreshToken = refreshToken;
   await user.save({ validateBeforeSave: false });

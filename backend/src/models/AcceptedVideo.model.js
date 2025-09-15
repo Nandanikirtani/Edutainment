@@ -1,7 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-// Single collection for Pending, Approved, and Rejected videos
-const pendingVideoSchema = new Schema(
+const acceptedVideoSchema = new Schema(
   {
     facultyId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     title: { type: String, required: true },
@@ -11,4 +10,4 @@ const pendingVideoSchema = new Schema(
   { timestamps: true }
 );
 
-export const PendingVideo = mongoose.model("PendingVideo", pendingVideoSchema);
+export const AcceptedVideo = mongoose.model("AcceptedVideo", acceptedVideoSchema);
