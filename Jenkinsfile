@@ -54,18 +54,24 @@ pipeline {
         }
 
         stage('Docker Push to Hub') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh """
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} .
-                        docker push ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
-                        docker logout
-                    """
-                }
-            }
+    steps {
+        withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+            sh """
+                echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+                # Backend image
+                docker build -t ${DOCKER_USER}/edutainment-backend:latest -f backend/Dockerfile backend
+                docker push ${DOCKER_USER}/edutainment-backend:latest
+
+                # Frontend image
+                docker build -t ${DOCKER_USER}/edutainment-frontend:latest -f frontend/Dockerfile frontend
+                docker push ${DOCKER_USER}/edutainment-frontend:latest
+
+                docker logout
+            """
         }
     }
+}
 
     post {
         success {
