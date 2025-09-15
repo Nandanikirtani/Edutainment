@@ -1,12 +1,15 @@
 pipeline {
     agent any
+    options {
+        shell '/bin/sh'   // Force Jenkins to use proper shell
+    }
 
     environment {
-        PATH = "/usr/local/bin/docker-compose"
         NODEJS_HOME = '/Users/mac/.nvm/versions/node/v22.11.0/bin'
-        // PATH = "${NODEJS_HOME}:${env.PATH}"
-        DOCKER_HUB_CREDENTIALS = 'docker-hub-creds' 
-        DOCKER_IMAGE_NAME = 'jashank06/freelancing_project'
+        DOCKER_BIN = '/usr/local/bin'
+        PATH = "${NODEJS_HOME}:${DOCKER_BIN}:${env.PATH}"
+        DOCKER_HUB_CREDENTIALS = 'docker-hub-creds'   
+        DOCKER_IMAGE_NAME = 'jashank06/edutainment'
         DOCKER_TAG = "latest"
     }
 
