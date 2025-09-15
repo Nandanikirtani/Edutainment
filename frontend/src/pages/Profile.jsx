@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 
 export default function Profile() {
   const [user, setUser] = useState({
-    name: "",
-    email: "",
+    name: localStorage.getItem("username") || "",
+    email: localStorage.getItem("email") || "",
     phone: "",
     dob: "",
   });
@@ -14,63 +13,45 @@ export default function Profile() {
     newPassword: "",
   });
 
-  const [loading, setLoading] = useState(true);
-  const [msg, setMsg] = useState("");
+  const [msg, setMsg] = useState({ type: "", text: "" });
 
-  // Fetch user profile when component mounts
+  // Update localStorage when name changes (to update Navbar)
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await axios.get("/api/user/profile", { withCredentials: true });
-        setUser(res.data);
-      } catch (err) {
-        console.error(err);
-        setMsg("Failed to load profile.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    localStorage.setItem("username", user.name);
+    localStorage.setItem("email", user.email);
+    window.dispatchEvent(new Event("storage")); // trigger Navbar update
+  }, [user.name, user.email]);
 
-    fetchProfile();
-  }, []);
-
-  // Handle profile form submit
-  const handleProfileUpdate = async (e) => {
+  const handleProfileUpdate = (e) => {
     e.preventDefault();
-    try {
-      const res = await axios.put("/api/user/profile", user, { withCredentials: true });
-      setMsg("Profile updated successfully!");
-      setUser(res.data.user);
-    } catch (err) {
-      console.error(err);
-      setMsg("Error updating profile.");
-    }
+    setMsg({ type: "success", text: "Profile updated successfully!" });
   };
 
-  // Handle password change
-  const handleChangePassword = async (e) => {
+  const handleChangePassword = (e) => {
     e.preventDefault();
-    try {
-      await axios.post("/api/user/change-password", passwords, { withCredentials: true });
-      setMsg("Password changed successfully!");
-      setPasswords({ oldPassword: "", newPassword: "" });
-    } catch (err) {
-      console.error(err);
-      setMsg("Error changing password.");
-    }
+    setPasswords({ oldPassword: "", newPassword: "" });
+    setMsg({ type: "success", text: "Password changed successfully!" });
   };
-
-  if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="profile-container" style={styles.container}>
+    <div style={styles.container}>
       <h2 style={styles.heading}>My Profile</h2>
-      {msg && <p style={styles.message}>{msg}</p>}
 
-      {/* Profile Form */}
+      {msg.text && (
+        <p style={{ ...styles.message, color: msg.type === "error" ? "red" : "green" }}>
+          {msg.text}
+        </p>
+      )}
+
       <form onSubmit={handleProfileUpdate} style={styles.form}>
         <label style={styles.label}>Name</label>
-        <input type="text" value={user.name} readOnly style={styles.inputDisabled} />
+        <input
+          type="text"
+          value={user.name}
+          onChange={(e) => setUser({ ...user, name: e.target.value })}
+          style={styles.input}
+          required
+        />
 
         <label style={styles.label}>Email</label>
         <input type="email" value={user.email} readOnly style={styles.inputDisabled} />
@@ -86,15 +67,16 @@ export default function Profile() {
         <label style={styles.label}>Date of Birth</label>
         <input
           type="date"
-          value={user.dob ? user.dob.substring(0, 10) : ""}
+          value={user.dob}
           onChange={(e) => setUser({ ...user, dob: e.target.value })}
           style={styles.input}
         />
 
-        <button type="submit" style={styles.button}>Update Profile</button>
+        <button type="submit" style={styles.button}>
+          Update Profile
+        </button>
       </form>
 
-      {/* Change Password Form */}
       <form onSubmit={handleChangePassword} style={styles.form}>
         <h3 style={styles.subHeading}>Change Password</h3>
 
@@ -116,46 +98,22 @@ export default function Profile() {
           required
         />
 
-        <button type="submit" style={styles.button}>Change Password</button>
+        <button type="submit" style={styles.button}>
+          Change Password
+        </button>
       </form>
     </div>
   );
 }
 
-// Inline Styles
 const styles = {
-  container: {
-    maxWidth: "500px",
-    margin: "50px auto",
-    padding: "20px",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    backgroundColor: "#f9f9f9",
-  },
+  container: { maxWidth: "500px", margin: "50px auto", padding: "20px", border: "1px solid #ddd", borderRadius: "10px", backgroundColor: "#fff", boxShadow: "0px 4px 10px rgba(0,0,0,0.1)" },
   heading: { textAlign: "center", marginBottom: "20px" },
   subHeading: { marginBottom: "10px" },
   form: { display: "flex", flexDirection: "column", marginBottom: "20px" },
   label: { marginBottom: "5px", fontWeight: "bold" },
-  input: {
-    marginBottom: "15px",
-    padding: "10px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-  },
-  inputDisabled: {
-    marginBottom: "15px",
-    padding: "10px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    backgroundColor: "#e9e9e9",
-  },
-  button: {
-    padding: "10px",
-    border: "none",
-    borderRadius: "5px",
-    backgroundColor: "#007bff",
-    color: "white",
-    cursor: "pointer",
-  },
-  message: { textAlign: "center", color: "green", marginBottom: "15px" },
+  input: { marginBottom: "15px", padding: "10px", borderRadius: "5px", border: "1px solid #ccc" },
+  inputDisabled: { marginBottom: "15px", padding: "10px", borderRadius: "5px", border: "1px solid #ccc", backgroundColor: "#f0f0f0" },
+  button: { padding: "10px", border: "none", borderRadius: "5px", backgroundColor: "#007bff", color: "white", fontWeight: "bold", cursor: "pointer" },
+  message: { textAlign: "center", marginBottom: "15px" },
 };

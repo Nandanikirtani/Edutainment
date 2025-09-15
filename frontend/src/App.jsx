@@ -88,6 +88,10 @@ import Podcast from './pages/Podcast';
 import IconDetail from './pages/IconDetail';
 import Alumini from './pages/Alumini';
 import './App.css';
+// import  Podcast  from './pages/Podcast';
+import FacultyDashboard from './pages/FacultyDashboard';
+import './App.css';
+
 
 function AppContent() {
   const location = useLocation();
@@ -113,17 +117,9 @@ function AppContent() {
 
           {/* Podcasts */}
           <Route path="/podcast" element={<Podcast />} />
-          <Route
-            path="/podcast/1"
-            element={
-              <PodcastContent
-                title="The #1 Thing Industry Wants in Engineers"
-                speaker="Ft. Dr. Venkatesh Radhakrishnan"
-                desc="Learn the key skills and mindset industry demands."
-                bgImage="/podcast1.jpg"
-              />
-            }
-          />
+          <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
+          {/* <Route path="/profile" element={<Courses />} /> */}
+
 
           {/* Alumni + Detail Pages */}
           <Route path="/alumini" element={<Alumini />} />
