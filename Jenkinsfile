@@ -1,8 +1,5 @@
 pipeline {
     agent any
-    options {
-        shell '/bin/sh'   // Force Jenkins to use proper shell
-    }
 
     environment {
         NODEJS_HOME = '/Users/mac/.nvm/versions/node/v22.11.0/bin'
