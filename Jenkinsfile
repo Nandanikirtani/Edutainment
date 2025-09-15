@@ -2,50 +2,77 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
+        PATH = "/usr/local/bin/docker-compose"
+        NODEJS_HOME = '/Users/mac/.nvm/versions/node/v22.11.0/bin'
+        PATH = "${NODEJS_HOME}:${env.PATH}"
+        DOCKER_HUB_CREDENTIALS = 'docker-hub-creds' 
+        DOCKER_IMAGE_NAME = 'your-dockerhub-username/freelancing_project'
+        DOCKER_TAG = "latest"
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/Nandanikirtani/Edutainment.git'
             }
         }
 
-        stage('Build Docker Images') {
+        stage('Frontend Build') {
             steps {
-                sh "docker-compose -f ${DOCKER_COMPOSE_FILE} build"
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
             }
         }
 
-        stage('Start Services') {
+        stage('Backend Build') {
             steps {
-                sh "docker-compose -f ${DOCKER_COMPOSE_FILE} up -d"
+                dir('backend') {
+                    sh 'npm install'
+                    // Agar backend me build script ho, uncomment karna:
+                    // sh 'npm run build'
+                }
             }
         }
 
-        stage('Verify Containers') {
+        stage('Archive Artifacts') {
             steps {
-                sh "docker ps"
+                archiveArtifacts artifacts: 'frontend/build/**', allowEmptyArchive: true, fingerprint: true
             }
         }
 
-        stage('Health Check') {
+        stage('Docker Compose Up') {
             steps {
-                script {
-                    // frontend check (Vite/NGINX)
-                    sh "curl -f http://localhost:5173 || true"
-                    // backend check
-                    sh "curl -f http://localhost:5000 || true"
+                dir('.') {
+                    sh 'docker-compose down'
+                    sh 'docker-compose build'
+                    sh 'docker-compose up -d'
+                }
+            }
+        }
+
+        stage('Docker Push to Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} .
+                        docker push ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
+                        docker logout
+                    """
                 }
             }
         }
     }
 
     post {
-        always {
-            echo 'Cleaning unused docker resources...'
-            sh "docker system prune -f || true"
+        success {
+            echo 'Build, Docker Deployment & Push Successful!'
+        }
+        failure {
+            echo 'Build or Docker Deployment Failed!'
         }
     }
 }
