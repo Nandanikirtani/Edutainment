@@ -31,8 +31,6 @@ services:
       - REFRESH_TOKEN_SECRET=8f39c4a6f89c5b28e3a6d7b9f1e4c2a987d4b5c3e2f1a6b9c8d7e3f9a5c1b4d7
       - ACCESS_TOKEN_EXPIRY=15m
       - REFRESH_TOKEN_EXPIRY=7d
-    env_file:
-      - ./backend/.env
     depends_on:
       - mongo
     restart: unless-stopped
