@@ -3,28 +3,23 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import jwt from "jsonwebtoken";
 
-// ------------- Register -------------
+// ---------------- Register ----------------
 export const registerUser = asyncHandler(async (req, res) => {
   const { fullName, email, password, role } = req.body;
 
-  // check required fields
   if (!fullName || !email || !password || !role) {
     throw new ApiError(400, "All fields are required including role");
   }
 
-  // validate role
   const allowedRoles = ["student", "teacher", "admin"];
   if (!allowedRoles.includes(role)) {
     throw new ApiError(400, "Invalid role");
   }
 
-  // check if user already exists with same email + role
   const existedUser = await User.findOne({ email, role });
   if (existedUser) throw new ApiError(400, "User already exists with this role");
 
-  // create user
   const user = await User.create({ fullName, email, password, role });
-
   const createdUser = await User.findById(user._id).select("-password -refreshToken");
 
   res.status(201).json({
@@ -34,25 +29,27 @@ export const registerUser = asyncHandler(async (req, res) => {
   });
 });
 
-
-// ------------- Generate Tokens -------------
+// ---------------- Token Generator ----------------
 const generateTokens = async (user) => {
   const accessToken = jwt.sign(
-    { _id: user._id, email: user.email, fullName: user.fullName },
+    { _id: user._id, email: user.email, fullName: user.fullName, role: user.role },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "1d" } // Temporarily set expiry to 1 day for easier debugging
   );
+
   const refreshToken = jwt.sign(
     { _id: user._id },
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: "7d" } // Temporarily set expiry to 7 days for easier debugging
   );
+
   user.refreshToken = refreshToken;
   await user.save({ validateBeforeSave: false });
+
   return { accessToken, refreshToken };
 };
 
-// ------------- Login -------------
+// ---------------- Login (NO OTP) ----------------
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, password, role } = req.body;
 
@@ -60,39 +57,29 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Email, password, and role are required");
   }
 
-  // Find user by email AND role
   const user = await User.findOne({ email, role });
-  if (!user) {
-    throw new ApiError(401, "Invalid credentials or role");
-  }
+  if (!user) throw new ApiError(401, "Invalid credentials or role");
 
-  const isMatch = await user.isPasswordCorrect(password);
-  if (!isMatch) {
-    throw new ApiError(401, "Invalid credentials");
-  }
+  const isValid = await user.isPasswordCorrect(password);
+  if (!isValid) throw new ApiError(401, "Invalid password");
 
-  // Generate tokens
-  const accessToken = user.generateAccessToken();
-  const refreshToken = user.generateRefreshToken();
+  const { accessToken, refreshToken } = await generateTokens(user);
+  const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
-  user.refreshToken = refreshToken;
-  await user.save();
-
-  res.json({
-    success: true,
-    data: {
-      _id: user._id,
-      fullName: user.fullName,
-      email: user.email,
-      role: user.role,
+  res
+    .status(200)
+    .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true })
+    .cookie("accessToken", accessToken, { httpOnly: true, secure: true })
+    .json({
+      success: true,
+      data: loggedInUser,
       accessToken,
       refreshToken,
-    },
-  });
+      message: "Login successful",
+    });
 });
 
-
-// ------------- Logout -------------
+// ---------------- Logout ----------------
 export const logoutUser = asyncHandler(async (req, res) => {
   if (req.user) await User.findByIdAndUpdate(req.user._id, { refreshToken: null });
   res
@@ -102,7 +89,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
     .json({ success: true, data: null, message: "User logged out successfully" });
 });
 
-// ------------- Refresh Token -------------
+// ---------------- Refresh Token ----------------
 export const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
   if (!incomingRefreshToken) throw new ApiError(401, "Refresh token required");
@@ -124,14 +111,14 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-// ------------- Get Profile -------------
+// ---------------- Get Profile ----------------
 export const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).select("-password -refreshToken");
   if (!user) throw new ApiError(404, "User not found");
   res.status(200).json({ success: true, data: user, message: "Profile fetched successfully" });
 });
 
-// ------------- Update Profile (phone & dob) -------------
+// ---------------- Update Profile ----------------
 export const updateUserProfile = asyncHandler(async (req, res) => {
   const { phone, dob } = req.body;
   const user = await User.findById(req.user._id);
@@ -145,7 +132,7 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: updatedUser, message: "Profile updated successfully" });
 });
 
-// ------------- Change Password -------------
+// ---------------- Change Password ----------------
 export const changePassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
   if (!oldPassword || !newPassword) throw new ApiError(400, "Old and new passwords required");
@@ -158,7 +145,7 @@ export const changePassword = asyncHandler(async (req, res) => {
   if (!isOldCorrect) throw new ApiError(401, "Old password incorrect");
 
   user.password = newPassword;
-  user.refreshToken = null; // invalidate refresh token
+  user.refreshToken = null;
   await user.save();
 
   res.status(200).json({ success: true, message: "Password changed successfully. Please log in again." });

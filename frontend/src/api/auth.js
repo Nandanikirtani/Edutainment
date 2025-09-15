@@ -1,13 +1,13 @@
 const API_BASE = "http://localhost:5000/api/v1/user";
 
 // ------------- Login -------------
-export const loginUser = async (email, password, role) => {
+export const loginUser = async ({ email, password, role }) => {
   try {
     const res = await fetch(`${API_BASE}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ email, password, role }),
+      body: JSON.stringify({ email, password, role }), // must send object
     });
 
     const contentType = res.headers.get("content-type");
@@ -18,6 +18,8 @@ export const loginUser = async (email, password, role) => {
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Login failed");
+
+    // Returns user info + tokens
     return data.data;
   } catch (err) {
     throw err;
@@ -41,6 +43,7 @@ export const registerUser = async ({ fullName, email, password, role }) => {
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Registration failed");
+
     return data.data;
   } catch (err) {
     throw err;
@@ -63,6 +66,7 @@ export const getProfile = async () => {
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Failed to fetch profile");
+
     return data.data;
   } catch (err) {
     throw err;
@@ -87,6 +91,7 @@ export const updateProfile = async (updates) => {
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Profile update failed");
+
     return data.data;
   } catch (err) {
     throw err;
@@ -111,6 +116,7 @@ export const changePassword = async (oldPassword, newPassword) => {
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Password change failed");
+
     return data.message;
   } catch (err) {
     throw err;

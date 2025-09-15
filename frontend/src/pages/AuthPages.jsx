@@ -1,9 +1,8 @@
-// src/pages/AuthPages.jsx
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-import { loginUser, registerUser } from "../api/auth.js"; // API helper file
+import { loginUser, registerUser } from "../api/auth.js";
 
 // ---------- Role Tabs ----------
 const RoleTabs = ({ role, setRole }) => {
@@ -19,11 +18,11 @@ const RoleTabs = ({ role, setRole }) => {
         <button
           key={r.id}
           onClick={() => setRole(r.id)}
-          className={`relative z-10  flex-1 min-w-[70px] py-2 text-xs sm:text-sm font-medium transition-all rounded-full
+          className={`relative z-10 flex-1 min-w-[70px] py-2 text-xs sm:text-sm font-medium transition-all rounded-full
             ${
               role === r.id
                 ? "bg-red-200 text-black shadow-lg"
-                : " hover:bg-white/5"
+                : "hover:bg-white/5"
             }`}
           aria-pressed={role === r.id}
         >
@@ -35,36 +34,32 @@ const RoleTabs = ({ role, setRole }) => {
 };
 
 // ---------- Input ----------
-const Input = ({ id, label, type = "text", value, onChange }) => {
-  return (
-    <label className="block text-sm w-full">
-      <span className="text-black text-sm">{label}</span>
-      <motion.input
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
-        id={id}
-        type={type}
-        value={value}
-        onChange={onChange}
-        className="mt-1 block w-full rounded-lg bg-white border border-black text-black px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-[#0C7489]"
-        placeholder={label}
-      />
-    </label>
-  );
-};
+const Input = ({ id, label, type = "text", value, onChange }) => (
+  <label className="block text-sm w-full">
+    <span className="text-black text-sm">{label}</span>
+    <motion.input
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+      id={id}
+      type={type}
+      value={value}
+      onChange={onChange}
+      className="mt-1 block w-full rounded-lg bg-white border border-black text-black px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-[#0C7489]"
+      placeholder={label}
+    />
+  </label>
+);
 
-// ---------- Forms ----------
-const LoginForm = ({ role, onLogin }) => {
-  const [email, setEmail] = useState("");
+// ---------- Login Form ----------
+const LoginForm = ({ role, onLogin, email, setEmail }) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const submit = (e) => {
     e.preventDefault();
     setLoading(true);
-    onLogin({ email, password, role })
-      .finally(() => setLoading(false));
+    onLogin({ email, password, role }).finally(() => setLoading(false));
   };
 
   return (
@@ -112,6 +107,7 @@ const LoginForm = ({ role, onLogin }) => {
   );
 };
 
+// ---------- Signup Form ----------
 const SignupForm = ({ role, onSignup }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -121,8 +117,7 @@ const SignupForm = ({ role, onSignup }) => {
   const submit = (e) => {
     e.preventDefault();
     setLoading(true);
-    onSignup({ name, email, password, role })
-      .finally(() => setLoading(false));
+    onSignup({ name, email, password, role }).finally(() => setLoading(false));
   };
 
   return (
@@ -172,38 +167,42 @@ export default function AuthPages() {
   const [mode, setMode] = useState("login");
   const [role, setRole] = useState("student");
   const [message, setMessage] = useState(null);
+  const [loginEmail, setLoginEmail] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  // --------- Login ----------
+  // ---------- Login ----------
   const handleLogin = async ({ email, password, role }) => {
-    setMessage({ type: "loading", text: "Logging in..." });
+    setMessage({ type: "loading", text: "Checking credentials..." });
+    console.log({ email, password, role });
+
     try {
-      const userData = await loginUser(email, password,role);
-      console.log("Login response (AuthPages.jsx):", userData); 
+      const userData = await loginUser({ email, password, role });
+      if (!userData) throw new Error("Invalid credentials");
+
+      // store token and update context
       localStorage.setItem("token", userData.accessToken);
-      // localStorage.setItem("token", userData.token);
       login({ ...userData, role });
-      setMessage({ type: "success", text: "Login successful!" });
-      if (role === "teacher") {
-      navigate("/faculty/dashboard");
-    } else if (role === "student") {
-      navigate("/");
-    } else if (role === "admin") {
-      navigate("/admin/dashboard");
-    }
+
+      setMessage({ type: "success", text: "Logged in successfully!" });
+
+      if (role === "teacher") navigate("/faculty/dashboard");
+      else if (role === "student") navigate("/");
+      else if (role === "admin") navigate("/admin/dashboard");
     } catch (err) {
       setMessage({ type: "error", text: err.message });
     }
   };
 
-  // --------- Signup ----------
+  // ---------- Signup ----------
   const handleSignup = async ({ name, email, password, role }) => {
     setMessage({ type: "loading", text: "Creating account..." });
+
     try {
       await registerUser({ fullName: name, email, password, role });
       setMessage({ type: "success", text: "Account created successfully!" });
       setMode("login");
+      setLoginEmail(email); // pre-fill email for login
     } catch (err) {
       setMessage({ type: "error", text: err.message });
     }
@@ -225,7 +224,7 @@ export default function AuthPages() {
         initial={{ scale: 0.96, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.45 }}
-        className="relative z-10 w-full max-w-4xl bg-gradient-to-b from-red-500 to-red-700  rounded-2xl shadow-2xl overflow-hidden"
+        className="relative z-10 w-full max-w-4xl bg-gradient-to-b from-red-500 to-red-700 rounded-2xl shadow-2xl overflow-hidden"
       >
         <div className="grid grid-cols-1 md:grid-cols-2">
           {/* Left */}
@@ -248,7 +247,7 @@ export default function AuthPages() {
               admin tasks — beautifully animated and role-aware.
             </motion.p>
 
-            <div className="mt-6 ">
+            <div className="mt-6">
               <RoleTabs role={role} setRole={setRole} />
 
               <p className="text-center mt-6 sm:mt-10 text-md">
@@ -308,7 +307,12 @@ export default function AuthPages() {
                   animate={{ opacity: 1 }}
                 >
                   {mode === "login" ? (
-                    <LoginForm role={role} onLogin={handleLogin} />
+                    <LoginForm
+                      role={role}
+                      onLogin={handleLogin}
+                      email={loginEmail}
+                      setEmail={setLoginEmail}
+                    />
                   ) : (
                     <SignupForm role={role} onSignup={handleSignup} />
                   )}

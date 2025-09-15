@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import { Play } from "lucide-react";
 import { createGlobalStyle } from "styled-components";
-
 const GlobalStyle = createGlobalStyle`
   body, html {
     margin: 0;
