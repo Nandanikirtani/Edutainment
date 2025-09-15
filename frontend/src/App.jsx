@@ -13,6 +13,8 @@ import AwardDetail from './components/AwardDetail';
 import Profile from './pages/Profile';
 import  Podcast  from './pages/Podcast';
 import FacultyDashboard from './pages/FacultyDashboard';
+import AdminDashboard from './pages/AdminDashboard'; // Import AdminDashboard
+import Reels from './pages/Reels'; // Import Reels
 import './App.css';
 
 
@@ -37,6 +39,8 @@ function AppContent() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/podcast" element={<Podcast />} />
           <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} /> {/* Admin Dashboard Route */}
+          <Route path="/reels" element={<Reels />} /> {/* Reels Page Route */}
           {/* <Route path="/profile" element={<Courses />} /> */}
 
           <Route
