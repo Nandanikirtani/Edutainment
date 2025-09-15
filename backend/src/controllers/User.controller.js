@@ -2,16 +2,6 @@ import { User } from "../models/User.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
-
-// ------------- Mail Transporter -------------
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.SMTP_EMAIL,
-    pass: process.env.SMTP_PASSWORD,
-  },
-});
 
 // ---------------- Register ----------------
 export const registerUser = asyncHandler(async (req, res) => {
@@ -59,7 +49,7 @@ const generateTokens = async (user) => {
   return { accessToken, refreshToken };
 };
 
-// ---------------- Login (Auto-detect role + OTP) ----------------
+// ---------------- Login (NO OTP) ----------------
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, password, role } = req.body;
 
@@ -67,52 +57,11 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Email, password, and role are required");
   }
 
-  // Find user by email AND role
   const user = await User.findOne({ email, role });
-  if (!user) {
-    throw new ApiError(401, "Invalid credentials or role");
-  }
+  if (!user) throw new ApiError(401, "Invalid credentials or role");
 
   const isValid = await user.isPasswordCorrect(password);
   if (!isValid) throw new ApiError(401, "Invalid password");
-
-  // ✅ Generate OTP
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  user.otp = otp;
-  user.otpExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
-  await user.save();
-
-  // ✅ Send OTP to email
-  await transporter.sendMail({
-    from: process.env.SMTP_EMAIL,
-    to: user.email,
-    subject: "Your Login OTP",
-    text: `Hello ${user.fullName}, Your OTP is ${otp}. It will expire in 5 minutes.`,
-  });
-
-  res.status(200).json({
-    success: true,
-    message: `OTP sent to your email (${user.email}) for role: ${user.role}. Please verify to complete login.`,
-  });
-});
-
-// ---------------- Verify OTP ----------------
-export const verifyOtp = asyncHandler(async (req, res) => {
-  const { email, otp } = req.body;
-  if (!email || !otp) throw new ApiError(400, "Email and OTP required");
-
-  const user = await User.findOne({ email });
-  if (!user) throw new ApiError(404, "User not found");
-
-  if (!user.otp || user.otp !== otp || user.otpExpiry < Date.now()) {
-    throw new ApiError(400, "Invalid or expired OTP");
-  }
-
-  // ✅ Clear OTP & mark verified
-  user.otp = null;
-  user.otpExpiry = null;
-  user.isVerified = true;
-  await user.save();
 
   const { accessToken, refreshToken } = await generateTokens(user);
   const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
@@ -126,7 +75,7 @@ export const verifyOtp = asyncHandler(async (req, res) => {
       data: loggedInUser,
       accessToken,
       refreshToken,
-      message: "OTP verified & login successful",
+      message: "Login successful",
     });
 });
 

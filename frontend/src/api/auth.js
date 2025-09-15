@@ -1,14 +1,13 @@
 const API_BASE = "http://localhost:5000/api/v1/user";
 
-// ------------- Login (Step 1: send password, backend sends OTP) -------------
 // ------------- Login -------------
-export const loginUser = async (email, password, role) => {
+export const loginUser = async ({ email, password, role }) => {
   try {
     const res = await fetch(`${API_BASE}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ email, password, role }),
+      body: JSON.stringify({ email, password, role }), // must send object
     });
 
     const contentType = res.headers.get("content-type");
@@ -20,27 +19,7 @@ export const loginUser = async (email, password, role) => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Login failed");
 
-    // Step 1 returns success message; OTP sent to email
-    return data.data || { message: data.message };
-  } catch (err) {
-    throw err;
-  }
-};
-
-// ------------- Verify OTP (Step 2) -------------
-export const verifyOtp = async (email, otp, role) => {
-  try {
-    const res = await fetch(`${API_BASE}/verify-otp`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ email, otp, role }),
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || "OTP verification failed");
-
-    // Returns user info + accessToken/refreshToken
+    // Returns user info + tokens
     return data.data;
   } catch (err) {
     throw err;

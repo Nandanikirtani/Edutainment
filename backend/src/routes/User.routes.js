@@ -1,4 +1,3 @@
-
 import { Router } from "express";
 import {
   registerUser,
@@ -8,7 +7,6 @@ import {
   getUserProfile,
   updateUserProfile,
   changePassword,
-  verifyOtp,
 } from "../controllers/User.controller.js";
 import { verifyJWT } from "../middlewares/verifyJWT.js";
 
@@ -17,11 +15,8 @@ const router = Router();
 // ----------------- Register -----------------
 router.post("/register", registerUser);
 
-// ----------------- Login (single route, auto-detect role) -----------------
+// ----------------- Login -----------------
 router.post("/login", loginUser);
-
-// ----------------- Verify OTP -----------------
-router.post("/verify-otp", verifyOtp);
 
 // ----------------- Logout -----------------
 router.post("/logout", logoutUser);
