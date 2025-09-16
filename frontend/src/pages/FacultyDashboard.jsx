@@ -21,6 +21,7 @@ export default function FacultyDashboard() {
   const [message, setMessage] = useState("");
 
   const token = localStorage.getItem("token");
+  // console.log("User token:", token);
 
   // ---------- Video Upload ----------
   const handleVideoChange = (e) => {
@@ -133,9 +134,9 @@ export default function FacultyDashboard() {
           <FaUser size={40} className="text-blue-700" />
         </div>
         <div>
-          <h2 className="text-xl font-bold">{user.fullName}</h2>
-          <p className="text-gray-600">{user.role}</p>
-          <p className="text-gray-500">{user.email}</p>
+          <h2 className="text-xl font-bold">{user.data.fullName}</h2>
+          <p className="text-gray-600">{user.data.role}</p>
+          <p className="text-gray-500">{user.data.email}</p>
         </div>
       </div>
 

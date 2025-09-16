@@ -20,7 +20,7 @@ export const loginUser = async ({ email, password, role }) => {
     if (!res.ok) throw new Error(data.message || "Login failed");
 
     // Returns user info + tokens
-    return data.data;
+    return data;
   } catch (err) {
     throw err;
   }
