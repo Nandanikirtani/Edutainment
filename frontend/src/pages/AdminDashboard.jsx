@@ -144,7 +144,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex gap-2">
                     <button
-                      onClick={() => handleStatusChange(video._id, 'approved')}
+                      onClick={() => handleStatusChange(video._id, 'accepted')}
                       className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
                     >
                       Approve
