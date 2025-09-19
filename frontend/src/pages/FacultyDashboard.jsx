@@ -4,7 +4,7 @@ import { FaVideo, FaQuestionCircle, FaUpload, FaUser } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 
 export default function FacultyDashboard() {
-  const { user, loading } = useAuth(); // get user from context
+  const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   const [videoCount, setVideoCount] = useState(0);
   const [quizCount, setQuizCount] = useState(0);
@@ -12,7 +12,7 @@ export default function FacultyDashboard() {
   const [videoFile, setVideoFile] = useState(null);
   const [videoTitle, setVideoTitle] = useState("");
   const [videoDescription, setVideoDescription] = useState("");
-  const [uploading, setUploading] = useState(false); // ⏳ state for video upload
+  const [uploading, setUploading] = useState(false);
 
   const [quizTitle, setQuizTitle] = useState("");
   const [questions, setQuestions] = useState([
@@ -21,13 +21,10 @@ export default function FacultyDashboard() {
   const [message, setMessage] = useState("");
 
   const token = localStorage.getItem("token");
-  // console.log("User token:", token);
 
-  // ---------- Video Upload ----------
   const handleVideoChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const url = URL.createObjectURL(file);
     const video = document.createElement("video");
     video.src = url;
@@ -44,23 +41,20 @@ export default function FacultyDashboard() {
   const handleVideoUpload = async (e) => {
     e.preventDefault();
     if (!videoFile || !videoTitle) return alert("Add title and video");
-
     const formData = new FormData();
     formData.append("title", videoTitle);
     formData.append("description", videoDescription);
     formData.append("video", videoFile);
 
     try {
-      setUploading(true); // start
+      setUploading(true);
       const res = await fetch("http://localhost:5000/api/v1/videos/upload", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Upload failed");
-
       setMessage("✅ Video uploaded successfully for admin approval!");
       setVideoFile(null);
       setVideoTitle("");
@@ -69,16 +63,12 @@ export default function FacultyDashboard() {
     } catch (err) {
       setMessage(`❌ ${err.message}`);
     } finally {
-      setUploading(false); // reset
+      setUploading(false);
     }
   };
 
-  // ---------- Quiz Handling ----------
   const addQuestion = () =>
-    setQuestions([
-      ...questions,
-      { question: "", options: ["", "", "", ""], answer: "" },
-    ]);
+    setQuestions([...questions, { question: "", options: ["", "", "", ""], answer: "" }]);
 
   const updateQuestion = (index, field, value) => {
     const updated = [...questions];
@@ -104,53 +94,46 @@ export default function FacultyDashboard() {
       if (!res.ok) throw new Error(data.message || "Quiz upload failed");
       setMessage("✅ Quiz uploaded successfully for admin approval!");
       setQuizTitle("");
-      setQuestions([
-        { question: "", options: ["", "", "", ""], answer: "" },
-      ]);
+      setQuestions([{ question: "", options: ["", "", "", ""], answer: "" }]);
       setQuizCount((prev) => prev + 1);
     } catch (err) {
       setMessage(`❌ ${err.message}`);
     }
   };
 
-  // ---------- Handle Loading & No Login ----------
-  if (loading) return <div className="text-center mt-20">Loading profile...</div>;
+  if (loading) return <div className="text-center mt-20 text-white">Loading profile...</div>;
   if (!user)
-    return (
-      <div className="text-center mt-20 text-red-600">
-        Please login to view dashboard
-      </div>
-    );
+    return <div className="text-center mt-20 text-red-400">Please login to view dashboard</div>;
 
   return (
-    <div className="min-h-screen p-8 bg-gray-100">
-      <h1 className="text-4xl font-bold mb-6 text-center text-blue-700">
+    <div className="min-h-screen p-8 bg-black text-white">
+      <h1 className="text-4xl font-extrabold mb-6 text-center text-red-500 tracking-wide">
         Faculty Dashboard
       </h1>
 
       {/* Profile Box */}
-      <div className="max-w-4xl mx-auto mb-6 bg-white rounded-2xl shadow-xl p-6 flex items-center gap-6">
-        <div className="w-20 h-20 flex items-center justify-center bg-blue-200 rounded-full">
-          <FaUser size={40} className="text-blue-700" />
+      <div className="max-w-4xl mx-auto mb-6 bg-gray-900 rounded-2xl shadow-xl p-6 flex items-center gap-6">
+        <div className="w-20 h-20 flex items-center justify-center bg-red-600 rounded-full">
+          <FaUser size={40} className="text-white" />
         </div>
         <div>
           <h2 className="text-xl font-bold">{user.data.fullName}</h2>
-          <p className="text-gray-600">{user.data.role}</p>
-          <p className="text-gray-500">{user.data.email}</p>
+          <p className="text-gray-300">{user.data.role}</p>
+          <p className="text-gray-400">{user.data.email}</p>
         </div>
       </div>
 
-      {/* Inner Navbar & Content */}
-      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6">
-        <div className="flex justify-around border-b mb-6">
+      {/* Tabs & Content */}
+      <div className="max-w-4xl mx-auto bg-gray-900 rounded-2xl shadow-xl p-6">
+        <div className="flex justify-around border-b border-gray-700 mb-6">
           {["overview", "videos", "quiz"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2 font-semibold transition-all ${
                 activeTab === tab
-                  ? "text-blue-600 border-b-4 border-blue-600"
-                  : "text-gray-500"
+                  ? "text-red-400 border-b-4 border-red-400"
+                  : "text-gray-400"
               }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -162,15 +145,15 @@ export default function FacultyDashboard() {
         {activeTab === "overview" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="grid grid-cols-2 gap-6">
-              <div className="bg-blue-100 p-6 rounded-xl shadow">
-                <FaVideo size={30} className="text-blue-700 mb-2" />
-                <h3 className="text-xl font-bold">{videoCount}</h3>
-                <p className="text-gray-600">Videos Uploaded</p>
+              <div className="bg-gray-800 p-6 rounded-xl shadow">
+                <FaVideo size={30} className="text-red-400 mb-2" />
+                <h3 className="text-xl font-bold text-white">{videoCount}</h3>
+                <p className="text-gray-300">Videos Uploaded</p>
               </div>
-              <div className="bg-green-100 p-6 rounded-xl shadow">
-                <FaQuestionCircle size={30} className="text-green-700 mb-2" />
-                <h3 className="text-xl font-bold">{quizCount}</h3>
-                <p className="text-gray-600">Quizzes Uploaded</p>
+              <div className="bg-gray-800 p-6 rounded-xl shadow">
+                <FaQuestionCircle size={30} className="text-green-400 mb-2" />
+                <h3 className="text-xl font-bold text-white">{quizCount}</h3>
+                <p className="text-gray-300">Quizzes Uploaded</p>
               </div>
             </div>
           </motion.div>
@@ -179,7 +162,7 @@ export default function FacultyDashboard() {
         {/* Videos */}
         {activeTab === "videos" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <h2 className="text-2xl font-semibold mb-4 text-red-600 flex items-center gap-2">
+            <h2 className="text-2xl font-semibold mb-4 text-red-400 flex items-center gap-2">
               <FaVideo /> Upload Video (max 90s)
             </h2>
             <form onSubmit={handleVideoUpload} className="space-y-4">
@@ -189,15 +172,30 @@ export default function FacultyDashboard() {
                 value={videoTitle}
                 onChange={(e) => setVideoTitle(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-400"
+                className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:ring-2 focus:ring-red-400"
               />
               <textarea
                 placeholder="Description"
                 value={videoDescription}
                 onChange={(e) => setVideoDescription(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-400"
+                className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:ring-2 focus:ring-red-400"
               />
-              <input type="file" accept="video/*" onChange={handleVideoChange} required />
+
+              {/* ✅ File input with upload icon */}
+              <label className="flex items-center gap-2 text-gray-300 cursor-pointer">
+                <FaUpload className="text-red-400" />
+                <span className="bg-gray-800 px-4 py-2 rounded-lg border border-gray-600 hover:bg-gray-700">
+                  Choose File
+                </span>
+                <input
+                  type="file"
+                  accept="video/*"
+                  onChange={handleVideoChange}
+                  required
+                  className="hidden"
+                />
+              </label>
+
               {videoFile && (
                 <video
                   src={URL.createObjectURL(videoFile)}
@@ -210,7 +208,7 @@ export default function FacultyDashboard() {
                 disabled={uploading}
                 className={`flex items-center gap-3 px-6 py-3 rounded-xl shadow-lg transition-all ${
                   uploading
-                    ? "bg-gray-400 cursor-not-allowed text-white"
+                    ? "bg-gray-600 cursor-not-allowed text-white"
                     : "bg-red-500 hover:bg-red-600 text-white"
                 }`}
               >
@@ -229,7 +227,7 @@ export default function FacultyDashboard() {
         {/* Quiz */}
         {activeTab === "quiz" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <h2 className="text-2xl font-semibold mb-4 text-green-600 flex items-center gap-2">
+            <h2 className="text-2xl font-semibold mb-4 text-green-400 flex items-center gap-2">
               <FaQuestionCircle /> Create Quiz
             </h2>
             <form onSubmit={handleQuizUpload} className="space-y-4">
@@ -239,19 +237,19 @@ export default function FacultyDashboard() {
                 value={quizTitle}
                 onChange={(e) => setQuizTitle(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-400"
+                className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:ring-2 focus:ring-green-400"
               />
               {questions.map((q, i) => (
                 <div
                   key={i}
-                  className="border-l-4 border-green-400 p-4 rounded-lg bg-gray-50"
+                  className="border-l-4 border-green-400 p-4 rounded-lg bg-gray-800"
                 >
                   <input
                     type="text"
                     placeholder={`Question ${i + 1}`}
                     value={q.question}
                     onChange={(e) => updateQuestion(i, "question", e.target.value)}
-                    className="w-full mb-2 px-3 py-2 rounded-lg border border-gray-300"
+                    className="w-full mb-2 px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white"
                   />
                   {q.options.map((opt, idx) => (
                     <input
@@ -260,7 +258,7 @@ export default function FacultyDashboard() {
                       placeholder={`Option ${idx + 1}`}
                       value={opt}
                       onChange={(e) => updateQuestion(i, idx, e.target.value)}
-                      className="w-full mb-1 px-3 py-2 rounded-lg border border-gray-300"
+                      className="w-full mb-1 px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white"
                     />
                   ))}
                   <input
@@ -268,7 +266,7 @@ export default function FacultyDashboard() {
                     placeholder="Answer"
                     value={q.answer}
                     onChange={(e) => updateQuestion(i, "answer", e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-gray-300"
+                    className="w-full px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white"
                   />
                 </div>
               ))}
@@ -276,13 +274,13 @@ export default function FacultyDashboard() {
                 <button
                   type="button"
                   onClick={addQuestion}
-                  className="flex items-center gap-2 px-4 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600"
+                  className="flex items-center gap-2 px-4 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700"
                 >
                   + Add Question
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600"
+                  className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700"
                 >
                   <FaUpload /> Upload Quiz
                 </button>
@@ -292,9 +290,8 @@ export default function FacultyDashboard() {
         )}
       </div>
 
-      {/* Messages */}
       {message && (
-        <div className="max-w-3xl mx-auto mt-6 p-3 bg-green-100 text-green-800 rounded shadow text-center">
+        <div className="max-w-3xl mx-auto mt-6 p-3 bg-green-800 text-green-100 rounded shadow text-center">
           {message}
         </div>
       )}
