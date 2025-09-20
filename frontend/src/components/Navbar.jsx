@@ -255,7 +255,7 @@
 import React, { useState, useEffect } from "react";
 import { 
   FaSignInAlt, FaUser, FaUserCircle, FaExchangeAlt, FaSave, 
-  FaRegMoneyBillAlt, FaLanguage, FaSignOutAlt, FaMoon, FaSun 
+  FaRegMoneyBillAlt, FaLanguage, FaSignOutAlt, FaMoon, FaSun,FaColumns
 } from "react-icons/fa";
 import { FiMenu } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
@@ -273,6 +273,24 @@ export default function Navbar() {
   const { user, logout } = useAuth();
 
   // ✅ Load username from localStorage
+  const getDashboardPath = () => {
+    if (!user) return "/login";
+
+    switch (
+      user.role // assuming user.role is 'student', 'teacher', or 'admin'
+    ) {
+      case "student":
+        return "/student-dashboard";
+      case "teacher":
+        return "/faculty/dashboard";
+      case "admin":
+        return "/admin/dashboard";
+      default:
+        return "/login";
+    }
+  };
+
+
   useEffect(() => {
     const storedName = localStorage.getItem("username");
     if (storedName) setUsername(storedName);
@@ -323,7 +341,11 @@ export default function Navbar() {
   return (
     <nav
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300
-        ${scrolled ? "shadow-lg bg-white/90 dark:bg-black/90 backdrop-blur" : "bg-white dark:bg-black"}`}
+        ${
+          scrolled
+            ? "shadow-lg bg-white/90 dark:bg-black/90 backdrop-blur"
+            : "bg-white dark:bg-black"
+        }`}
     >
       <div className="mx-auto px-4">
         <div className="flex justify-between items-center h-20">
@@ -373,9 +395,7 @@ export default function Navbar() {
 
                   {/* Dropdown */}
                   {showDropdown && (
-                    <div
-                      className="absolute right-0 mt-2 w-72 bg-white dark:bg-black/95 backdrop-blur-md rounded-xl shadow-lg transition-all duration-300"
-                    >
+                    <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-black/95 backdrop-blur-md rounded-xl shadow-lg transition-all duration-300">
                       {/* User Info */}
                       <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-300 dark:border-gray-700">
                         <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-gray-800 dark:text-white">
@@ -393,12 +413,44 @@ export default function Navbar() {
 
                       {/* Dropdown Links */}
                       <div className="py-2">
+                        {/* Dashboard Link */}
+                        <Link
+                          to={getDashboardPath()}
+                          onClick={() => setShowDropdown(false)}
+                          className="flex items-center gap-3 px-6 py-3 text-gray-900 dark:text-white 
+             hover:bg-gray-200 dark:hover:bg-red-600 transition-all duration-200 text-base"
+                        >
+                          <FaColumns />{" "}
+                          {/* replace with FaTachometerAlt if preferred */}
+                          Dashboard
+                        </Link>
+
                         {[
-                          { name: "Profile", icon: <FaUserCircle />, path: "/profile" },
-                          { name: "Transactions", icon: <FaExchangeAlt />, path: "/transactions" },
-                          { name: "Saved Reels", icon: <FaSave />, path: "/saved-reels" },
-                          { name: "Subscription", icon: <FaRegMoneyBillAlt />, path: "/subscription" },
-                          { name: "Languages", icon: <FaLanguage />, path: "/languages" },
+                          {
+                            name: "Profile",
+                            icon: <FaUserCircle />,
+                            path: "/profile",
+                          },
+                          {
+                            name: "Transactions",
+                            icon: <FaExchangeAlt />,
+                            path: "/transactions",
+                          },
+                          {
+                            name: "Saved Reels",
+                            icon: <FaSave />,
+                            path: "/saved-reels",
+                          },
+                          {
+                            name: "Subscription",
+                            icon: <FaRegMoneyBillAlt />,
+                            path: "/subscription",
+                          },
+                          {
+                            name: "Languages",
+                            icon: <FaLanguage />,
+                            path: "/languages",
+                          },
                         ].map((item, idx) => (
                           <Link
                             key={idx}
@@ -443,7 +495,10 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
-            <button onClick={() => setIsOpen(!isOpen)} className="text-gray-900 dark:text-white focus:outline-none">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-gray-900 dark:text-white focus:outline-none"
+            >
               {isOpen ? <IoMdClose size={28} /> : <FiMenu size={28} />}
             </button>
           </div>
@@ -463,7 +518,8 @@ export default function Navbar() {
             className="relative text-gray-900 dark:text-white text-lg font-semibold
                  after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 
                  after:h-[2px] after:bg-red-600 after:transition-all after:duration-500 
-                 hover:after:w-full hover:text-red-600 dark:hover:text-red-400">
+                 hover:after:w-full hover:text-red-600 dark:hover:text-red-400"
+          >
             {item.name}
           </Link>
         ))}
@@ -490,7 +546,11 @@ export default function Navbar() {
           onClick={handleThemeToggle}
           className="block w-full text-left px-4 py-2 text-lg text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-all duration-200"
         >
-          {isDarkMode ? <FaSun className="inline mr-2" /> : <FaMoon className="inline mr-2" />}
+          {isDarkMode ? (
+            <FaSun className="inline mr-2" />
+          ) : (
+            <FaMoon className="inline mr-2" />
+          )}
           {isDarkMode ? "Light Mode" : "Dark Mode"}
         </button>
       </div>
