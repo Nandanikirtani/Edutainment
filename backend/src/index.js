@@ -81,30 +81,50 @@
 import express from "express";
 import dotenv from "dotenv";
 import connectDb from "./db/index.js";
-import videoRoutes from "./routes/Video.routes.js";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+
+// ✅ Routes
+import userRoutes from "./routes/User.routes.js";
+import videoRoutes from "./routes/Video.routes.js";
+
+// ✅ Middlewares
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 dotenv.config();
 
-// ✅ MongoDB Connect
+// ✅ Connect MongoDB first
 connectDb();
 
 const app = express();
 
-// ✅ Middleware
+// ✅ Middlewares
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN.split(","), // e.g. ["http://localhost:5173"]
+    origin: process.env.CORS_ORIGIN
+      ? process.env.CORS_ORIGIN.split(",") // supports multiple origins
+      : ["http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true, // cookies / tokens allow
+    credentials: true,
   })
 );
 
 app.use(express.json());
+app.use(cookieParser());
 
 // ✅ Routes
+app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/videos", videoRoutes);
 
-// ✅ Server Listen
+// ✅ Health check
+app.get("/", (req, res) => res.send("✅ Backend running!"));
+
+// ✅ Global Error Handler
+app.use(errorHandler);
+
+// ✅ Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () =>
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+);
+
