@@ -31,8 +31,6 @@ pipeline {
             steps {
                 dir('backend') {
                     sh 'npm install'
-                    // Agar backend me build script ho, uncomment karna:
-                    // sh 'npm run build'
                 }
             }
         }
