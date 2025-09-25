@@ -47,7 +47,7 @@ const PlayButton = styled(motion.button)`
   position: absolute;
   top: 25%;
   left: 10%;
-  background: linear-gradient(135deg, #ff0000, #ff4d4d);
+  background: linear-gradient(135deg, #ff078, #ff4d4d);
   color: white;
   font-size: 22px;
   font-weight: bold;
@@ -314,8 +314,8 @@ const coursesData = [
 ];
 
 const artsData = [
-  { id: 1, title: "Philosophy", img: "A1.png" },
-  { id: 2, title: "History", img: "A2.png" },
+  { id: 1, title: "Entrepreneurship AND Startup", img: "A1.png", videoId: "fmycIrIn9Pk"},
+  { id: 2, title: "Sources of Business Ideas", img: "A2.png" , videoId: "9kMY1Amf1CA" },
   { id: 3, title: "Literature", img: "A3.png" },
   { id: 4, title: "Sociology", img: "A4.png" },
 ];
@@ -415,19 +415,107 @@ const CoursesSection = () => {
 };
 
 const ArtsSection = () => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentVideo, setCurrentVideo] = useState(null);
+
+  const handlePlayVideo = (videoId, title) => {
+    setCurrentVideo({ id: videoId, title });
+    setIsPlaying(true);
+  };
+
   return (
     <ArtsContainer>
       <ArtsTitle>Arts & Humanities</ArtsTitle>
       <MotionArtsGrid variants={gridVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-        {artsData.map((item, index) => (
-          <ArtsCard key={item.id} variants={cardVariant} whileHover={{ scale: 1.05, y: -5, boxShadow: "0px 15px 30px rgba(0,0,0,0.6)" }}>
+        {artsData.map((item) => (
+          <ArtsCard 
+            key={item.id} 
+            variants={cardVariant} 
+            whileHover={{ 
+              scale: 1.05, 
+              y: -5, 
+              boxShadow: "0px 15px 30px rgba(0,0,0,0.6)"
+            }}
+            onClick={() => item.videoId && handlePlayVideo(item.videoId, item.title)}
+            style={{ cursor: item.videoId ? 'pointer' : 'default' }}
+          >
             <ArtsImage src={item.img} alt={item.title} />
+            {item.videoId && (
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                background: 'rgba(0, 0, 0, 0.7)',
+                borderRadius: '50%',
+                width: '50px',
+                height: '50px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 2
+              }}>
+                <Play size={24} color="#fff" />
+              </div>
+            )}
             <ArtsOverlay>
               <ArtsText>{item.title}</ArtsText>
             </ArtsOverlay>
           </ArtsCard>
         ))}
       </MotionArtsGrid>
+
+      {isPlaying && currentVideo && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          zIndex: 1000,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <button 
+            onClick={() => setIsPlaying(false)}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              right: '20px',
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: 'none',
+              color: 'white',
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              fontSize: '20px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            ×
+          </button>
+          <h3 style={{ color: 'white', marginBottom: '20px' }}>{currentVideo.title}</h3>
+          <iframe
+            width="80%"
+            height="70%"
+            src={`https://www.youtube.com/embed/${currentVideo.id}?autoplay=1`}
+            title={currentVideo.title}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{
+              borderRadius: '10px',
+              boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)'
+            }}
+          ></iframe>
+        </div>
+      )}
     </ArtsContainer>
   );
 };
