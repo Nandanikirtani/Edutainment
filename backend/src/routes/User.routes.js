@@ -1,6 +1,8 @@
 import { Router } from "express";
 import {
   registerUser,
+  sendRegistrationOTP,
+  verifyOTPAndRegister,
   loginUser,
   logoutUser,
   refreshAccessToken,
@@ -12,7 +14,11 @@ import { verifyJWT } from "../middlewares/verifyJWT.js";
 
 const router = Router();
 
-// ----------------- Register -----------------
+// ----------------- Register with OTP -----------------
+router.post("/send-otp", sendRegistrationOTP);
+router.post("/verify-otp", verifyOTPAndRegister);
+
+// ----------------- Register (Legacy) -----------------
 router.post("/register", registerUser);
 
 // ----------------- Login -----------------

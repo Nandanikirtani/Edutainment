@@ -266,11 +266,30 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [username, setUsername] = useState("");
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme ? savedTheme === 'dark' : true; // Default to dark mode
+  });
 
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+
+  // ✅ Apply initial theme on component mount
+  useEffect(() => {
+    const root = document.documentElement;
+    const body = document.body;
+    
+    if (isDarkMode) {
+      root.classList.add('dark');
+      body.style.backgroundColor = '#000000';
+      body.style.color = '#ffffff';
+    } else {
+      root.classList.remove('dark');
+      body.style.backgroundColor = '#ffffff';
+      body.style.color = '#000000';
+    }
+  }, []); // Run only on mount
 
   // ✅ Load username from localStorage
   const getDashboardPath = () => {
@@ -311,14 +330,24 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ✅ Dark mode toggle
+  // ✅ Dark mode functionality
   useEffect(() => {
+    const root = document.documentElement;
+    const body = document.body;
+    
     if (isDarkMode) {
-      document.documentElement.classList.add("dark");
+      root.classList.add('dark');
+      body.style.backgroundColor = '#000000';
+      body.style.color = '#ffffff';
+      localStorage.setItem('theme', 'dark');
     } else {
-      document.documentElement.classList.remove("dark");
+      root.classList.remove('dark');
+      body.style.backgroundColor = '#ffffff';
+      body.style.color = '#000000';
+      localStorage.setItem('theme', 'light');
     }
   }, [isDarkMode]);
+
 
   // ✅ Menu Items (added Reels)
   const menuItems = [
@@ -336,7 +365,13 @@ export default function Navbar() {
     navigate("#/home");
   };
 
-  const handleThemeToggle = () => setIsDarkMode(!isDarkMode);
+  const handleThemeToggle = () => {
+    setIsDarkMode(!isDarkMode);
+    setShowDropdown(false);
+    
+    // Log for debugging
+    console.log(`Switching to ${!isDarkMode ? 'Dark' : 'Light'} mode`);
+  };
 
   return (
     <nav

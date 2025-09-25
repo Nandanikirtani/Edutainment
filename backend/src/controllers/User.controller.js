@@ -1,9 +1,86 @@
 import { User } from "../models/User.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
+import { apiResponse } from "../utils/apiResponse.js";
+import { sendOtpEmail } from "../utils/sendEmail.js";
+import { generateOTP, storeOTP, storeData, verifyOTP, clearOTP, getStoredData } from "../utils/otpUtils.js";
 import jwt from "jsonwebtoken";
 
-// ---------------- Register ----------------
+// ---------------- Send OTP for Registration ----------------
+export const sendRegistrationOTP = asyncHandler(async (req, res) => {
+  const { fullName, email, password, role } = req.body;
+
+  if (!fullName || !email || !password || !role) {
+    throw new ApiError(400, "All fields are required including role");
+  }
+
+  const allowedRoles = ["student", "teacher", "admin"];
+  if (!allowedRoles.includes(role)) {
+    throw new ApiError(400, "Invalid role");
+  }
+
+  const existedUser = await User.findOne({ email, role });
+  if (existedUser) throw new ApiError(400, "User already exists with this role");
+
+  // Generate and send OTP
+  const otp = generateOTP();
+  storeOTP(email, otp);
+  
+  // Store user data temporarily
+  storeData(`${email}_userData`, { fullName, email, password, role });
+
+  // Try to send email, but continue even if it fails
+  try {
+    await sendOtpEmail(email, otp, fullName);
+  } catch (emailError) {
+    console.log("⚠️ Email sending failed, but OTP is logged in console");
+  }
+
+  res.status(200).json(
+    new apiResponse(200, { email }, "OTP sent successfully to your email")
+  );
+});
+
+// ---------------- Verify OTP and Register User ----------------
+export const verifyOTPAndRegister = asyncHandler(async (req, res) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    throw new ApiError(400, "Email and OTP are required");
+  }
+
+  // Verify OTP
+  const otpVerification = verifyOTP(email, otp);
+  if (!otpVerification.success) {
+    throw new ApiError(400, otpVerification.message);
+  }
+
+  // Get stored user data
+  const userData = getStoredData(`${email}_userData`);
+  if (!userData) {
+    throw new ApiError(400, "Registration session expired. Please start again.");
+  }
+  
+  // Create user
+  const user = await User.create({
+    fullName: userData.fullName,
+    email: userData.email,
+    password: userData.password,
+    role: userData.role,
+    isVerified: true
+  });
+
+  const createdUser = await User.findById(user._id).select("-password -refreshToken");
+
+  // Clean up stored data
+  clearOTP(`${email}_userData`);
+
+  res.status(201).json(
+    new apiResponse(201, createdUser, "User registered successfully")
+  );
+});
+
+// ---------------- Register (Legacy - keeping for backward compatibility) ----------------
 export const registerUser = asyncHandler(async (req, res) => {
   const { fullName, email, password, role } = req.body;
 

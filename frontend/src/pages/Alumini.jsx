@@ -1,12 +1,22 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Play } from "lucide-react";
+import { Play, ArrowLeft, Clock, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Alumini() {
   const navigate = useNavigate();
   const [selectedAward, setSelectedAward] = useState(null);
+  
+  // Video states for MRU Awards
+  const [awardActiveIndex, setAwardActiveIndex] = useState(0);
+  const [awardIsPlaying, setAwardIsPlaying] = useState(false);
+  const [awardShowDetailView, setAwardShowDetailView] = useState(false);
+  
+  // Video states for Icons
+  const [iconActiveIndex, setIconActiveIndex] = useState(0);
+  const [iconIsPlaying, setIconIsPlaying] = useState(false);
+  const [iconShowDetailView, setIconShowDetailView] = useState(false);
 
   const awards = [
     {
@@ -16,6 +26,8 @@ export default function Alumini() {
       img: "award1.png",
       bg: "hero1-bg.png",
       link: "/award/1",
+      videoId: "qjG6PU4IrYs",
+      desc: "Celebrating the lifetime achievements and contributions of Sh. Rajan Nanda to society and industry excellence.",
     },
     {
       id: 2,
@@ -24,6 +36,8 @@ export default function Alumini() {
       img: "award2.png",
       bg: "hero2-bg.png",
       link: "/award/2",
+      videoId: "WBl0I7WaACA",
+      desc: "Honoring Shri Ravindra Chandra Bhargava's exceptional contributions to nation building and industrial development.",
     },
     {
       id: 3,
@@ -32,6 +46,8 @@ export default function Alumini() {
       img: "award3.png",
       bg: "hero3-bg.png",
       link: "/award/3",
+      videoId: "pGmBsWEFrtU",
+      desc: "Recognizing Ms. Shradha Suri Marwah's outstanding leadership qualities and achievements as a young leader.",
     },
     {
       id: 4,
@@ -40,6 +56,8 @@ export default function Alumini() {
       img: "award4.png",
       bg: "hero4-bg.png",
       link: "/award/4",
+      videoId: "AjQ-qntkWRY",
+      desc: "Acknowledging Shri Dinesh Kumar Sarraf's remarkable contributions to corporate excellence and industry leadership.",
     },
   ];
 
@@ -49,29 +67,45 @@ export default function Alumini() {
       name: "Anoushka Lomas",
       img: "icon1.png",
       link: "/icon/1",
+      videoId: "3o6Tze3o43k",
+      desc: "Discover the inspiring journey of Anoushka Lomas and her achievements at Manav Rachna.",
+      tag: "Alumni Success Story",
     },
     {
       id: 2,
       name: "Lalit Sharma",
       img: "icon2.png",
       link: "/icon/2",
+      videoId: "rL5tVESPJs8",
+      desc: "Learn about Lalit Sharma's remarkable career path and contributions to the industry.",
+      tag: "Industry Leader",
     },
     {
       id: 3,
       name: "Dr. Mahima Bakshi",
       img: "icon3.png",
       link: "/icon/3",
+      videoId: "1XnvvvJew3I",
+      desc: "Explore Dr. Mahima Bakshi's academic achievements and research contributions.",
+      tag: "Academic Excellence",
     },
     {
       id: 4,
       name: "Parents of Tanmay Grover",
       img: "icon4.png",
       link: "/icon/4",
+      videoId: "DtfhT5KiCLA",
+      desc: "Hear from the parents of Tanmay Grover about their experience with Manav Rachna.",
+      tag: "Family Testimonial",
     },
   ];
 
   // Hero background image (default or selected)
   const heroBg = selectedAward?.bg || "hero1-bg.png";
+  
+  // Active items for video functionality
+  const activeAward = awards[awardActiveIndex];
+  const activeIcon = icons[iconActiveIndex];
 
   return (
     <div className="bg-black text-white min-h-screen">
@@ -130,7 +164,11 @@ export default function Alumini() {
               className={`relative bg-gradient-to-r from-yellow-600 to-yellow-500 p-3 rounded-md w-72 h-48 flex flex-col items-center justify-center text-center shadow-xl border border-yellow-400/70 hover:shadow-yellow-400/90 hover:border-yellow-300 cursor-pointer ${
                 selectedAward?.id === award.id ? "ring-4 ring-red-500" : ""
               }`}
-              onClick={() => setSelectedAward(award)} // ✅ set selected award
+              onClick={() => {
+                setSelectedAward(award);
+                setAwardActiveIndex(i);
+                setAwardShowDetailView(true);
+              }}
             >
               <img
                 src={award.img}
@@ -156,7 +194,10 @@ export default function Alumini() {
               whileHover={{ scale: 1.05, rotateY: -3 }}
               whileTap={{ scale: 0.97 }}
               className="relative bg-gray-900 p-3 rounded-md w-64 h-44 flex flex-col items-center justify-center text-center shadow-xl border border-red-400/70 hover:shadow-red-500/90 hover:border-red-300 cursor-pointer"
-              onClick={() => navigate(icon.link)}
+              onClick={() => {
+                setIconActiveIndex(i);
+                setIconShowDetailView(true);
+              }}
             >
               <img
                 src={icon.img}
@@ -168,6 +209,186 @@ export default function Alumini() {
           ))}
         </div>
       </section>
+
+      {/* 🔹 MRU Awards Video Player */}
+      {awardIsPlaying && (
+        <div className="fixed inset-0 w-full h-full bg-black z-50">
+          {/* <button
+            onClick={() => {
+              setAwardIsPlaying(false);
+              setAwardShowDetailView(true);
+            }}
+            className="absolute top-4 left-4 z-50 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button> */}
+          <iframe
+            className="w-full h-full"
+            src={`https://www.youtube.com/embed/${activeAward.videoId}?autoplay=1`}
+            title={activeAward.title}
+            frameBorder="0"
+            allow="autoplay; encrypted-media"
+            allowFullScreen
+          ></iframe>
+        </div>
+      )}
+
+      {/* 🔹 MRU Awards Detail View */}
+      {awardShowDetailView && (
+        <div className="fixed inset-0 w-full h-full bg-black z-40">
+          <motion.div
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${activeAward.bg})` }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/40" />
+          </motion.div>
+
+          {/* <button
+            onClick={() => setAwardShowDetailView(false)}
+            className="absolute top-6 left-6 z-50 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full hover:bg-black/70 transition-all duration-300 flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button> */}
+
+          <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="max-w-4xl mx-auto"
+            >
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                {activeAward.title}
+              </h1>
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <User className="w-5 h-5 text-yellow-500" />
+                <p className="text-xl text-gray-200">{activeAward.person}</p>
+              </div>
+              <p className="text-lg text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto">
+                {activeAward.desc}
+              </p>
+              <motion.button
+                onClick={() => {
+                  setAwardShowDetailView(false);
+                  setAwardIsPlaying(true);
+                }}
+                className="group relative bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white px-12 py-4 rounded-full text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-yellow-500/25"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/20 p-2 rounded-full group-hover:bg-white/30 transition-all duration-300">
+                    <Play className="w-6 h-6 fill-white" />
+                  </div>
+                  <span>Watch Award Story</span>
+                </div>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-600 to-yellow-700 opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
+              </motion.button>
+              <div className="mt-8 flex items-center justify-center gap-6 text-gray-400">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>Award Ceremony</span>
+                </div>
+                <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                <span>HD Quality</span>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      )}
+
+      {/* 🔹 Icons Video Player */}
+      {iconIsPlaying && (
+        <div className="fixed inset-0 w-full h-full bg-black z-50">
+          {/* <button
+            onClick={() => {
+              setIconIsPlaying(false);
+              setIconShowDetailView(true);
+            }}
+            className="absolute top-4 left-4 z-50 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button> */}
+          <iframe
+            className="w-full h-full"
+            src={`https://www.youtube.com/embed/${activeIcon.videoId}?autoplay=1`}
+            title={activeIcon.name}
+            frameBorder="0"
+            allow="autoplay; encrypted-media"
+            allowFullScreen
+          ></iframe>
+        </div>
+      )}
+
+      {/* 🔹 Icons Detail View */}
+      {iconShowDetailView && (
+        <div className="fixed inset-0 w-full h-full bg-black z-40">
+          <motion.div
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${activeIcon.img})` }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/40" />
+          </motion.div>
+
+          {/* <button
+            onClick={() => setIconShowDetailView(false)}
+            className="absolute top-6 left-6 z-50 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full hover:bg-black/70 transition-all duration-300 flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button> */}
+
+          <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="max-w-4xl mx-auto"
+            >
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                {activeIcon.name}
+              </h1>
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <User className="w-5 h-5 text-red-500" />
+                <p className="text-xl text-gray-200">{activeIcon.tag}</p>
+              </div>
+              <p className="text-lg text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto">
+                {activeIcon.desc}
+              </p>
+              <motion.button
+                onClick={() => {
+                  setIconShowDetailView(false);
+                  setIconIsPlaying(true);
+                }}
+                className="group relative bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-12 py-4 rounded-full text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-red-500/25"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/20 p-2 rounded-full group-hover:bg-white/30 transition-all duration-300">
+                    <Play className="w-6 h-6 fill-white" />
+                  </div>
+                  <span>Watch Story</span>
+                </div>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
+              </motion.button>
+              <div className="mt-8 flex items-center justify-center gap-6 text-gray-400">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>Success Story</span>
+                </div>
+                <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                <span>HD Quality</span>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

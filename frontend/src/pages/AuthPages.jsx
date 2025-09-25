@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-import { loginUser, registerUser } from "../api/auth.js";
+import { loginUser, registerUser, sendRegistrationOTP, verifyOTPAndRegister } from "../api/auth.js";
 
 // ---------- Role Tabs ----------
 const RoleTabs = ({ role, setRole }) => {
@@ -107,8 +107,8 @@ const LoginForm = ({ role, onLogin, email, setEmail }) => {
   );
 };
 
-// ---------- Signup Form ----------
-const SignupForm = ({ role, onSignup }) => {
+// ---------- Signup Form with OTP ----------
+const SignupForm = ({ role, onSignup, onOTPSent }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -155,9 +155,76 @@ const SignupForm = ({ role, onSignup }) => {
         disabled={loading}
       >
         {loading
-          ? "Creating..."
-          : `Create ${role.charAt(0).toUpperCase() + role.slice(1)} account`}
+          ? "Sending OTP..."
+          : `Send OTP to Email`}
       </button>
+    </motion.form>
+  );
+};
+
+// ---------- OTP Verification Form ----------
+const OTPForm = ({ email, role, onVerifyOTP, onBack }) => {
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const submit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    onVerifyOTP({ email, otp }).finally(() => setLoading(false));
+  };
+
+  return (
+    <motion.form
+      onSubmit={submit}
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-4"
+    >
+      <div className="text-center mb-4">
+        <h4 className="font-semibold text-black">Verify Your Email</h4>
+        <p className="text-sm text-gray-600 mt-1">
+          Enter the 6-digit OTP sent to <br />
+          <span className="font-medium">{email}</span>
+        </p>
+      </div>
+      
+      <Input
+        id="otp"
+        label="Enter OTP"
+        value={otp}
+        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+        placeholder="123456"
+        maxLength={6}
+      />
+      
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={onBack}
+          className="flex-1 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold"
+          disabled={loading}
+        >
+          Back
+        </button>
+        <button
+          type="submit"
+          className="flex-1 py-2 rounded-lg bg-gradient-to-r from-green-400 to-teal-500 text-slate-900 font-semibold shadow-lg"
+          disabled={loading || otp.length !== 6}
+        >
+          {loading ? "Verifying..." : "Verify OTP"}
+        </button>
+      </div>
+      
+      <div className="text-center">
+        <button
+          type="button"
+          className="text-sm text-blue-600 hover:underline"
+          disabled={loading}
+        >
+          Resend OTP
+        </button>
+      </div>
     </motion.form>
   );
 };
@@ -168,6 +235,8 @@ export default function AuthPages() {
   const [role, setRole] = useState("student");
   const [message, setMessage] = useState(null);
   const [loginEmail, setLoginEmail] = useState("");
+  const [otpStep, setOtpStep] = useState(false);
+  const [otpEmail, setOtpEmail] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -194,18 +263,40 @@ export default function AuthPages() {
     }
   };
 
-  // ---------- Signup ----------
+  // ---------- Send OTP for Signup ----------
   const handleSignup = async ({ name, email, password, role }) => {
-    setMessage({ type: "loading", text: "Creating account..." });
+    setMessage({ type: "loading", text: "Sending OTP to your email..." });
 
     try {
-      await registerUser({ fullName: name, email, password, role });
+      await sendRegistrationOTP({ fullName: name, email, password, role });
+      setMessage({ type: "success", text: "OTP sent to your email!" });
+      setOtpEmail(email);
+      setOtpStep(true);
+    } catch (err) {
+      setMessage({ type: "error", text: err.message });
+    }
+  };
+
+  // ---------- Verify OTP and Complete Registration ----------
+  const handleOTPVerification = async ({ email, otp }) => {
+    setMessage({ type: "loading", text: "Verifying OTP..." });
+
+    try {
+      await verifyOTPAndRegister({ email, otp });
       setMessage({ type: "success", text: "Account created successfully!" });
+      setOtpStep(false);
       setMode("login");
       setLoginEmail(email); // pre-fill email for login
     } catch (err) {
       setMessage({ type: "error", text: err.message });
     }
+  };
+
+  // ---------- Go Back from OTP Step ----------
+  const handleBackFromOTP = () => {
+    setOtpStep(false);
+    setOtpEmail("");
+    setMessage(null);
   };
 
   return (
@@ -295,14 +386,14 @@ export default function AuthPages() {
                 className="bg-transparent"
               >
                 <h3 className="text-lg sm:text-xl font-bold mb-2">
-                  {mode === "login" ? "Sign in" : "Create account"}
+                  {mode === "login" ? "Sign in" : otpStep ? "Verify Email" : "Create account"}
                 </h3>
                 <p className="text-xs sm:text-sm text-[#0C7489] mb-4">
-                  Continue as <span className="font-semibold">{role}</span>
+                  {otpStep ? "Enter OTP to complete registration" : `Continue as ${role}`}
                 </p>
 
                 <motion.div
-                  key={mode}
+                  key={`${mode}-${otpStep}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
@@ -312,6 +403,13 @@ export default function AuthPages() {
                       onLogin={handleLogin}
                       email={loginEmail}
                       setEmail={setLoginEmail}
+                    />
+                  ) : otpStep ? (
+                    <OTPForm
+                      email={otpEmail}
+                      role={role}
+                      onVerifyOTP={handleOTPVerification}
+                      onBack={handleBackFromOTP}
                     />
                   ) : (
                     <SignupForm role={role} onSignup={handleSignup} />

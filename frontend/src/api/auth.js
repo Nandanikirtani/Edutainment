@@ -98,6 +98,54 @@ export const updateProfile = async (updates) => {
   }
 };
 
+// ------------- Send OTP for Registration -------------
+export const sendRegistrationOTP = async ({ fullName, email, password, role }) => {
+  try {
+    const res = await fetch(`${API_BASE}/send-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fullName, email, password, role }),
+    });
+
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await res.text();
+      throw new Error("Invalid response: " + text);
+    }
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to send OTP");
+
+    return data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+// ------------- Verify OTP and Register -------------
+export const verifyOTPAndRegister = async ({ email, otp }) => {
+  try {
+    const res = await fetch(`${API_BASE}/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp }),
+    });
+
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await res.text();
+      throw new Error("Invalid response: " + text);
+    }
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "OTP verification failed");
+
+    return data.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 // ------------- Change Password -------------
 export const changePassword = async (oldPassword, newPassword) => {
   try {

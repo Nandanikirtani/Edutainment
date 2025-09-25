@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
-import { Play } from "lucide-react";
+import { Play, ArrowLeft, Clock, User } from "lucide-react";
 import { createGlobalStyle } from "styled-components";
 const GlobalStyle = createGlobalStyle`
   body, html {
@@ -321,10 +321,10 @@ const artsData = [
 ];
 
 const extraData = [
-  { id: 1, title: "B.Tech Automobile", tag: "Engineering", img: "C1.jpeg" },
-  { id: 2, title: "MBA Programs", tag: "Business", img: "C2.jpeg" },
-  { id: 3, title: "Psychology", tag: "Behavioral Science", img: "C3.jpeg" },
-  { id: 4, title: "Mass Comm.", tag: "Media", img: "C4.jpeg" },
+  { id: 1, title: "B.Tech Automobile", tag: "Engineering", img: "C1.jpeg", videoId: "C2ZFWaHOAaQ", desc: "Explore the world of automotive engineering with cutting-edge technology and hands-on learning experiences." },
+  { id: 2, title: "MBA Programs", tag: "Business", img: "C2.jpeg", videoId: "FFbCjEAestA", desc: "Transform your career with our comprehensive MBA programs designed for future business leaders." },
+  { id: 3, title: "Psychology", tag: "Behavioral Science", img: "C3.jpeg", videoId: "_bFV-saB2Uk", desc: "Understand human behavior and mental processes through our advanced psychology curriculum." },
+  { id: 4, title: "Mass Comm.", tag: "Media", img: "C4.jpeg", videoId: "XOZhYijcVBY", desc: "Master the art of communication and media with our industry-focused mass communication program." },
 ];
 
 /* ================= Motion Variants ================= */
@@ -434,42 +434,158 @@ const ArtsSection = () => {
 
 /* ================= ExtraSection Component ================= */
 const ExtraSection = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [showDetailView, setShowDetailView] = useState(false);
+
+  const activeProgram = extraData[activeIndex];
+
   return (
-    <ExtraSectionContainer>
-      <ExtraSectionTitle>Programs Offered</ExtraSectionTitle>
-      <MotionExtraGrid
-        variants={gridVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.25 }}
-      >
-        {extraData.map((item, index) => (
-          <ExtraCard
-            key={item.id}
-            variants={cardVariant}
-            whileHover={{
-              scale: 1.1, // Zoom
-              rotateX: -5, // 3D tilt
-              rotateY: 5,
-              boxShadow: "0 0 25px 8px rgba(245, 26, 26, 0.8)", // Glow
-              border: "3px solid #ff0000"
+    <>
+      {isPlaying ? (
+        // ✅ Fullscreen Video Player
+        <div className="fixed inset-0 w-full h-full bg-black z-50">
+          {/* Back Button */}
+          {/* <button
+            onClick={() => {
+              setIsPlaying(false);
+              setShowDetailView(true);
             }}
-            transition={{
-              type: "spring",
-              stiffness: 250,
-              damping: 18,
-            }}
-            whileTap={{ scale: 1.05 }} // Slight shrink on click/tap
+            className="absolute top-4 left-4 z-50 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 flex items-center gap-2"
           >
-            <ExtraCardImage src={item.img} alt={item.title} />
-            <ExtraCardOverlay>
-              <ExtraCardTag>{item.tag}</ExtraCardTag>
-              <ExtraCardTitle>{item.title}</ExtraCardTitle>
-            </ExtraCardOverlay>
-          </ExtraCard>
-        ))}
-      </MotionExtraGrid>
-    </ExtraSectionContainer>
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button> */}
+
+          <iframe
+            className="w-full h-full"
+            src={`https://www.youtube.com/embed/${activeProgram.videoId}?autoplay=1`}
+            title={activeProgram.title}
+            frameBorder="0"
+            allow="autoplay; encrypted-media"
+            allowFullScreen
+          ></iframe>
+        </div>
+      ) : showDetailView ? (
+        // ✅ Detailed View with Background Image and Content
+        <div className="fixed inset-0 w-full h-full bg-black z-40">
+          {/* Background Image */}
+          <motion.div
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${activeProgram.img})` }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/40" />
+          </motion.div>
+
+          {/* Back Button
+          <button
+            onClick={() => setShowDetailView(false)}
+            className="absolute top-6 left-6 z-50 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full hover:bg-black/70 transition-all duration-300 flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button> */}
+
+          {/* Content */}
+          <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="max-w-4xl mx-auto"
+            >
+              {/* Title */}
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                {activeProgram.title}
+              </h1>
+
+              {/* Tag */}
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <User className="w-5 h-5 text-red-500" />
+                <p className="text-xl text-gray-200">{activeProgram.tag}</p>
+              </div>
+
+              {/* Description */}
+              <p className="text-lg text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto">
+                {activeProgram.desc}
+              </p>
+
+              {/* Enhanced Play Button */}
+              <motion.button
+                onClick={() => {
+                  setShowDetailView(false);
+                  setIsPlaying(true);
+                }}
+                className="group relative bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-12 py-4 rounded-full text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-red-500/25"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/20 p-2 rounded-full group-hover:bg-white/30 transition-all duration-300">
+                    <Play className="w-6 h-6 fill-white" />
+                  </div>
+                  <span>Watch Program</span>
+                </div>
+                
+                {/* Glow effect */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
+              </motion.button>
+
+              {/* Additional Info */}
+              <div className="mt-8 flex items-center justify-center gap-6 text-gray-400">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>Full Program Details</span>
+                </div>
+                <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                <span>HD Quality</span>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      ) : (
+        <ExtraSectionContainer>
+          <ExtraSectionTitle>Programs Offered</ExtraSectionTitle>
+          <MotionExtraGrid
+            variants={gridVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.25 }}
+          >
+            {extraData.map((item, index) => (
+              <ExtraCard
+                key={item.id}
+                variants={cardVariant}
+                onClick={() => {
+                  setActiveIndex(index);
+                  setShowDetailView(true);
+                }}
+                whileHover={{
+                  scale: 1.1, // Zoom
+                  rotateX: -5, // 3D tilt
+                  rotateY: 5,
+                  boxShadow: "0 0 25px 8px rgba(245, 26, 26, 0.8)", // Glow
+                  border: "3px solid #ff0000"
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 250,
+                  damping: 18,
+                }}
+                whileTap={{ scale: 1.05 }} // Slight shrink on click/tap
+              >
+                <ExtraCardImage src={item.img} alt={item.title} />
+                <ExtraCardOverlay>
+                  <ExtraCardTag>{item.tag}</ExtraCardTag>
+                  <ExtraCardTitle>{item.title}</ExtraCardTitle>
+                </ExtraCardOverlay>
+              </ExtraCard>
+            ))}
+          </MotionExtraGrid>
+        </ExtraSectionContainer>
+      )}
+    </>
   );
 };
 const HomePage = () => {

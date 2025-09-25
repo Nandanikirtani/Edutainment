@@ -1,7 +1,7 @@
 // Podcast.jsx
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Play } from "lucide-react";
+import { Play, ArrowLeft, Clock, User } from "lucide-react";
 
 // ================= Motion Variants =================
 const gridVariants = {
@@ -58,6 +58,7 @@ const dailyPodcasts = [podcasts[2], podcasts[0], podcasts[3]];
 export default function Podcast() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showDetailView, setShowDetailView] = useState(false);
 
   const activePodcast = podcasts[activeIndex];
 
@@ -67,12 +68,15 @@ export default function Podcast() {
         // ✅ Fullscreen Video Player
         <div className="fixed inset-0 w-full h-full bg-black z-50">
           {/* Back Button */}
-          <button
-            onClick={() => setIsPlaying(false)}
-            className="absolute top-4 left-4 z-50 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+          {/* <button
+            onClick={() => {
+              setIsPlaying(false);
+              setShowDetailView(true);
+            }}
+            className="absolute top-4 left-4 z-50 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 flex items-center gap-2"
           >
-            ⬅ Back
-          </button>
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button> */}
 
           <iframe
             className="w-full h-full"
@@ -82,6 +86,85 @@ export default function Podcast() {
             allow="autoplay; encrypted-media"
             allowFullScreen
           ></iframe>
+        </div>
+      ) : showDetailView ? (
+        // ✅ Detailed View with Background Image and Content
+        <div className="fixed inset-0 w-full h-full bg-black z-40">
+          {/* Background Image */}
+          <motion.div
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${activePodcast.img})` }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/40" />
+          </motion.div>
+
+          {/* Back Button
+          <button
+            onClick={() => setShowDetailView(false)}
+            className="absolute top-6 left-6 z-50 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full hover:bg-black/70 transition-all duration-300 flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button> */}
+
+          {/* Content */}
+          <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="max-w-4xl mx-auto"
+            >
+              {/* Title */}
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                {activePodcast.title}
+              </h1>
+
+              {/* Speaker */}
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <User className="w-5 h-5 text-red-500" />
+                <p className="text-xl text-gray-200">{activePodcast.speaker}</p>
+              </div>
+
+              {/* Description */}
+              <p className="text-lg text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto">
+                {activePodcast.desc}
+              </p>
+
+              {/* Enhanced Play Button */}
+              <motion.button
+                onClick={() => {
+                  setShowDetailView(false);
+                  setIsPlaying(true);
+                }}
+                className="group relative bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-12 py-4 rounded-full text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-red-500/25"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/20 p-2 rounded-full group-hover:bg-white/30 transition-all duration-300">
+                    <Play className="w-6 h-6 fill-white" />
+                  </div>
+                  <span>Play Episode</span>
+                </div>
+                
+                {/* Glow effect */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
+              </motion.button>
+
+              {/* Additional Info */}
+              <div className="mt-8 flex items-center justify-center gap-6 text-gray-400">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>Full Episode</span>
+                </div>
+                <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                <span>HD Quality</span>
+              </div>
+            </motion.div>
+          </div>
         </div>
       ) : (
         <>
@@ -113,12 +196,22 @@ export default function Podcast() {
                 <p className="mb-6 text-gray-300 max-w-2xl mx-auto">
                   {activePodcast.desc}
                 </p>
-                <button
-                  onClick={() => setIsPlaying(true)}
-                  className="mt-6 px-6 py-3 bg-red-600 rounded-full flex items-center gap-2 hover:bg-red-700 transition"
+                <motion.button
+                  onClick={() => setShowDetailView(true)}
+                  className="group relative bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-red-500/25"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <Play className="w-5 h-5" /> Play
-                </button>
+                  <div className="flex items-center gap-3">
+                    <div className="bg-white/20 p-2 rounded-full group-hover:bg-white/30 transition-all duration-300">
+                      <Play className="w-5 h-5 fill-white" />
+                    </div>
+                    <span>Watch Now</span>
+                  </div>
+                  
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
+                </motion.button>
               </motion.div>
 
               {/* Thumbnails */}
@@ -137,7 +230,7 @@ export default function Podcast() {
                     alt={`podcast-${idx}`}
                     onClick={() => {
                       setActiveIndex(idx);
-                      setIsPlaying(true);
+                      setShowDetailView(true);
                     }}
                     className="w-60 h-40 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-red-500 transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
                     whileHover={{ scale: 1.05 }}
@@ -167,7 +260,7 @@ export default function Podcast() {
                     alt={`manav-${idx}`}
                     onClick={() => {
                       setActiveIndex(idx);
-                      setIsPlaying(true);
+                      setShowDetailView(true);
                     }}
                     className="w-72 h-44 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-red-500 transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
                     whileHover={{ scale: 1.05 }}
@@ -194,7 +287,7 @@ export default function Podcast() {
                     alt={`weekly-${idx}`}
                     onClick={() => {
                       setActiveIndex(podcasts.indexOf(p));
-                      setIsPlaying(true);
+                      setShowDetailView(true);
                     }}
                     className="w-72 h-44 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-red-500 transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
                     whileHover={{ scale: 1.05 }}
@@ -221,7 +314,7 @@ export default function Podcast() {
                     alt={`daily-${idx}`}
                     onClick={() => {
                       setActiveIndex(podcasts.indexOf(p));
-                      setIsPlaying(true);
+                      setShowDetailView(true);
                     }}
                     className="w-72 h-44 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-red-500 transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
                     whileHover={{ scale: 1.05 }}
