@@ -301,9 +301,27 @@ const BackDesc = styled.p`
 
 /* ================= Data ================= */
 const sliderImages = [
-  { id: 1, url: "1.png" },
-  { id: 2, url: "2.png" },
-  { id: 3, url: "3.png" },
+  { 
+    id: 1, 
+    url: "1.png",
+    videoId: "rHWQm-dsJ8g",
+    title: "Campus Tour",
+    description: "Experience our world-class campus facilities and infrastructure"
+  },
+  { 
+    id: 2, 
+    url: "2.png",
+    videoId: "2HeLWFWPhaw",
+    title: "Student Life",
+    description: "Discover the vibrant student community and activities"
+  },
+  { 
+    id: 3, 
+    url: "3.png",
+    videoId: "s0rQ4wn8Ir8",
+    title: "Academic Excellence",
+    description: "Learn about our cutting-edge academic programs and research"
+  },
 ];
 
 const coursesData = [
@@ -345,6 +363,8 @@ const MotionExtraGrid = motion(ExtraGrid);
 /* ================= Components ================= */
 const HeroSlider = () => {
   const [current, setCurrent] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentVideo, setCurrentVideo] = useState(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -352,6 +372,15 @@ const HeroSlider = () => {
     }, 4000);
     return () => clearInterval(interval);
   }, []);
+
+  const handlePlayClick = (videoId) => {
+    if (!videoId) return;
+    setCurrentVideo({
+      id: videoId,
+      title: sliderImages[current].title || 'Video Player'
+    });
+    setIsPlaying(true);
+  };
 
   return (
     <SliderContainer>
@@ -363,10 +392,19 @@ const HeroSlider = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1 }}
+          onClick={() => handlePlayClick(sliderImages[current].videoId)}
+          style={{ cursor: 'pointer' }}
         />
       </AnimatePresence>
       <Overlay />
-      <PlayButton whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+      <PlayButton 
+        whileHover={{ scale: 1.1 }} 
+        whileTap={{ scale: 0.95 }}
+        onClick={(e) => {
+          e.stopPropagation();
+          handlePlayClick(sliderImages[current].videoId);
+        }}
+      >
         <Play size={22} /> Play
       </PlayButton>
       <PreviewContainer>
@@ -381,16 +419,211 @@ const HeroSlider = () => {
           />
         ))}
       </PreviewContainer>
+
+      {isPlaying && currentVideo && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+        }}>
+          <div style={{
+            position: 'relative',
+            width: '90%',
+            maxWidth: '1000px',
+            paddingBottom: '56.25%', /* 16:9 Aspect Ratio */
+          }}>
+            <button
+              onClick={() => {
+                setIsPlaying(false);
+                setCurrentVideo(null);
+              }}
+              style={{
+                position: 'absolute',
+                top: '20px',
+                right: '20px',
+                background: 'rgba(0, 0, 0, 0.7)',
+                color: 'white',
+                border: '2px solid white',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                zIndex: 1001,
+                fontSize: '24px',
+                fontWeight: 'bold',
+                boxShadow: '0 0 10px rgba(0,0,0,0.5)'
+              }}
+            >
+              ×
+            </button>
+            <iframe
+              width="100%"
+              height="100%"
+              src={`https://www.youtube.com/embed/${currentVideo.id}?autoplay=1`}
+              title={currentVideo.title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                borderRadius: '10px',
+                boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)'
+              }}
+            ></iframe>
+          </div>
+        </div>
+      )}
     </SliderContainer>
   );
 };
 
-// ============ CHANGE 2: UPDATED THIS COMPONENT TO USE THE WRAPPER ============
-const CareerSection = () => {
+// Custom Modal Component
+const ConfirmationModal = ({ isOpen, onConfirm, onCancel }) => {
+  if (!isOpen) return null;
+  
   return (
-    <CareerContainer>
-      <CareerBanner src="carrer.png" alt="Career Banner" />
-    </CareerContainer>
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.9)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000,
+    }}>
+      <div style={{
+        backgroundColor: '#1a1a1a',
+        padding: '2rem',
+        borderRadius: '12px',
+        maxWidth: '450px',
+        width: '90%',
+        textAlign: 'center',
+        boxShadow: '0 4px 25px rgba(220, 38, 38, 0.3)',
+        border: '1px solid #dc2626',
+        color: '#ffffff'
+      }}>
+        <h3 style={{ 
+          color: '#ffffff',
+          marginBottom: '1.5rem',
+          fontSize: '1.5rem',
+          fontWeight: '600',
+          textTransform: 'uppercase',
+          letterSpacing: '1px'
+        }}>Redirecting to Application Portal</h3>
+        
+        <p style={{
+          color: '#e5e7eb',
+          marginBottom: '2rem',
+          lineHeight: '1.6',
+          fontSize: '1.1rem'
+        }}>
+          You are being redirected to the application portal. Do you want to continue?
+        </p>
+        
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '1rem',
+          marginTop: '1.5rem'
+        }}>
+          <button 
+            onClick={onCancel}
+            style={{
+              padding: '0.75rem 2rem',
+              borderRadius: '6px',
+              border: '1px solid #333',
+              backgroundColor: '#333',
+              color: '#ffffff',
+              cursor: 'pointer',
+              fontWeight: '500',
+              transition: 'all 0.2s ease',
+              ':hover': {
+                backgroundColor: '#444',
+                transform: 'translateY(-2px)'
+              }
+            }}
+          >
+            Cancel
+          </button>
+          <button 
+            onClick={onConfirm}
+            style={{
+              padding: '0.75rem 2rem',
+              borderRadius: '6px',
+              border: 'none',
+              backgroundColor: '#dc2626',
+              color: 'white',
+              cursor: 'pointer',
+              fontWeight: '600',
+              transition: 'all 0.2s ease',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              ':hover': {
+                backgroundColor: '#b91c1c',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 4px 12px rgba(220, 38, 38, 0.4)'
+              }
+            }}
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============ UPDATED CAREER SECTION WITH CUSTOM MODAL ============
+const CareerSection = () => {
+  const [showModal, setShowModal] = useState(false);
+
+  const handleBannerClick = () => {
+    setShowModal(true);
+  };
+
+  const handleConfirm = () => {
+    setShowModal(false);
+    window.open('https://apply.manavrachna.edu.in/mru', '_blank');
+  };
+
+  const handleCancel = () => {
+    setShowModal(false);
+  };
+
+  return (
+    <>
+      <CareerContainer>
+        <CareerBanner 
+          src="carrer.png" 
+          alt="Career Banner" 
+          onClick={handleBannerClick}
+          style={{ cursor: 'pointer' }}
+        />
+      </CareerContainer>
+      
+      <ConfirmationModal 
+        isOpen={showModal}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
+    </>
   );
 };
 
@@ -446,16 +679,36 @@ const ArtsSection = () => {
                 top: '50%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
-                background: 'rgba(0, 0, 0, 0.7)',
+                background: 'rgba(0, 0, 0, 0.2)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
                 borderRadius: '50%',
                 width: '50px',
                 height: '50px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                zIndex: 2
+                zIndex: 2,
+                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.15)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                cursor: 'pointer',
+                ':hover': {
+                  transform: 'translate(-50%, -50%) scale(1.1)',
+                  background: 'linear-gradient(135deg, rgba(255, 0, 0, 0.3), rgba(220, 38, 38, 0.4))',
+                  backdropFilter: 'blur(15px)',
+                  WebkitBackdropFilter: 'blur(15px)',
+                  borderColor: 'rgba(255, 0, 0, 0.4)',
+                  boxShadow: '0 6px 25px rgba(220, 38, 38, 0.25)'
+                }
               }}>
-                <Play size={24} color="#fff" />
+                <Play size={24} color="#fff" fill="#fff" style={{
+                  filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))',
+                  transition: 'transform 0.2s ease',
+                  ':hover': {
+                    transform: 'scale(1.1)'
+                  }
+                }} />
               </div>
             )}
             <ArtsOverlay>

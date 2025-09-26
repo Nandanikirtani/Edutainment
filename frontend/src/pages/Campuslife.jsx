@@ -26,25 +26,29 @@ const podcasts = [
     img: import.meta.env.BASE_URL + "podcast1.jpg",
     title: "The #1 Thing Industry Wants in Engineers",
     speaker: "Ft. Dr. Venkatesh Radhakrishnan",
-    desc: "We unpack the future of engineering talent in this high-stakes conversation where real-world skills meet evolving industry benchmarks, and students transition into true industry-ready professionals. ",
+    desc: "We unpack the future of engineering talent in this high-stakes conversation where real-world skills meet evolving industry benchmarks, and students transition into true industry-ready professionals.",
+    videoId: "S7IOV-HaVME"
   },
   {
     img: import.meta.env.BASE_URL + "podcast2.jpg",
     title: "Traditional vs Dynamic Pedagogy",
     speaker: "Ft. Dr. Anadajit Goswami",
-    desc: "Discover how India is positioning itself as a global semiconductor hub through major government initiatives like the ₹76,000 crore Semicon India Program, rising investments, and the growing startup ecosystem. Learn about the critical talent pipeline for advanced chip design, fabrication, and packaging, and hear actionable insights on how industry-academia collaborations are shaping the future workforce for the deep-tech hardware revolution.",
+    desc: "Discover how India is positioning itself as a global semiconductor hub through major government initiatives like the ₹76,000 crore Semicon India Program, rising investments, and the growing startup ecosystem.",
+    videoId: "8yMwHkDy6ZU"
   },
   {
     img: import.meta.env.BASE_URL + "podcast3.jpg",
-    title: "India’s Silicon Leap",
+    title: "India's Silicon Leap",
     speaker: "Ft. Dr. Ashwini K. Aggarwal",
-    desc: "In a riveting conversation with Dr. Anadajit Goswami — Professor and Director at the School of Behavioural and Social Sciences, Research Director at Manav Rachna International Institute of Research and Studies, and a leading voice across institutions like IMPRI, Ashoka University, and J-PAL — we unravel the transformative state of education in the age of interdisciplinarity.  ",
+    desc: "In a riveting conversation with Dr. Anadajit Goswami — Professor and Director at the School of Behavioural and Social Sciences, Research Director at Manav Rachna International Institute of Research and Studies.",
+    videoId: "Gj6XjGR4tU8"
   },
   {
     img: import.meta.env.BASE_URL + "podcast4.jpg",
     title: "Will AI make Engineering Obsolete?",
     speaker: "Ft. Dr. Dipali Bansal",
-    desc: "Our guest for this episode, Dr. Dipali Bansal, Professor and Dean, School of Engineering at Manav Rachna University, brings decades of academic and industry experience to the mic. With her deep expertise in AI, signal processing, and emerging tech trends, Dr. Bansal breaks down the myths, realities, and future pathways of engineering in the age of AI. ",
+    desc: "Dr. Dipali Bansal, Professor and Dean, School of Engineering at Manav Rachna University, brings decades of academic and industry experience to the mic.",
+    videoId: "0Gz9wP4eCEs"
   },
 ];
 
@@ -76,31 +80,31 @@ const awards = [
 const courses = [
   { 
     img: import.meta.env.BASE_URL + "course1.png", 
-    title: "B.Tech Automobile", 
+    title: "The #1 Thing Industry Wants in Engineers", 
     tag: "Engineering", 
     videoId: "C2ZFWaHOAaQ", 
-    desc: "Explore the world of automotive engineering with cutting-edge technology and hands-on learning experiences." 
+    desc: "We unpack the future of engineering talent in this high-stakes conversation where real-world skills meet evolving industry benchmarks, and students transition into true industry-ready professionals." 
   },
   { 
     img: import.meta.env.BASE_URL + "course2.png", 
-    title: "MBA Programs", 
-    tag: "Business", 
+    title: "Traditional vs Dynamic Pedagogy", 
+    tag: "Education", 
     videoId: "FFbCjEAestA", 
-    desc: "Transform your career with our comprehensive MBA programs designed for future business leaders." 
+    desc: "Discover how India is positioning itself as a global semiconductor hub through major government initiatives like the ₹76,000 crore Semicon India Program." 
   },
   { 
     img: import.meta.env.BASE_URL + "course3.png", 
-    title: "Psychology", 
-    tag: "Behavioral Science", 
+    title: "India's Silicon Leap", 
+    tag: "Technology", 
     videoId: "_bFV-saB2Uk", 
-    desc: "Understand human behavior and mental processes through our advanced psychology curriculum." 
+    desc: "Exploring India's journey in the semiconductor industry and its impact on the global tech landscape." 
   },
   { 
     img: import.meta.env.BASE_URL + "course4.png", 
-    title: "Mass Comm.", 
-    tag: "Media", 
+    title: "Will AI make Engineering Obsolete?", 
+    tag: "AI & Future", 
     videoId: "XOZhYijcVBY", 
-    desc: "Master the art of communication and media with our industry-focused mass communication program." 
+    desc: "A deep dive into how artificial intelligence is reshaping the engineering landscape and what it means for future engineers." 
   },
 ];
 
@@ -179,7 +183,10 @@ export default function CampusLife() {
             transition={{ duration: 0.8, delay: 0.3 }}
           >
             <button
-              onClick={() => setShowPodcast(true)}
+              onClick={() => {
+                setActiveIndex(activeIndex);
+                setShowPodcast(true);
+              }}
               className="mt-6 px-6 py-3 bg-red-600 rounded-full flex items-center gap-2 hover:bg-red-700 transition"
             >
               <Play className="w-5 h-5" /> Play
@@ -219,13 +226,9 @@ export default function CampusLife() {
             speaker={activePodcast.speaker}
             desc={activePodcast.desc}
             bgImage={activePodcast.img}
+            videoId={activePodcast.videoId}
+            onBack={() => setShowPodcast(false)}
           />
-          <button
-            onClick={() => setShowPodcast(false)}
-            className="absolute top-5 right-5 z-60 bg-red-600 px-4 py-2 rounded-lg text-white font-semibold"
-          >
-            ✕ Close
-          </button>
         </div>
       )}
 
@@ -270,7 +273,7 @@ export default function CampusLife() {
               alt={`icon-${idx}`}
               onClick={() => {
                 setIconActiveIndex(idx);
-                setIconShowDetailView(true);
+                setIconIsPlaying(true);
               }}
               className="w-full h-52 object-cover rounded-md cursor-pointer transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
               whileHover={{ scale: 1.05 }}
@@ -351,7 +354,7 @@ export default function CampusLife() {
               alt={`course-${idx}`}
               onClick={() => {
                 setProgramActiveIndex(idx);
-                setProgramShowDetailView(true);
+                setProgramIsPlaying(true);
               }}
               className="w-full h-40 object-cover rounded-lg cursor-pointer transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
               whileHover={{ scale: 1.05 }}
@@ -363,21 +366,12 @@ export default function CampusLife() {
       {/* 🔹 Programs Offered Video Player */}
       {programIsPlaying && (
         <div className="fixed inset-0 w-full h-full bg-black z-50">
-          {/* <button
-            onClick={() => {
-              setProgramIsPlaying(false);
-              setProgramShowDetailView(true);
-            }}
-            className="absolute top-4 left-4 z-50 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back
-          </button> */}
           <iframe
             className="w-full h-full"
             src={`https://www.youtube.com/embed/${activeProgram.videoId}?autoplay=1`}
             title={activeProgram.title}
             frameBorder="0"
-            allow="autoplay; encrypted-media"
+            allow="accelerometer; autoplay; encrypted-media"
             allowFullScreen
           ></iframe>
         </div>
@@ -445,21 +439,12 @@ export default function CampusLife() {
       {/* 🔹 Icons Video Player */}
       {iconIsPlaying && (
         <div className="fixed inset-0 w-full h-full bg-black z-50">
-          {/* <button
-            onClick={() => {
-              setIconIsPlaying(false);
-              setIconShowDetailView(true);
-            }}
-            className="absolute top-4 left-4 z-50 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back
-          </button> */}
           <iframe
             className="w-full h-full"
             src={`https://www.youtube.com/embed/${activeIcon.videoId}?autoplay=1`}
             title={activeIcon.title}
             frameBorder="0"
-            allow="autoplay; encrypted-media"
+            allow="accelerometer; autoplay; encrypted-media"
             allowFullScreen
           ></iframe>
         </div>
