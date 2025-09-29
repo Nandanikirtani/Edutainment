@@ -62,10 +62,13 @@ export default function FacultyDashboard() {
       setUploading(true);
       setMessage("");
 
-      const res = await fetch("http://localhost:5000/api/v1/videos/upload", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/videos/upload`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 
+          Authorization: `Bearer ${token}`,
+        },
         body: formData,
+        credentials: 'include',
       });
 
       // Check for non-JSON responses
@@ -109,13 +112,14 @@ export default function FacultyDashboard() {
 
     try {
       setMessage("");
-      const res = await fetch("http://localhost:5000/api/v1/quizzes", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/quizzes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ title: quizTitle, questions }),
+        credentials: 'include',
       });
 
       const data = await res.json();

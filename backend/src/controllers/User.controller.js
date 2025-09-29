@@ -60,8 +60,7 @@ export const verifyOTPAndRegister = asyncHandler(async (req, res) => {
   if (!userData) {
     throw new ApiError(400, "Registration session expired. Please start again.");
   }
-  
-  // Create user
+
   const user = await User.create({
     fullName: userData.fullName,
     email: userData.email,
