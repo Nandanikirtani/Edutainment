@@ -16,6 +16,7 @@ import Podcast from "./pages/Podcast";
 import IconDetail from "./pages/IconDetail";
 import Alumini from "./pages/Alumini";
 import FacultyDashboard from "./pages/FacultyDashboard";
+import AdminDashboard from "./pages/AdminDashboard"; // Import AdminDashboard
 import Reels from "./pages/Reels";
 
 import "./App.css";
@@ -54,6 +55,9 @@ function AppContent() {
 
           {/* Faculty Dashboard */}
           <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
+
+          {/* Admin Dashboard */}
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
           {/* Alumni + Detail Pages */}
           <Route path="/alumini" element={<Alumini />} />

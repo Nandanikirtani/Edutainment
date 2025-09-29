@@ -628,21 +628,124 @@ const CareerSection = () => {
 };
 
 const CoursesSection = () => {
+  const [courses, setCourses] = useState([]);
+  const [message, setMessage] = useState('');
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentVideo, setCurrentVideo] = useState(null);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/v1/videos/courses');
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to fetch courses');
+        setCourses(data.data);
+      } catch (err) {
+        setMessage(`Error: ${err.message}`);
+      }
+    };
+    fetchCourses();
+  }, []);
+
+  const handlePlayVideo = (videoUrl, title) => {
+    setCurrentVideo({ url: videoUrl, title });
+    setIsPlaying(true);
+  };
+
   return (
     <SectionContainer>
       <SectionTitle>Trending Courses</SectionTitle>
-      <MotionCoursesGrid variants={gridVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }}>
-        {coursesData.map((course, index) => (
-          <CourseCard key={course.id} variants={cardVariant} whileHover={{ scale: 1.08, rotateX: -5, rotateY: 5, boxShadow: "0px 20px 40px rgba(255,0,0,0.5)" }}>
-            <Rank>{index + 1}</Rank>
-            <CardImage src={course.img} alt={course.title} />
-            <CardOverlay>
-              <CardTag>{course.tag}</CardTag>
-              <CardTitle>{course.title}</CardTitle>
-            </CardOverlay>
-          </CourseCard>
-        ))}
-      </MotionCoursesGrid>
+      {message && (
+        <div className="max-w-4xl mx-auto mt-6 p-3 bg-red-100 text-red-800 rounded shadow text-center">
+          {message}
+        </div>
+      )}
+      {courses.length === 0 ? (
+        <p style={{ textAlign: 'center', color: '#ccc' }}>No courses available yet.</p>
+      ) : (
+        <MotionCoursesGrid variants={gridVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }}>
+          {courses.map((course) => (
+            <CourseCard 
+              key={course._id} 
+              variants={cardVariant} 
+              whileHover={{ scale: 1.08, rotateX: -5, rotateY: 5, boxShadow: "0px 20px 40px rgba(255,0,0,0.5)" }}
+              onClick={() => handlePlayVideo(course.videoUrl, course.title)}
+            >
+              {course.thumbnailUrl ? (
+                <CardImage src={course.thumbnailUrl} alt={course.title} />
+              ) : (
+                <div style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  backgroundColor: '#333', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  color: 'white', 
+                  fontSize: '1.2em' 
+                }}>
+                  No Thumbnail
+                </div>
+              )}
+              <CardOverlay>
+                <CardTitle>{course.title}</CardTitle>
+                <p style={{ fontSize: '12px', color: '#aaa' }}>Faculty: {course.facultyId?.fullName || 'Unknown'}</p>
+                <p style={{ fontSize: '10px', color: '#bbb' }}>{course.description}</p>
+              </CardOverlay>
+            </CourseCard>
+          ))}
+        </MotionCoursesGrid>
+      )}
+
+      {isPlaying && currentVideo && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+        }}>
+          <button
+            onClick={() => setIsPlaying(false)}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              right: '20px',
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: 'none',
+              color: 'white',
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              fontSize: '20px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            ×
+          </button>
+          <h3 style={{ color: 'white', marginBottom: '20px' }}>{currentVideo.title}</h3>
+          <video
+            controls
+            src={currentVideo.url}
+            width="80%"
+            height="70%"
+            style={{
+              borderRadius: '10px',
+              boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
+              maxWidth: '1000px',
+            }}
+          />
+        </div>
+      )}
     </SectionContainer>
   );
 };

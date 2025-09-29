@@ -11,6 +11,13 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('pending');
   const token = localStorage.getItem('token');
 
+  const [courseTitle, setCourseTitle] = useState('');
+  const [courseDescription, setCourseDescription] = useState('');
+  const [videoFile, setVideoFile] = useState(null);
+  const [thumbnailFile, setThumbnailFile] = useState(null);
+  const [uploadingCourse, setUploadingCourse] = useState(false);
+  const [myUploadedCourses, setMyUploadedCourses] = useState([]); // New state for admin's uploaded courses
+
   useEffect(() => {
     if (!loading) {
       if (!user || user.role !== 'admin') {
@@ -37,11 +44,26 @@ export default function AdminDashboard() {
       const res = await fetch('http://localhost:5000/api/v1/videos/rejected', {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log("Rejected Videos API Response:", res); // Debugging line
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to fetch rejected videos');
       setRejectedVideos(data.data);
     } catch (err) {
       setMessage(`Error fetching rejected videos: ${err.message}`);
+    }
+  };
+
+  const fetchAdminUploadedCourses = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/v1/videos/admin/courses', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log("Admin Courses API Response:", res); // Debugging line
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to fetch uploaded courses');
+      setMyUploadedCourses(data.data);
+    } catch (err) {
+      setMessage(`Error fetching uploaded courses: ${err.message}`);
     }
   };
 
@@ -51,6 +73,8 @@ export default function AdminDashboard() {
         fetchPendingVideos();
       } else if (activeTab === 'rejected') {
         fetchRejectedVideos();
+      } else if (activeTab === 'myCourses') { // New tab for admin's courses
+        fetchAdminUploadedCourses();
       }
     }
   }, [user, token, activeTab]);
@@ -81,6 +105,49 @@ export default function AdminDashboard() {
       setMessage(`Video ${status} successfully!`);
     } catch (err) {
       setMessage(`Error: ${err.message}`);
+    }
+  };
+
+  const handleCourseUpload = async (e) => {
+    e.preventDefault();
+    if (!courseTitle || !courseDescription || !videoFile) {
+      setMessage(`Error: Course title, description, and video file are required.`);
+      return;
+    }
+
+    setUploadingCourse(true);
+    setMessage("Uploading course video...");
+
+    const formData = new FormData();
+    formData.append('title', courseTitle);
+    formData.append('description', courseDescription);
+    formData.append('videoFile', videoFile);
+    if (thumbnailFile) {
+      formData.append('thumbnailFile', thumbnailFile);
+    }
+
+    try {
+      const res = await fetch('http://localhost:5000/api/v1/videos/courses/upload', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to upload course video');
+
+      setMessage(`Course video uploaded successfully!`);
+      setCourseTitle('');
+      setCourseDescription('');
+      setVideoFile(null);
+      setThumbnailFile(null);
+      // Optionally refresh a list of courses here if you implement one
+    } catch (err) {
+      setMessage(`Error uploading course video: ${err.message}`);
+    } finally {
+      setUploadingCourse(false);
     }
   };
 
@@ -120,6 +187,26 @@ export default function AdminDashboard() {
             }`}
           >
             Rejected Videos
+          </button>
+          <button
+            onClick={() => setActiveTab('courses')}
+            className={`px-4 py-2 font-semibold transition-all ${
+              activeTab === 'courses'
+                ? "text-red-400 border-b-4 border-red-400"
+                : "text-gray-300 hover:text-red-400"
+            }`}
+          >
+            Upload Course Video
+          </button>
+          <button
+            onClick={() => setActiveTab('myCourses')}
+            className={`px-4 py-2 font-semibold transition-all ${
+              activeTab === 'myCourses'
+                ? "text-red-400 border-b-4 border-red-400"
+                : "text-gray-300 hover:text-red-400"
+            }`}
+          >
+            My Uploaded Courses
           </button>
         </div>
 
@@ -184,6 +271,93 @@ export default function AdminDashboard() {
               ))}
             </div>
           )
+        )}
+
+        {activeTab === 'courses' && (
+          <div className="course-upload-section space-y-4">
+            <h2 className="text-2xl font-bold text-white text-center">Upload New Course Video</h2>
+            <form onSubmit={handleCourseUpload} className="space-y-4 bg-gray-800 p-6 rounded-lg shadow-md">
+              <div>
+                <label htmlFor="courseTitle" className="block text-gray-300 text-sm font-bold mb-2">Title:</label>
+                <input
+                  type="text"
+                  id="courseTitle"
+                  value={courseTitle}
+                  onChange={(e) => setCourseTitle(e.target.value)}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 text-white"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="courseDescription" className="block text-gray-300 text-sm font-bold mb-2">Description:</label>
+                <textarea
+                  id="courseDescription"
+                  value={courseDescription}
+                  onChange={(e) => setCourseDescription(e.target.value)}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 text-white"
+                  rows="4"
+                  required
+                ></textarea>
+              </div>
+              <div>
+                <label htmlFor="videoFile" className="block text-gray-300 text-sm font-bold mb-2">Video File:</label>
+                <input
+                  type="file"
+                  id="videoFile"
+                  accept="video/*"
+                  onChange={(e) => setVideoFile(e.target.files[0])}
+                  className="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-500 file:text-white hover:file:bg-red-600"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="thumbnailFile" className="block text-gray-300 text-sm font-bold mb-2">Thumbnail (Optional):</label>
+                <input
+                  type="file"
+                  id="thumbnailFile"
+                  accept="image/*"
+                  onChange={(e) => setThumbnailFile(e.target.files[0])}
+                  className="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-500 file:text-white hover:file:bg-red-600"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full py-2 rounded-lg bg-red-600 text-white font-semibold shadow-lg hover:bg-red-700"
+                disabled={uploadingCourse}
+              >
+                {uploadingCourse ? "Uploading Course..." : "Upload Course Video"}
+              </button>
+            </form>
+          </div>
+        )}
+
+        {activeTab === 'myCourses' && (
+          <div className="my-courses-section space-y-4">
+            <h2 className="text-2xl font-bold text-white text-center">My Uploaded Courses</h2>
+            {myUploadedCourses.length === 0 ? (
+              <p className="text-center text-gray-400">You haven't uploaded any courses yet.</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {myUploadedCourses.map(course => (
+                  <div key={course._id} className="bg-gray-800 rounded-lg shadow-md overflow-hidden">
+                    {course.thumbnailUrl ? (
+                      <img src={course.thumbnailUrl} alt={course.title} className="w-full h-40 object-cover" />
+                    ) : (
+                      <div className="w-full h-40 bg-gray-700 flex items-center justify-center text-gray-400">No Thumbnail</div>
+                    )}
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold text-white">{course.title}</h3>
+                      <p className="text-gray-300 text-sm">Faculty: {course.facultyId?.fullName || 'Unknown Faculty'}</p>
+                      <p className="text-gray-400 text-sm">{course.description}</p>
+                      {course.videoUrl && (
+                        <a href={course.videoUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block px-3 py-1 bg-red-600 text-white rounded-md text-sm hover:bg-red-700">Watch Video</a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>
