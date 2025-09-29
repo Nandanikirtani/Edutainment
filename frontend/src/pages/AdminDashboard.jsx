@@ -28,8 +28,12 @@ export default function AdminDashboard() {
 
   const fetchPendingVideos = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/v1/videos/pending', {
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/videos/pending`, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to fetch pending videos');
@@ -41,8 +45,12 @@ export default function AdminDashboard() {
 
   const fetchRejectedVideos = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/v1/videos/rejected', {
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/videos/rejected`, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
       });
       console.log("Rejected Videos API Response:", res); // Debugging line
       const data = await res.json();

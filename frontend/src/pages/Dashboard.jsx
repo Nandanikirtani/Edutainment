@@ -94,7 +94,7 @@ export default function Dashboard() {
   useEffect(() => {
     // Fetch dashboard data
     axios
-      .get(`http://localhost:5000/api/dashboard/${studentId}`)
+      .get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/dashboard/${studentId}`)
       .then((res) => {
         setStats(res.data.stats || {});
         setCourses(res.data.courses || []);

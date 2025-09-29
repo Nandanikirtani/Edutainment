@@ -21,9 +21,9 @@ function Courses() {
   // Load enrolled courses from backend
   useEffect(() => {
     if (!userEmail) return;
-    axios.get(`http://localhost:5000/api/enrollments/${userEmail}`)
+    axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/enrollments/${userEmail}`)
       .then(res => setEnrolledCourses(res.data))
-      .catch(err => console.error(err));
+      .catch(err => console.error('Error fetching enrollments:', err));
   }, [userEmail]);
 
   // Search handling
@@ -41,7 +41,7 @@ function Courses() {
 
   // Enroll API call
   const handleEnroll = (course) => {
-    axios.post("http://localhost:5000/api/enrollments", {
+    axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/enrollments`, {
       user_email: userEmail,
       course_id: course.id
     })
