@@ -16,7 +16,6 @@ import Podcast from "./pages/Podcast";
 import IconDetail from "./pages/IconDetail";
 import Alumini from "./pages/Alumini";
 import FacultyDashboard from "./pages/FacultyDashboard";
-import AdminDashboard from "./pages/AdminDashboard"; // Import AdminDashboard
 import Reels from "./pages/Reels";
 import AdminDashboard from "./pages/AdminDashboard";
 
