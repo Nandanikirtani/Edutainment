@@ -1,6 +1,6 @@
 import { User } from "../models/User.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
+import { ApiError } from "../utils/apiError.js";
 import { apiResponse } from "../utils/apiResponse.js";
 import { sendOtpEmail } from "../utils/sendEmail.js";
 import { generateOTP, storeOTP, storeData, verifyOTP, clearOTP, getStoredData } from "../utils/otpUtils.js";

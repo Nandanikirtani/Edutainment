@@ -3,7 +3,7 @@ import { AcceptedVideo } from "../models/AcceptedVideo.model.js";
 import { RejectedVideo } from "../models/RejectedVideo.model.js";
 import { Course } from "../models/Course.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
+import { ApiError } from "../utils/apiError.js";
 import cloudinary from "../utils/cloudinary.js";
 import fs from "fs";
 
