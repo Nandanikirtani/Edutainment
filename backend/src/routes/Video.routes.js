@@ -2,19 +2,11 @@ import express from "express";
 import multer from "multer";
 import fs from "fs";
 import {
-  // Original Video (Team Mate's) Functions
-  getVideos,
-  likeVideo,
-  saveVideo,
-  shareVideo,
-  commentVideo,
-  // Reels Video (My Implementation) Functions
   uploadVideo,
   approveRejectVideo,
-  getApprovedReels, // Renamed to avoid conflict
+  getApprovedVideos,
   getPendingVideos,
   getRejectedVideos,
-  // Course Video (New) Functions
   uploadCourseVideo,
   getAllCourses,
   getAdminUploadedCourses,
@@ -27,27 +19,12 @@ const router = express.Router();
 const uploadDir = "uploads/";
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
-// Multer storage config for reels (single video file)
-const reelUpload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => cb(null, `reel-${Date.now()}-${file.originalname}`),
-  }),
+// Multer storage config
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
-
-// Multer storage config for course videos (video + optional thumbnail)
-const courseUpload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => {
-      if (file.fieldname === "videoFile") {
-        cb(null, `course-video-${Date.now()}-${file.originalname}`);
-      } else if (file.fieldname === "thumbnailFile") {
-        cb(null, `course-thumbnail-${Date.now()}-${file.originalname}`);
-      }
-    },
-  }),
-});
+const upload = multer({ storage });
 
 // Middleware to check if the user is an admin
 const verifyAdmin = (req, res, next) => {
@@ -59,55 +36,33 @@ const verifyAdmin = (req, res, next) => {
   }
 };
 
-// ===============================================
-//                Original Video (Team Mate's) Routes
-// ===============================================
+// ==============================
+// General video routes (Git version)
+// ==============================
 
-// Public route: get all general videos
-router.get("/", getVideos); // Renamed from '/approved' to avoid conflict with reels
+// Route with JWT authentication + file upload
+router.post("/upload", verifyJWT, upload.single("video"), uploadVideo);
 
-// Like video
-router.post("/:videoId/like", verifyJWT, likeVideo);
+// Admin routes
+router.post("/approve-reject", verifyJWT, verifyAdmin, approveRejectVideo);
+router.get("/pending", verifyJWT, verifyAdmin, getPendingVideos);
+router.get("/rejected", verifyJWT, verifyAdmin, getRejectedVideos);
 
-// Save video
-router.post("/:videoId/save", verifyJWT, saveVideo);
+// Public route for approved videos
+router.get("/approved", getApprovedVideos);
 
-// Share video
-router.post("/:videoId/share", verifyJWT, shareVideo);
+// ==============================
+// Course video routes (Your admin additions)
+// ==============================
 
-// Comment video
-router.post("/:videoId/comments", verifyJWT, commentVideo);
-
-// ===============================================
-//                 Reels Video (My Implementation) Routes
-// ===============================================
-
-// Faculty: Upload reel video (requires JWT)
-router.post("/reels/upload", verifyJWT, reelUpload.single("video"), uploadVideo);
-
-// Admin: Approve or reject reel video (requires JWT + Admin)
-router.post("/reels/approve-reject", verifyJWT, verifyAdmin, approveRejectVideo);
-
-// Admin: Get pending reel videos (requires JWT + Admin)
-router.get("/reels/pending", verifyJWT, verifyAdmin, getPendingVideos);
-
-// Admin: Get rejected reel videos (requires JWT + Admin)
-router.get("/reels/rejected", verifyJWT, verifyAdmin, getRejectedVideos);
-
-// Public: Get all approved reel videos
-router.get("/reels/approved", getApprovedReels);
-
-// ===============================================
-//                 Course Video (New) Routes
-// ===============================================
-
-// Admin: Upload course video (requires JWT + Admin, supports video and thumbnail)
-router.post("/courses/upload",
+// Admin: Upload course video (JWT + Admin)
+router.post(
+  "/courses/upload",
   verifyJWT,
   verifyAdmin,
-  courseUpload.fields([
-    { name: 'videoFile', maxCount: 1 },
-    { name: 'thumbnailFile', maxCount: 1 }
+  upload.fields([
+    { name: "videoFile", maxCount: 1 },
+    { name: "thumbnailFile", maxCount: 1 },
   ]),
   uploadCourseVideo
 );
@@ -115,12 +70,7 @@ router.post("/courses/upload",
 // Public: Get all course videos
 router.get("/courses", getAllCourses);
 
-// Admin: Get Courses Uploaded by Admin (requires JWT + Admin)
+// Admin: Get Courses Uploaded by Admin (JWT + Admin)
 router.get("/admin/courses", verifyJWT, verifyAdmin, getAdminUploadedCourses);
 
 export default router;
-
-
-
-
-

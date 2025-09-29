@@ -22,15 +22,18 @@ export default function FacultyDashboard() {
 
   const token = localStorage.getItem("token");
 
+  // Video file change & 90s duration check
   const handleVideoChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
     const url = URL.createObjectURL(file);
     const video = document.createElement("video");
     video.src = url;
+
     video.onloadedmetadata = () => {
       if (video.duration > 90) {
-        alert("Video must be 90 seconds or less");
+        alert("❌ Video must be 90 seconds or less");
         e.target.value = null;
       } else {
         setVideoFile(file);
@@ -38,9 +41,18 @@ export default function FacultyDashboard() {
     };
   };
 
+  // Upload video function
   const handleVideoUpload = async (e) => {
     e.preventDefault();
-    if (!videoFile || !videoTitle) return alert("Add title and video");
+
+    if (!token) {
+      return alert("❌ Please login first");
+    }
+
+    if (!videoFile || !videoTitle) {
+      return alert("❌ Please provide title and video file");
+    }
+
     const formData = new FormData();
     formData.append("title", videoTitle);
     formData.append("description", videoDescription);
@@ -48,13 +60,25 @@ export default function FacultyDashboard() {
 
     try {
       setUploading(true);
+      setMessage("");
+
       const res = await fetch("http://localhost:5000/api/v1/videos/upload", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
-      const data = await res.json();
+
+      // Check for non-JSON responses
+      const contentType = res.headers.get("content-type");
+      let data;
+      if (contentType && contentType.includes("application/json")) {
+        data = await res.json();
+      } else {
+        data = { message: await res.text() };
+      }
+
       if (!res.ok) throw new Error(data.message || "Upload failed");
+
       setMessage("✅ Video uploaded successfully for admin approval!");
       setVideoFile(null);
       setVideoTitle("");
@@ -67,6 +91,7 @@ export default function FacultyDashboard() {
     }
   };
 
+  // Quiz related functions (unchanged)
   const addQuestion = () =>
     setQuestions([...questions, { question: "", options: ["", "", "", ""], answer: "" }]);
 
@@ -79,9 +104,11 @@ export default function FacultyDashboard() {
 
   const handleQuizUpload = async (e) => {
     e.preventDefault();
-    if (!quizTitle) return alert("Quiz title required");
+    if (!token) return alert("❌ Please login first");
+    if (!quizTitle) return alert("❌ Quiz title required");
 
     try {
+      setMessage("");
       const res = await fetch("http://localhost:5000/api/v1/quizzes", {
         method: "POST",
         headers: {
@@ -90,8 +117,10 @@ export default function FacultyDashboard() {
         },
         body: JSON.stringify({ title: quizTitle, questions }),
       });
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Quiz upload failed");
+
       setMessage("✅ Quiz uploaded successfully for admin approval!");
       setQuizTitle("");
       setQuestions([{ question: "", options: ["", "", "", ""], answer: "" }]);
@@ -181,7 +210,6 @@ export default function FacultyDashboard() {
                 className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:ring-2 focus:ring-red-400"
               />
 
-              {/* ✅ File input with upload icon */}
               <label className="flex items-center gap-2 text-gray-300 cursor-pointer">
                 <FaUpload className="text-red-400" />
                 <span className="bg-gray-800 px-4 py-2 rounded-lg border border-gray-600 hover:bg-gray-700">
@@ -203,6 +231,7 @@ export default function FacultyDashboard() {
                   className="w-full rounded-lg mt-2 shadow-lg"
                 />
               )}
+
               <button
                 type="submit"
                 disabled={uploading}

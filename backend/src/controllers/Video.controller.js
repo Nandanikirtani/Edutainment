@@ -8,108 +8,20 @@ import cloudinary from "../utils/cloudinary.js";
 import fs from "fs";
 
 // ===============================================
-//                Original Video (Team Mate's) Functions
+//               Original Git Video Functions
 // ===============================================
 
-// ✅ Get all general videos (using AcceptedVideo, likely for a main video feed)
-export const getVideos = asyncHandler(async (req, res) => {
-  const videos = await AcceptedVideo.find({}).populate('facultyId', 'fullName').sort({ createdAt: -1 });
-  res.status(200).json({
-    success: true,
-    data: videos,
-  });
-});
-
-// ✅ Like a video
-export const likeVideo = asyncHandler(async (req, res) => {
-  const { videoId } = req.params;
-  const video = await AcceptedVideo.findById(videoId);
-
-  if (!video) throw new ApiError(404, "Video not found");
-
-  video.likes = (video.likes || 0) + 1;
-  await video.save();
-
-  res.status(200).json({
-    success: true,
-    message: "Video liked successfully",
-    likes: video.likes,
-  });
-});
-
-// ✅ Save a video
-export const saveVideo = asyncHandler(async (req, res) => {
-  const { videoId } = req.params;
-  const video = await AcceptedVideo.findById(videoId);
-
-  if (!video) throw new ApiError(404, "Video not found");
-
-  video.saves = (video.saves || 0) + 1;
-  await video.save();
-
-  res.status(200).json({
-    success: true,
-    message: "Video saved successfully",
-    saves: video.saves,
-  });
-});
-
-// ✅ Share a video
-export const shareVideo = asyncHandler(async (req, res) => {
-  const { videoId } = req.params;
-  const video = await AcceptedVideo.findById(videoId);
-
-  if (!video) throw new ApiError(404, "Video not found");
-
-  video.shares = (video.shares || 0) + 1;
-  await video.save();
-
-  res.status(200).json({
-    success: true,
-    message: "Video shared successfully",
-    shares: video.shares,
-  });
-});
-
-// ✅ Comment on a video
-export const commentVideo = asyncHandler(async (req, res) => {
-  const { videoId } = req.params;
-  const { text } = req.body;
-
-  const video = await AcceptedVideo.findById(videoId);
-  if (!video) throw new ApiError(404, "Video not found");
-
-  if (!text || text.trim() === "") {
-    throw new ApiError(400, "Comment text is required");
-  }
-
-  video.comments.push({ text }); // Assumes comments array exists in AcceptedVideo schema
-  await video.save();
-
-  res.status(200).json({
-    success: true,
-    message: "Comment added successfully",
-    comments: video.comments,
-  });
-});
-
-// ===============================================
-//                 Reels Video (My Implementation) Functions
-// ===============================================
-
-// Faculty: Upload reel video
+// Upload video (original Git version)
 export const uploadVideo = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
   const video = req.file;
 
-  if (!title || !video) {
-    throw new ApiError(400, "Title and video file are required for reel upload");
-  }
+  if (!title || !video) throw new ApiError(400, "Title and video are required");
 
   try {
     const result = await cloudinary.uploader.upload(video.path, {
       resource_type: "video",
-      folder: "reel_videos",
+      folder: "faculty_videos",
     });
 
     const newVideo = await PendingVideo.create({
@@ -125,16 +37,15 @@ export const uploadVideo = asyncHandler(async (req, res) => {
     res.status(201).json({
       success: true,
       data: newVideo,
-      message: "Reel uploaded successfully, pending admin approval",
+      message: "Video uploaded successfully, pending admin approval",
     });
   } catch (err) {
     if (video && fs.existsSync(video.path)) fs.unlinkSync(video.path);
-    console.error("Reel upload error:", err);
-    throw new ApiError(500, "Reel upload failed", [err.message]);
+    console.error("Video upload error:", err);
+    throw new ApiError(500, "Video upload failed", [err.message]);
   }
 });
 
-// Admin: Approve/Reject Reels Video
 export const approveRejectVideo = asyncHandler(async (req, res) => {
   const { videoId, status } = req.body;
 
@@ -184,38 +95,35 @@ export const approveRejectVideo = asyncHandler(async (req, res) => {
   }
 });
 
-// Admin: Get Pending Reels Videos
+export const getApprovedVideos = asyncHandler(async (req, res) => {
+  const approvedVideos = await AcceptedVideo.find({}).populate('facultyId', 'fullName');
+  res.status(200).json({
+    success: true,
+    data: approvedVideos,
+    message: "Approved videos fetched successfully",
+  });
+});
+
 export const getPendingVideos = asyncHandler(async (req, res) => {
   const pendingVideos = await PendingVideo.find({}).populate('facultyId', 'fullName');
   res.status(200).json({
     success: true,
     data: pendingVideos,
-    message: "Pending reels fetched successfully",
+    message: "Pending videos fetched successfully",
   });
 });
 
-// Admin: Get Rejected Reels Videos
 export const getRejectedVideos = asyncHandler(async (req, res) => {
   const rejectedVideos = await RejectedVideo.find({}).populate('facultyId', 'fullName');
   res.status(200).json({
     success: true,
     data: rejectedVideos,
-    message: "Rejected reels fetched successfully",
-  });
-});
-
-// Public: Get Approved Reels Videos (renamed from '/approved' to '/reels/approved' in routes)
-export const getApprovedReels = asyncHandler(async (req, res) => {
-  const approvedReels = await AcceptedVideo.find({}).populate('facultyId', 'fullName');
-  res.status(200).json({
-    success: true,
-    data: approvedReels,
-    message: "Approved reels fetched successfully",
+    message: "Rejected videos fetched successfully",
   });
 });
 
 // ===============================================
-//                 Course Video (New) Functions
+//               Admin Course Video Functions
 // ===============================================
 
 // Admin: Upload Course Video
@@ -285,8 +193,3 @@ export const getAdminUploadedCourses = asyncHandler(async (req, res) => {
     message: "Admin uploaded courses fetched successfully",
   });
 });
-
-
-
-
-

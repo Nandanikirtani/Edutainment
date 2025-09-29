@@ -18,6 +18,7 @@ import Alumini from "./pages/Alumini";
 import FacultyDashboard from "./pages/FacultyDashboard";
 import AdminDashboard from "./pages/AdminDashboard"; // Import AdminDashboard
 import Reels from "./pages/Reels";
+import AdminDashboard from "./pages/AdminDashboard";
 
 import "./App.css";
 
@@ -55,6 +56,8 @@ function AppContent() {
 
           {/* Faculty Dashboard */}
           <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
 
           {/* Admin Dashboard */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
