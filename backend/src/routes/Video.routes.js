@@ -10,6 +10,15 @@ import {
   uploadCourseVideo,
   getAllCourses,
   getAdminUploadedCourses,
+  getCourseById,
+  createCourse,
+  addChapter,
+  addVideoToChapter,
+  updateCourse,
+  deleteCourse,
+  enrollInCourse,
+  deleteChapter,
+  deleteVideo,
 } from "../controllers/Video.controller.js";
 import { verifyJWT } from "../middlewares/verifyJWT.js";
 
@@ -72,5 +81,41 @@ router.get("/courses", getAllCourses);
 
 // Admin: Get Courses Uploaded by Admin (JWT + Admin)
 router.get("/admin/courses", verifyJWT, verifyAdmin, getAdminUploadedCourses);
+
+// ==============================
+// Course Management Routes
+// ==============================
+
+// Public: Get single course details
+router.get("/courses/:courseId", getCourseById);
+
+// Admin/Faculty: Create new course
+router.post("/courses", verifyJWT, createCourse);
+
+// Admin/Faculty: Update course
+router.put("/courses/:courseId", verifyJWT, updateCourse);
+
+// Admin/Faculty: Delete course
+router.delete("/courses/:courseId", verifyJWT, deleteCourse);
+
+// Admin/Faculty: Add chapter to course
+router.post("/courses/:courseId/chapters", verifyJWT, addChapter);
+
+// Admin/Faculty: Add video to chapter
+router.post(
+  "/courses/:courseId/chapters/:chapterId/videos",
+  verifyJWT,
+  upload.single("video"),
+  addVideoToChapter
+);
+
+// Student: Enroll in course
+router.post("/courses/:courseId/enroll", verifyJWT, enrollInCourse);
+
+// Admin/Faculty: Delete chapter
+router.delete("/courses/:courseId/chapters/:chapterId", verifyJWT, deleteChapter);
+
+// Admin/Faculty: Delete video from chapter
+router.delete("/courses/:courseId/chapters/:chapterId/videos/:videoId", verifyJWT, deleteVideo);
 
 export default router;

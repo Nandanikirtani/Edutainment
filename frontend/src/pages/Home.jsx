@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import { Play, ArrowLeft, Clock, User } from "lucide-react";
 import { createGlobalStyle } from "styled-components";
+import { useNavigate } from "react-router-dom";
 const GlobalStyle = createGlobalStyle`
   body, html {
     margin: 0;
@@ -143,7 +144,14 @@ const Rank = styled.div`
   z-index: 5;
 `;
 
-const CardImage = styled.img`
+const CardImage = styled.img.attrs({
+  onError: (e) => {
+    e.target.onerror = null; // Prevent infinite loop
+    e.target.src = `https://via.placeholder.com/300x200?text=${encodeURIComponent(e.target.alt || 'Image')}`;
+    e.target.style.objectFit = 'contain';
+    e.target.style.backgroundColor = '#f0f0f0';
+  }
+})`
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -301,34 +309,16 @@ const BackDesc = styled.p`
 
 /* ================= Data ================= */
 const sliderImages = [
-  { 
-    id: 1, 
-    url: "1.png",
-    videoId: "rHWQm-dsJ8g",
-    title: "Campus Tour",
-    description: "Experience our world-class campus facilities and infrastructure"
-  },
-  { 
-    id: 2, 
-    url: "2.png",
-    videoId: "2HeLWFWPhaw",
-    title: "Student Life",
-    description: "Discover the vibrant student community and activities"
-  },
-  { 
-    id: 3, 
-    url: "3.png",
-    videoId: "s0rQ4wn8Ir8",
-    title: "Academic Excellence",
-    description: "Learn about our cutting-edge academic programs and research"
-  },
+  { id: 1, url: "1.png", videoId: "rHWQm-dsJ8g" },
+  { id: 2, url: "2.png", videoId: "2HeLWFWPhaw" },
+  { id: 3, url: "3.png", videoId: "s0rQ4wn8Ir8" },
 ];
 
 const coursesData = [
-  { id: 1, title: "AR/VR COURSES", tag: "New / Free", img: "AR.jpeg" },
-  { id: 2, title: "Machine Learning", tag: "Everybody", img: "Machine_LEARNING.jpeg" },
-  { id: 3, title: "AI Tutorial", tag: "Simplilearn", img: "AI.jpeg" },
-  { id: 4, title: "Java", tag: "Pay per view", img: "java.png" },
+  { id: "1", title: "AR/VR COURSES", tag: "New / Free", img: "/AR.jpeg" },
+  { id: "2", title: "Machine Learning", tag: "Everybody", img: "/Machine_LEARNING.jpeg" },
+  { id: "3", title: "AI Tutorial", tag: "Simplilearn", img: "/AI.jpeg" },
+  { id: "4", title: "Java", tag: "Pay per view", img: "/java.png" },
 ];
 
 const artsData = [
@@ -363,114 +353,112 @@ const MotionExtraGrid = motion(ExtraGrid);
 /* ================= Components ================= */
 const HeroSlider = () => {
   const [current, setCurrent] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentVideo, setCurrentVideo] = useState(null);
+  const [showVideo, setShowVideo] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % sliderImages.length);
-    }, 4000);
+    let interval;
+    if (!showVideo) {
+      interval = setInterval(() => {
+        setCurrent((prev) => (prev + 1) % sliderImages.length);
+      }, 4000);
+    }
     return () => clearInterval(interval);
-  }, []);
+  }, [showVideo]);
 
-  const handlePlayClick = (videoId) => {
-    if (!videoId) return;
-    setCurrentVideo({
-      id: videoId,
-      title: sliderImages[current].title || 'Video Player'
-    });
-    setIsPlaying(true);
+  const handlePlayClick = () => {
+    setShowVideo(true);
+  };
+
+  const closeVideo = () => {
+    setShowVideo(false);
+  };
+
+  const handleThumbnailClick = (index) => {
+    setCurrent(index);
+    setShowVideo(false);
   };
 
   return (
     <SliderContainer>
       <AnimatePresence mode="wait">
-        <MainImage
-          key={sliderImages[current].id}
-          src={sliderImages[current].url}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1 }}
-          onClick={() => handlePlayClick(sliderImages[current].videoId)}
-          style={{ cursor: 'pointer' }}
-        />
-      </AnimatePresence>
-      <Overlay />
-      <PlayButton 
-        whileHover={{ scale: 1.1 }} 
-        whileTap={{ scale: 0.95 }}
-        onClick={(e) => {
-          e.stopPropagation();
-          handlePlayClick(sliderImages[current].videoId);
-        }}
-      >
-        <Play size={22} /> Play
-      </PlayButton>
-      <PreviewContainer>
-        {sliderImages.map((img, index) => (
-          <PreviewImage
-            key={img.id}
-            src={img.url}
-            whileHover={{ scale: 1.1 }}
-            animate={{ borderColor: index === current ? "red" : "transparent", scale: index === current ? 1.05 : 1 }}
-            transition={{ duration: 0.4 }}
-            onClick={() => setCurrent(index)}
+        <div 
+          style={{ position: 'relative', width: '100%', height: '100%' }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <MainImage
+            key={sliderImages[current].id}
+            src={sliderImages[current].url}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
           />
-        ))}
-      </PreviewContainer>
+          <Overlay />
+          <PlayButton 
+            onClick={handlePlayClick}
+            whileHover={{ scale: 1.1 }} 
+            whileTap={{ scale: 0.95 }}
+            style={{
+              opacity: isHovered ? 1 : 0.8,
+              transition: 'opacity 0.3s ease',
+            }}
+          >
+            <Play size={22} /> Play
+          </PlayButton>
+        </div>
+      </AnimatePresence>
 
-      {isPlaying && currentVideo && (
+      {/* Video Modal */}
+      {showVideo && (
         <div style={{
           position: 'fixed',
           top: 0,
           left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.9)',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           zIndex: 1000,
         }}>
+          <button 
+            onClick={closeVideo}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              right: '20px',
+              background: 'rgba(0,0,0,0.7)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              fontSize: '20px',
+              cursor: 'pointer',
+              zIndex: 1001,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            ✕
+          </button>
           <div style={{
-            position: 'relative',
             width: '90%',
-            maxWidth: '1000px',
-            paddingBottom: '56.25%', /* 16:9 Aspect Ratio */
+            maxWidth: '1200px',
+            aspectRatio: '16/9',
+            position: 'relative',
+            borderRadius: '12px',
+            overflow: 'hidden',
           }}>
-            <button
-              onClick={() => {
-                setIsPlaying(false);
-                setCurrentVideo(null);
-              }}
-              style={{
-                position: 'absolute',
-                top: '20px',
-                right: '20px',
-                background: 'rgba(0, 0, 0, 0.7)',
-                color: 'white',
-                border: '2px solid white',
-                borderRadius: '50%',
-                width: '40px',
-                height: '40px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                zIndex: 1001,
-                fontSize: '24px',
-                fontWeight: 'bold',
-                boxShadow: '0 0 10px rgba(0,0,0,0.5)'
-              }}
-            >
-              ×
-            </button>
             <iframe
               width="100%"
               height="100%"
-              src={`https://www.youtube.com/embed/${currentVideo.id}?autoplay=1`}
-              title={currentVideo.title}
+              src={`https://www.youtube.com/embed/${sliderImages[current].videoId}?autoplay=1&modestbranding=1&rel=0`}
+              title="Video Player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -480,272 +468,308 @@ const HeroSlider = () => {
                 left: 0,
                 width: '100%',
                 height: '100%',
-                borderRadius: '10px',
-                boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)'
+                border: 'none',
               }}
             ></iframe>
           </div>
         </div>
       )}
+
+      <PreviewContainer>
+        {sliderImages.map((img, index) => (
+          <div key={img.id} style={{ position: 'relative' }}>
+            <PreviewImage
+              src={img.url}
+              whileHover={{ scale: 1.1 }}
+              animate={{ 
+                borderColor: index === current ? "#ff4d4d" : "transparent", 
+                scale: index === current ? 1.05 : 1 
+              }}
+              transition={{ duration: 0.3 }}
+              onClick={() => handleThumbnailClick(index)}
+            />
+            {index === current && showVideo && (
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0,0,0,0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '10px',
+                pointerEvents: 'none',
+              }}>
+                <div style={{
+                  width: '30px',
+                  height: '30px',
+                  background: '#ff4d4d',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  animation: 'pulse 1.5s infinite',
+                }}>
+                  <Play size={16} color="white" />
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </PreviewContainer>
+
+      <style jsx global>{`
+        @keyframes pulse {
+          0% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.1); opacity: 0.8; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+      `}</style>
     </SliderContainer>
   );
 };
 
-// Custom Modal Component
-const ConfirmationModal = ({ isOpen, onConfirm, onCancel }) => {
-  if (!isOpen) return null;
-  
-  return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.9)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-    }}>
-      <div style={{
-        backgroundColor: '#1a1a1a',
-        padding: '2rem',
-        borderRadius: '12px',
-        maxWidth: '450px',
-        width: '90%',
-        textAlign: 'center',
-        boxShadow: '0 4px 25px rgba(220, 38, 38, 0.3)',
-        border: '1px solid #dc2626',
-        color: '#ffffff'
-      }}>
-        <h3 style={{ 
-          color: '#ffffff',
-          marginBottom: '1.5rem',
-          fontSize: '1.5rem',
-          fontWeight: '600',
-          textTransform: 'uppercase',
-          letterSpacing: '1px'
-        }}>Redirecting to Application Portal</h3>
-        
-        <p style={{
-          color: '#e5e7eb',
-          marginBottom: '2rem',
-          lineHeight: '1.6',
-          fontSize: '1.1rem'
-        }}>
-          You are being redirected to the application portal. Do you want to continue?
-        </p>
-        
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '1rem',
-          marginTop: '1.5rem'
-        }}>
-          <button 
-            onClick={onCancel}
-            style={{
-              padding: '0.75rem 2rem',
-              borderRadius: '6px',
-              border: '1px solid #333',
-              backgroundColor: '#333',
-              color: '#ffffff',
-              cursor: 'pointer',
-              fontWeight: '500',
-              transition: 'all 0.2s ease',
-              ':hover': {
-                backgroundColor: '#444',
-                transform: 'translateY(-2px)'
-              }
-            }}
-          >
-            Cancel
-          </button>
-          <button 
-            onClick={onConfirm}
-            style={{
-              padding: '0.75rem 2rem',
-              borderRadius: '6px',
-              border: 'none',
-              backgroundColor: '#dc2626',
-              color: 'white',
-              cursor: 'pointer',
-              fontWeight: '600',
-              transition: 'all 0.2s ease',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              ':hover': {
-                backgroundColor: '#b91c1c',
-                transform: 'translateY(-2px)',
-                boxShadow: '0 4px 12px rgba(220, 38, 38, 0.4)'
-              }
-            }}
-          >
-            Continue
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ============ UPDATED CAREER SECTION WITH CUSTOM MODAL ============
+// ============ CHANGE 2: UPDATED THIS COMPONENT TO USE THE WRAPPER ============
 const CareerSection = () => {
   const [showModal, setShowModal] = useState(false);
 
-  const handleBannerClick = () => {
+  const handleCareerClick = () => {
     setShowModal(true);
   };
 
   const handleConfirm = () => {
-    setShowModal(false);
     window.open('https://apply.manavrachna.edu.in/mru', '_blank');
+    setShowModal(false);
   };
 
   const handleCancel = () => {
     setShowModal(false);
   };
 
+  // Close modal when clicking outside
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      handleCancel();
+    }
+  };
+
   return (
     <>
-      <CareerContainer>
+      <CareerContainer onClick={handleCareerClick} style={{ cursor: 'pointer' }}>
         <CareerBanner 
           src="carrer.png" 
           alt="Career Banner" 
-          onClick={handleBannerClick}
-          style={{ cursor: 'pointer' }}
+          style={{ width: '100%', height: 'auto' }}
         />
       </CareerContainer>
-      
-      <ConfirmationModal 
-        isOpen={showModal}
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
-      />
+
+      {/* Custom Modal */}
+      {showModal && (
+        <div 
+          onClick={handleOverlayClick}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+            padding: '20px',
+          }}
+        >
+          <div style={{
+            background: '#000000',
+            borderRadius: '24px',
+            overflow: 'hidden',
+            width: '100%',
+            maxWidth: '420px',
+            boxShadow: '0 10px 30px rgba(255, 0, 0, 0.3)',
+            fontFamily: 'Arial, sans-serif',
+            border: '1px solid #FF0000',
+          }}>
+            {/* Header */}
+            <div style={{
+              background: 'linear-gradient(135deg, #FF0000, #990000)',
+              color: 'white',
+              padding: '20px',
+              textAlign: 'center',
+              position: 'relative',
+            }}>
+              <h3 style={{
+                margin: 0,
+                fontSize: '20px',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px'
+              }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M12 8V12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M12 16H12.01" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Confirmation
+              </h3>
+              <button
+                onClick={handleCancel}
+                style={{
+                  position: 'absolute',
+                  top: '15px',
+                  right: '15px',
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '30px',
+                  height: '30px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: 'white',
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Body */}
+            <div style={{ padding: '30px 25px' }}>
+              <p style={{
+                color: '#FFFFFF',
+                fontSize: '16px',
+                lineHeight: '1.6',
+                margin: '0 0 25px',
+                textAlign: 'center'
+              }}>
+                Are you sure you want to be redirected to Manav Rachna University application page?
+              </p>
+
+              <div style={{
+                display: 'flex',
+                gap: '15px',
+                justifyContent: 'center',
+                flexWrap: 'wrap'
+              }}>
+                <button
+                  onClick={handleCancel}
+                  style={{
+                    padding: '12px 28px',
+                    borderRadius: '8px',
+                    border: '1px solid #FF0000',
+                    background: '#000000',
+                    color: '#FFFFFF',
+                    fontSize: '15px',
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.background = '#1a1a1a';
+                    e.target.style.color = '#FF0000';
+                    e.target.style.borderColor = '#FF0000';
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.background = '#000000';
+                    e.target.style.color = '#FF0000';
+                    e.target.style.borderColor = '#FF0000';
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirm}
+                  style={{
+                    padding: '12px 28px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #FF0000, #990000)',
+                    color: '#FFFFFF',
+                    fontSize: '15px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    minWidth: '120px',
+                  }}
+                  onMouseOver={(e) => e.target.style.opacity = '0.9'}
+                  onMouseOut={(e) => e.target.style.opacity = '1'}
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
 
 const CoursesSection = () => {
+  const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
-  const [message, setMessage] = useState('');
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentVideo, setCurrentVideo] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const res = await fetch('http://localhost:5000/api/v1/videos/courses');
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Failed to fetch courses');
-        setCourses(data.data);
-      } catch (err) {
-        setMessage(`Error: ${err.message}`);
-      }
-    };
     fetchCourses();
   }, []);
 
-  const handlePlayVideo = (videoUrl, title) => {
-    setCurrentVideo({ url: videoUrl, title });
-    setIsPlaying(true);
+  const fetchCourses = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/videos/courses`);
+      const data = await response.json();
+      
+      if (response.ok) {
+        setCourses(data.data || []);
+      } else {
+        // Fallback to hardcoded data if API fails
+        setCourses(coursesData);
+      }
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+      // Fallback to hardcoded data
+      setCourses(coursesData);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleCourseClick = (courseId) => {
+    navigate(`/course/${courseId}`);
+  };
+
+  if (loading) {
+    return (
+      <SectionContainer>
+        <SectionTitle>Trending Courses</SectionTitle>
+        <div className="text-center text-white">Loading courses...</div>
+      </SectionContainer>
+    );
+  }
 
   return (
     <SectionContainer>
       <SectionTitle>Trending Courses</SectionTitle>
-      {message && (
-        <div className="max-w-4xl mx-auto mt-6 p-3 bg-red-100 text-red-800 rounded shadow text-center">
-          {message}
-        </div>
-      )}
-      {courses.length === 0 ? (
-        <p style={{ textAlign: 'center', color: '#ccc' }}>No courses available yet.</p>
-      ) : (
-        <MotionCoursesGrid variants={gridVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }}>
-          {courses.map((course) => (
-            <CourseCard 
-              key={course._id} 
-              variants={cardVariant} 
-              whileHover={{ scale: 1.08, rotateX: -5, rotateY: 5, boxShadow: "0px 20px 40px rgba(255,0,0,0.5)" }}
-              onClick={() => handlePlayVideo(course.videoUrl, course.title)}
-            >
-              {course.thumbnailUrl ? (
-                <CardImage src={course.thumbnailUrl} alt={course.title} />
-              ) : (
-                <div style={{ 
-                  width: '100%', 
-                  height: '100%', 
-                  backgroundColor: '#333', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  color: 'white', 
-                  fontSize: '1.2em' 
-                }}>
-                  No Thumbnail
-                </div>
-              )}
-              <CardOverlay>
-                <CardTitle>{course.title}</CardTitle>
-                <p style={{ fontSize: '12px', color: '#aaa' }}>Faculty: {course.facultyId?.fullName || 'Unknown'}</p>
-                <p style={{ fontSize: '10px', color: '#bbb' }}>{course.description}</p>
-              </CardOverlay>
-            </CourseCard>
-          ))}
-        </MotionCoursesGrid>
-      )}
-
-      {isPlaying && currentVideo && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.9)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000,
-        }}>
-          <button
-            onClick={() => setIsPlaying(false)}
-            style={{
-              position: 'absolute',
-              top: '20px',
-              right: '20px',
-              background: 'rgba(255, 255, 255, 0.2)',
-              border: 'none',
-              color: 'white',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              fontSize: '20px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+      <MotionCoursesGrid variants={gridVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }}>
+        {courses.map((course, index) => (
+          <CourseCard 
+            key={course._id || course.id} 
+            variants={cardVariant} 
+            whileHover={{ scale: 1.08, rotateX: -5, rotateY: 5, boxShadow: "0px 20px 40px rgba(255,0,0,0.5)" }}
+            onClick={() => handleCourseClick(course._id || course.id)}
+            style={{ cursor: 'pointer' }}
           >
-            ×
-          </button>
-          <h3 style={{ color: 'white', marginBottom: '20px' }}>{currentVideo.title}</h3>
-          <video
-            controls
-            src={currentVideo.url}
-            width="80%"
-            height="70%"
-            style={{
-              borderRadius: '10px',
-              boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
-              maxWidth: '1000px',
-            }}
-          />
-        </div>
-      )}
+            <Rank>{index + 1}</Rank>
+            <CardImage 
+              src={course.img} 
+              alt={course.title}
+            />
+          </CourseCard>
+        ))}
+      </MotionCoursesGrid>
     </SectionContainer>
   );
 };
@@ -782,36 +806,16 @@ const ArtsSection = () => {
                 top: '50%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
-                background: 'rgba(0, 0, 0, 0.2)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
+                background: 'rgba(0, 0, 0, 0.7)',
                 borderRadius: '50%',
                 width: '50px',
                 height: '50px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                zIndex: 2,
-                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.15)',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                cursor: 'pointer',
-                ':hover': {
-                  transform: 'translate(-50%, -50%) scale(1.1)',
-                  background: 'linear-gradient(135deg, rgba(255, 0, 0, 0.3), rgba(220, 38, 38, 0.4))',
-                  backdropFilter: 'blur(15px)',
-                  WebkitBackdropFilter: 'blur(15px)',
-                  borderColor: 'rgba(255, 0, 0, 0.4)',
-                  boxShadow: '0 6px 25px rgba(220, 38, 38, 0.25)'
-                }
+                zIndex: 2
               }}>
-                <Play size={24} color="#fff" fill="#fff" style={{
-                  filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))',
-                  transition: 'transform 0.2s ease',
-                  ':hover': {
-                    transform: 'scale(1.1)'
-                  }
-                }} />
+                <Play size={24} color="#fff" />
               </div>
             )}
             <ArtsOverlay>

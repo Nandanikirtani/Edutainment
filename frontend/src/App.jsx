@@ -18,6 +18,7 @@ import Alumini from "./pages/Alumini";
 import FacultyDashboard from "./pages/FacultyDashboard";
 import Reels from "./pages/Reels";
 import AdminDashboard from "./pages/AdminDashboard";
+import CourseDetail from "./pages/CourseDetail";
 
 import "./App.css";
 
@@ -69,6 +70,9 @@ function AppContent() {
 
           {/* 🎥 Reels */}
           <Route path="/reels" element={<Reels />} />
+
+          {/* 📚 Course Detail */}
+          <Route path="/course/:courseId" element={<CourseDetail />} />
         </Routes>
       </div>
       {!hideLayout && <Footer />}

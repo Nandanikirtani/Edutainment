@@ -18,10 +18,13 @@ const verifyJWT = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    
+    console.log("🔐 JWT Decoded User:", decoded);
 
     req.user = decoded; // Assign decoded user info to request
     next();
   } catch (err) {
+    console.log("❌ JWT Verification Error:", err.message);
     return next(new ApiError(401, "Invalid token"));
   }
 };

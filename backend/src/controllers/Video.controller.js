@@ -193,3 +193,318 @@ export const getAdminUploadedCourses = asyncHandler(async (req, res) => {
     message: "Admin uploaded courses fetched successfully",
   });
 });
+
+// ===============================================
+//               Course Management APIs
+// ===============================================
+
+// Helper function to check if user can manage course
+const canManageCourse = (user, course) => {
+  console.log("🔍 Course Management Check:");
+  console.log("User ID:", user._id);
+  console.log("User Role:", user.role);
+  console.log("Course Faculty ID:", course.facultyId.toString());
+  console.log("Is Owner:", course.facultyId.toString() === user._id.toString());
+  console.log("Is Admin:", user.role === "admin");
+  
+  const canManage = course.facultyId.toString() === user._id.toString() || user.role === "admin";
+  console.log("Can Manage:", canManage);
+  
+  return canManage;
+};
+
+// Get single course with chapters and videos
+export const getCourseById = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  
+  const course = await Course.findById(courseId)
+    .populate('facultyId', 'fullName email')
+    .populate('enrolledStudents', 'fullName email');
+    
+  if (!course) {
+    throw new ApiError(404, "Course not found");
+  }
+  
+  res.status(200).json({
+    success: true,
+    data: course,
+    message: "Course fetched successfully",
+  });
+});
+
+// Create new course (Admin/Faculty only)
+export const createCourse = asyncHandler(async (req, res) => {
+  const { title, description, category, level, price, backgroundImage } = req.body;
+  
+  if (!title || !description) {
+    throw new ApiError(400, "Title and description are required");
+  }
+  
+  const course = await Course.create({
+    facultyId: req.user._id,
+    title,
+    description,
+    category: category || "General",
+    level: level || "Beginner",
+    price: price || 0,
+    backgroundImage,
+  });
+  
+  const createdCourse = await Course.findById(course._id).populate('facultyId', 'fullName');
+  
+  res.status(201).json({
+    success: true,
+    data: createdCourse,
+    message: "Course created successfully",
+  });
+});
+
+// Add chapter to course (Admin/Faculty only)
+export const addChapter = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  const { title, description } = req.body;
+  
+  if (!title) {
+    throw new ApiError(400, "Chapter title is required");
+  }
+  
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ApiError(404, "Course not found");
+  }
+  
+  // Check if user can manage the course
+  if (!canManageCourse(req.user, course)) {
+    throw new ApiError(403, "You can only add chapters to your own courses");
+  }
+  
+  const newChapter = {
+    title,
+    description: description || "",
+    order: course.chapters.length,
+  };
+  
+  course.chapters.push(newChapter);
+  await course.save();
+  
+  res.status(201).json({
+    success: true,
+    data: course,
+    message: "Chapter added successfully",
+  });
+});
+
+// Add video to chapter (Admin/Faculty only)
+export const addVideoToChapter = asyncHandler(async (req, res) => {
+  const { courseId, chapterId } = req.params;
+  const { title, description, isPreview } = req.body;
+  const videoFile = req.file;
+  
+  if (!title || !videoFile) {
+    throw new ApiError(400, "Title and video file are required");
+  }
+  
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ApiError(404, "Course not found");
+  }
+  
+  // Check if user can manage the course
+  if (!canManageCourse(req.user, course)) {
+    throw new ApiError(403, "You can only add videos to your own courses");
+  }
+  
+  const chapter = course.chapters.id(chapterId);
+  if (!chapter) {
+    throw new ApiError(404, "Chapter not found");
+  }
+  
+  try {
+    // Upload video to Cloudinary
+    const result = await cloudinary.uploader.upload(videoFile.path, {
+      resource_type: "video",
+      folder: "course_videos",
+    });
+    
+    const newVideo = {
+      title,
+      description: description || "",
+      videoUrl: result.secure_url,
+      order: chapter.videos.length,
+      isPreview: isPreview || false,
+    };
+    
+    chapter.videos.push(newVideo);
+    
+    // Use findByIdAndUpdate to avoid version conflicts
+    const updatedCourse = await Course.findByIdAndUpdate(
+      courseId,
+      { $set: { chapters: course.chapters } },
+      { new: true, runValidators: true }
+    );
+    
+    if (!updatedCourse) {
+      throw new ApiError(404, "Course not found after update");
+    }
+    
+    // Clean up local file
+    if (fs.existsSync(videoFile.path)) {
+      fs.unlinkSync(videoFile.path);
+    }
+    
+    res.status(201).json({
+      success: true,
+      data: updatedCourse,
+      message: "Video added to chapter successfully",
+    });
+  } catch (err) {
+    if (videoFile && fs.existsSync(videoFile.path)) {
+      fs.unlinkSync(videoFile.path);
+    }
+    console.error("Video upload error:", err);
+    throw new ApiError(500, "Video upload failed", [err.message]);
+  }
+});
+
+// Update course (Admin/Faculty only)
+export const updateCourse = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  const updates = req.body;
+  
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ApiError(404, "Course not found");
+  }
+  
+  // Check if user can manage the course
+  if (!canManageCourse(req.user, course)) {
+    throw new ApiError(403, "You can only update your own courses");
+  }
+  
+  Object.keys(updates).forEach(key => {
+    if (updates[key] !== undefined) {
+      course[key] = updates[key];
+    }
+  });
+  
+  await course.save();
+  
+  const updatedCourse = await Course.findById(courseId).populate('facultyId', 'fullName');
+  
+  res.status(200).json({
+    success: true,
+    data: updatedCourse,
+    message: "Course updated successfully",
+  });
+});
+
+// Delete course (Admin/Faculty only)
+export const deleteCourse = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ApiError(404, "Course not found");
+  }
+  
+  // Check if user can manage the course
+  if (!canManageCourse(req.user, course)) {
+    throw new ApiError(403, "You can only delete your own courses");
+  }
+  
+  await Course.findByIdAndDelete(courseId);
+  
+  res.status(200).json({
+    success: true,
+    message: "Course deleted successfully",
+  });
+});
+
+// Enroll student in course
+export const enrollInCourse = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  const userId = req.user._id;
+  
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ApiError(404, "Course not found");
+  }
+  
+  // Check if already enrolled
+  if (course.enrolledStudents.includes(userId)) {
+    throw new ApiError(400, "Already enrolled in this course");
+  }
+  
+  course.enrolledStudents.push(userId);
+  await course.save();
+  
+  res.status(200).json({
+    success: true,
+    message: "Successfully enrolled in course",
+  });
+});
+
+// Delete chapter (Admin/Faculty only)
+export const deleteChapter = asyncHandler(async (req, res) => {
+  const { courseId, chapterId } = req.params;
+  
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ApiError(404, "Course not found");
+  }
+  
+  // Check if user can manage the course
+  if (!canManageCourse(req.user, course)) {
+    throw new ApiError(403, "You can only delete chapters from your own courses");
+  }
+  
+  const chapter = course.chapters.id(chapterId);
+  if (!chapter) {
+    throw new ApiError(404, "Chapter not found");
+  }
+  
+  // Remove chapter
+  course.chapters.pull(chapterId);
+  await course.save();
+  
+  res.status(200).json({
+    success: true,
+    data: course,
+    message: "Chapter deleted successfully",
+  });
+});
+
+// Delete video from chapter (Admin/Faculty only)
+export const deleteVideo = asyncHandler(async (req, res) => {
+  const { courseId, chapterId, videoId } = req.params;
+  
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ApiError(404, "Course not found");
+  }
+  
+  // Check if user can manage the course
+  if (!canManageCourse(req.user, course)) {
+    throw new ApiError(403, "You can only delete videos from your own courses");
+  }
+  
+  const chapter = course.chapters.id(chapterId);
+  if (!chapter) {
+    throw new ApiError(404, "Chapter not found");
+  }
+  
+  const video = chapter.videos.id(videoId);
+  if (!video) {
+    throw new ApiError(404, "Video not found");
+  }
+  
+  // Remove video
+  chapter.videos.pull(videoId);
+  await course.save();
+  
+  res.status(200).json({
+    success: true,
+    data: course,
+    message: "Video deleted successfully",
+  });
+});
