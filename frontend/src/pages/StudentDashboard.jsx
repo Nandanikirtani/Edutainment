@@ -445,7 +445,7 @@ const StudentDashboard = () => {
             change="+1 this week"
             onClick={() => setShowBadgesModal(true)}
           />
-          />
+        
         </div>
 
         {/* Main Content Grid */}
