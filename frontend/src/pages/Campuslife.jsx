@@ -234,7 +234,7 @@ export default function CampusLife() {
 
       {/* 🔹 What's happening @MRU */}
       <div className="py-12 px-6">
-        <h2 className="text-2xl font-bold mb-6">What's happening @MRU</h2>
+        <h2 className="text-2xl text-center font-bold mb-6">What's happening @MRU</h2>
         <motion.div
           variants={gridVariants}
           initial="hidden"
@@ -257,7 +257,7 @@ export default function CampusLife() {
 
       {/* 🔹 Icons of Manav Rachna */}
       <div className="py-12 px-6">
-        <h2 className="text-2xl font-bold mb-6">Icons of Manav Rachna</h2>
+        <h2 className="text-2xl text-center font-bold mb-6">Icons of Manav Rachna</h2>
         <motion.div
           variants={gridVariants}
           initial="hidden"
@@ -284,7 +284,7 @@ export default function CampusLife() {
 
       {/* 🔹 MRE Awards */}
       <div className="py-12 px-6">
-        <h2 className="text-2xl font-bold mb-6">MRE Awards</h2>
+        <h2 className="text-2xl text-center font-bold mb-6">MRE Awards</h2>
         <div className="max-w-6xl mx-auto flex items-center justify-between relative">
           {/* Left Button */}
           <button
@@ -338,7 +338,7 @@ export default function CampusLife() {
 
       {/* 🔹 Programs Offered */}
       <div className="py-12 px-6">
-        <h2 className="text-2xl font-bold mb-6">Programs Offered</h2>
+        <h2 className="text-2xl text-center font-bold mb-6">Programs Offered</h2>
         <motion.div
           variants={gridVariants}
           initial="hidden"

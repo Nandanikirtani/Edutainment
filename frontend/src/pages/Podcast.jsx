@@ -65,27 +65,29 @@ export default function Podcast() {
   return (
     <div className="bg-black text-white min-h-screen overflow-hidden">
       {isPlaying ? (
-        // ✅ Fullscreen Video Player
-        <div className="fixed inset-0 w-full h-full bg-black z-50">
-          {/* Back Button */}
-          {/* <button
-            onClick={() => {
-              setIsPlaying(false);
-              setShowDetailView(true);
-            }}
-            className="absolute top-4 left-4 z-50 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 flex items-center gap-2"
+        // ✅ Mini-Screen Video Player (like Arts section)
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+          {/* Close Button */}
+          <button
+            onClick={() => setIsPlaying(false)}
+            className="absolute top-4 right-4 bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl hover:bg-white/30 transition"
           >
-            <ArrowLeft className="w-4 h-4" /> Back
-          </button> */}
+            ×
+          </button>
 
-          <iframe
-            className="w-full h-full"
-            src={`https://www.youtube.com/embed/${activePodcast.videoId}?autoplay=1`}
-            title={activePodcast.title}
-            frameBorder="0"
-            allow="autoplay; encrypted-media"
-            allowFullScreen
-          ></iframe>
+          <div className="flex flex-col items-center gap-4">
+            <h3 className="text-white text-xl font-semibold">
+              {activePodcast.title}
+            </h3>
+            <iframe
+              src={`https://www.youtube.com/embed/${activePodcast.videoId}?autoplay=1`}
+              title={activePodcast.title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-[90vw] h-[70vh] max-w-5xl rounded-lg shadow-[0_0_25px_rgba(255,0,0,0.5)]"
+            ></iframe>
+          </div>
         </div>
       ) : showDetailView ? (
         // ✅ Detailed View with Background Image and Content
@@ -149,7 +151,7 @@ export default function Podcast() {
                   </div>
                   <span>Play Episode</span>
                 </div>
-                
+
                 {/* Glow effect */}
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
               </motion.button>
@@ -191,7 +193,9 @@ export default function Podcast() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
-                <h1 className="text-4xl font-bold mb-4">{activePodcast.title}</h1>
+                <h1 className="text-4xl font-bold mb-4">
+                  {activePodcast.title}
+                </h1>
                 <p className="mb-2 text-lg">🎙️ {activePodcast.speaker}</p>
                 <p className="mb-6 text-gray-300 max-w-2xl mx-auto">
                   {activePodcast.desc}
@@ -208,7 +212,7 @@ export default function Podcast() {
                     </div>
                     <span>Watch Now</span>
                   </div>
-                  
+
                   {/* Glow effect */}
                   <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
                 </motion.button>
@@ -244,7 +248,9 @@ export default function Podcast() {
           <div className="px-8 py-12 space-y-12">
             {/* Manav Rachna Podcast */}
             <div>
-              <h2 className="text-3xl font-bold mb-6">The Manav Rachna Podcast</h2>
+              <h2 className="text-3xl text-center font-bold mb-6">
+                The Manav Rachna Podcast
+              </h2>
               <motion.div
                 variants={gridVariants}
                 initial="hidden"
@@ -271,7 +277,7 @@ export default function Podcast() {
 
             {/* Weekly */}
             <div>
-              <h2 className="text-3xl font-bold mb-6">Weekly Podcast</h2>
+              <h2 className="text-3xl text-center font-bold mb-6">Weekly Podcast</h2>
               <motion.div
                 variants={gridVariants}
                 initial="hidden"
@@ -298,7 +304,7 @@ export default function Podcast() {
 
             {/* Daily */}
             <div>
-              <h2 className="text-3xl font-bold mb-6">Daily Podcast | MRU</h2>
+              <h2 className="text-3xl text-center font-bold mb-6">Daily Podcast | MRU</h2>
               <motion.div
                 variants={gridVariants}
                 initial="hidden"

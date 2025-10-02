@@ -772,7 +772,7 @@ const CoursesSection = () => {
 
   return (
     <SectionContainer>
-      <SectionTitle>Trending Courses</SectionTitle>
+      <SectionTitle className="text-center">Trending Courses</SectionTitle>
       <MotionCoursesGrid variants={gridVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }}>
         {courses.map((course, index) => (
           <CourseCard 
@@ -1024,7 +1024,7 @@ const ExtraSection = () => {
         </div>
       ) : (
         <ExtraSectionContainer>
-          <ExtraSectionTitle>Programs Offered</ExtraSectionTitle>
+          <ExtraSectionTitle className="text-center">Programs Offered</ExtraSectionTitle>
           <MotionExtraGrid
             variants={gridVariants}
             initial="hidden"
