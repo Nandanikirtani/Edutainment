@@ -44,8 +44,9 @@ const BadgeAwardModal = ({ isOpen, onClose, badge }) => {
   if (!badge) return null;
 
   const badgeImage = `/Badge-${badge.badgeType}.${badge.badgeType === '50' ? 'jpeg' : 'jpg'}`;
-  const shareText = `🎉 I just earned a ${badge.badgeType}% completion badge for "${badge.courseName}" on Manav Rachna Edutainment! 🏆\n\nJoin me in learning at Manav Rachna Edutainment Website! 📚✨`;
-  const shareUrl = window.location.origin;
+  // Share message focused on course completion
+  const shareUrl = `${window.location.origin}/#/course/${badge.courseId || ''}`;
+  const shareText = `🎉 I just completed "${badge.courseName}" at Manav Rachna Edutainment and earned the ${badge.badgeType}% badge! 🏆`;
 
   const handleShare = (platform) => {
     const encodedText = encodeURIComponent(shareText);
@@ -65,7 +66,7 @@ const BadgeAwardModal = ({ isOpen, onClose, badge }) => {
         break;
       case 'instagram':
         // Instagram doesn't support direct web sharing, so we'll copy to clipboard
-        navigator.clipboard.writeText(shareText + '\n\n' + shareUrl);
+        navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`);
         alert('Text copied to clipboard! You can now paste it on Instagram 📋');
         return;
       default:

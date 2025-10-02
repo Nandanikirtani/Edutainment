@@ -1,4 +1,3 @@
-// Complete Analytics Student Dashboard
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -28,16 +27,14 @@ import {
   Gift,
   MessageSquare,
   FileText,
-  Settings,
-  LogOut,
-  Home,
   ArrowLeft,
+  Home,
   Facebook,
   Linkedin,
   MessageCircle
 } from 'lucide-react';
 
-const Dashboard = () => {
+const StudentDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState({
@@ -189,8 +186,7 @@ const Dashboard = () => {
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.3 }}
-      onClick={() => navigate(`/course/${course.id}`)}
-      className="bg-gradient-to-br from-black via-red-950/30 to-gray-900 rounded-xl p-6 border border-red-800/50 shadow-lg shadow-red-900/10 hover:shadow-red-900/20 cursor-pointer"
+      className="bg-gradient-to-br from-black via-red-950/30 to-gray-900 rounded-xl p-6 border border-red-800/50 shadow-lg shadow-red-900/10 hover:shadow-red-900/20"
     >
       <div className="flex items-start gap-4">
         <img 
@@ -440,6 +436,7 @@ const Dashboard = () => {
             title="Total Points"
             value={(dashboardData.statistics?.totalPoints || dashboardData.totalPoints || 0).toLocaleString()}
             change="+50 today"
+            onClick={() => navigate('/profile')}
           />
           <StatCard
             icon={Award}
@@ -447,6 +444,7 @@ const Dashboard = () => {
             value={dashboardData.statistics?.badgesEarned || dashboardData.badges.length}
             change="+1 this week"
             onClick={() => setShowBadgesModal(true)}
+          />
           />
         </div>
 
@@ -734,4 +732,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default StudentDashboard;

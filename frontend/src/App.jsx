@@ -8,7 +8,6 @@ import FAQS from "./pages/FAQS";
 import Courses from "./pages/Courses";
 import About from "./pages/About";
 import AuthPages from "./pages/AuthPages";
-import Studentsidebar from "./components/Studentsidebar";
 import Campuslife from "./pages/Campuslife";
 import AwardDetail from "./pages/AwardDetail";
 import Profile from "./pages/Profile";
@@ -19,6 +18,8 @@ import FacultyDashboard from "./pages/FacultyDashboard";
 import Reels from "./pages/Reels";
 import AdminDashboard from "./pages/AdminDashboard";
 import CourseDetail from "./pages/CourseDetail";
+import Dashboard from "./pages/Dashboard";
+import Achievement from "./pages/Achievement";
 
 import "./App.css";
 
@@ -45,7 +46,8 @@ function AppContent() {
           <Route path="/signup" element={<AuthPages />} />
 
           {/* Student */}
-          <Route path="/student" element={<Studentsidebar />} />
+          <Route path="/student" element={<Dashboard />} />
+          <Route path="/achievements" element={<Achievement />} />
           <Route path="/profile" element={<Profile />} />
 
           {/* Campus Life */}

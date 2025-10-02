@@ -42,16 +42,21 @@ export default function Navbar() {
   const getDashboardPath = () => {
     if (!user) return "/login";
 
-    switch (
-      user.role // assuming user.role is 'student', 'teacher', or 'admin'
-    ) {
+    // Debug log to check user structure
+    console.log('User object in navbar:', user);
+    console.log('User role:', user?.role || user?.data?.role);
+
+    const userRole = user?.role || user?.data?.role;
+    
+    switch (userRole) {
       case "student":
-        return "/student-dashboard";
+        return "/student";
       case "teacher":
         return "/faculty/dashboard";
       case "admin":
         return "/admin/dashboard";
       default:
+        console.log('Unknown role, redirecting to login');
         return "/login";
     }
   };
@@ -194,10 +199,13 @@ export default function Navbar() {
                         </div>
                         <div className="flex flex-col">
                           <span className="text-gray-900 dark:text-white font-semibold">
-                            {username || "User Name"}
+                            {user?.fullName || user?.data?.fullName || username || "User Name"}
                           </span>
                           <span className="text-gray-500 dark:text-gray-400 text-sm">
-                            {user?.email || "user@example.com"}
+                            {user?.email || user?.data?.email || "user@example.com"}
+                          </span>
+                          <span className="text-green-500 text-xs capitalize">
+                            {user?.role || user?.data?.role || "student"}
                           </span>
                         </div>
                       </div>

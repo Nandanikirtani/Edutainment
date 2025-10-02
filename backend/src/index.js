@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 // ✅ Routes
 import userRoutes from "./routes/User.routes.js";
 import videoRoutes from "./routes/Video.routes.js";
+import dashboardRoutes from "./routes/Dashboard.routes.js";
 
 // ✅ Middlewares
 import { errorHandler } from "./middlewares/errorHandler.js";
@@ -36,6 +37,7 @@ app.use(cookieParser());
 // ✅ Routes
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/videos", videoRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
 
 // ✅ Health check
 app.get("/", (req, res) => res.send("✅ Backend running!"));

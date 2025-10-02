@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -17,6 +17,14 @@ const CourseDetail = () => {
   const [loading, setLoading] = useState(true);
   const [activeChapter, setActiveChapter] = useState(null);
   const [activeVideo, setActiveVideo] = useState(null);
+  // Player state
+  const videoRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [volume, setVolume] = useState(1);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [showAddChapter, setShowAddChapter] = useState(false);
   const [showAddVideo, setShowAddVideo] = useState(false);
   const [newChapter, setNewChapter] = useState({ title: "", description: "" });
@@ -500,6 +508,11 @@ const CourseDetail = () => {
 
   const isEnrolled = course && user && course.enrolledStudents.some(student => student._id === getUserId());
 
+  // Permissions: only students watching their enrolled course get full videos; others only preview
+  const isStudent = user && getUserRole() === 'student';
+  const canWatchFull = isStudent && isEnrolled;
+  const canWatchThisVideo = canWatchFull || (!!activeVideo && activeVideo.isPreview);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -690,38 +703,136 @@ const CourseDetail = () => {
           <div className="lg:col-span-2">
             {activeVideo ? (
               <div className="bg-gradient-to-br from-gray-900 via-red-950/20 to-gray-900 rounded-lg overflow-hidden shadow-2xl shadow-red-900/20 border border-red-900/30">
-                <div className="aspect-video bg-black relative">
+                <div className="aspect-video bg-black relative group">
+                  {/* Video element (native controls hidden; custom controls below) */}
                   <video
-                    controls
-                    className="w-full h-full object-contain"
-                    src={activeVideo.videoUrl}
+                    key={`${activeVideo?._id}-${canWatchThisVideo ? 'allowed' : 'locked'}`}
+                    ref={videoRef}
+                    className={`w-full h-full object-contain ${!canWatchThisVideo ? 'blur-sm' : ''}`}
+                    src={canWatchThisVideo ? activeVideo.videoUrl : ''}
                     poster={course.thumbnailUrl}
+                    preload="metadata"
+                    controls={false}
+                    playsInline
+                    disablePictureInPicture
+                    controlsList="nodownload noplaybackrate noremoteplayback"
                     onLoadedMetadata={(e) => {
-                      // Update local state with duration so UI shows timing immediately
                       const dur = Math.round(e.currentTarget?.duration || 0);
+                      setDuration(dur);
                       if (dur && (!activeVideo.duration || activeVideo.duration !== dur)) {
                         setActiveVideo(prev => (prev ? { ...prev, duration: dur } : prev));
                       }
                     }}
-                  />
-                  {/* Fullscreen button */}
-                  <button
-                    onClick={() => {
-                      const video = document.querySelector('video');
-                      if (video.requestFullscreen) {
-                        video.requestFullscreen();
-                      } else if (video.webkitRequestFullscreen) {
-                        video.webkitRequestFullscreen();
-                      } else if (video.msRequestFullscreen) {
-                        video.msRequestFullscreen();
+                    onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+                    onEnded={async () => {
+                      setIsPlaying(false);
+                      if (canWatchFull && activeChapter && activeVideo) {
+                        try {
+                          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/videos/courses/${courseId}/chapters/${activeChapter._id}/videos/${activeVideo._id}/complete`, {
+                            method: 'POST',
+                            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                          });
+                          const data = await res.json();
+                          if (res.ok && data.data?.badgeAwarded) {
+                            setEarnedBadge(data.data.badgeAwarded);
+                            setShowBadgeModal(true);
+                            setMyBadges(prev => [...prev, {
+                              badgeType: data.data.badgeAwarded.badgeType,
+                              courseId: courseId,
+                              courseName: data.data.badgeAwarded.courseName,
+                              earnedAt: new Date()
+                            }]);
+                          }
+                        } catch (e) {
+                          // ignore
+                        }
                       }
                     }}
-                    className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-2 rounded hover:bg-opacity-70 transition-all"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15.586 13H14a1 1 0 01-1-1z" clipRule="evenodd" />
-                    </svg>
-                  </button>
+                  />
+
+                  {/* Overlay when locked */}
+                  {!canWatchThisVideo && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 text-center p-6">
+                      <Lock className="w-10 h-10 text-gray-300 mb-3" />
+                      <p className="text-white font-semibold mb-2">Login and Enroll to watch this video</p>
+                      <p className="text-gray-300 text-sm mb-4">This is a locked lesson. {activeVideo?.isPreview ? 'Preview is available' : 'Preview only for selected videos'}.</p>
+                      <div className="flex gap-3">
+                        {!user && (
+                          <button onClick={() => navigate('/login')} className="px-4 py-2 rounded bg-red-600 hover:bg-red-700">Login</button>
+                        )}
+                        {user && !isEnrolled && getUserRole() === 'student' && (
+                          <button onClick={handleEnroll} className="px-4 py-2 rounded bg-yellow-500 hover:bg-yellow-600 text-black">Enroll Now</button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Center Play/Pause */}
+                  {canWatchThisVideo && (
+                    <button
+                      onClick={() => {
+                        const v = videoRef.current; if (!v) return; if (v.paused) { v.play(); setIsPlaying(true); } else { v.pause(); setIsPlaying(false); }
+                      }}
+                      className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="Toggle Play"
+                    >
+                      <div className="bg-black/50 p-4 rounded-full">
+                        {isPlaying ? (
+                          <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4h2v12H6V4zm6 0h2v12h-2V4z"/></svg>
+                        ) : (
+                          <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6V4z"/></svg>
+                        )}
+                      </div>
+                    </button>
+                  )}
+
+                  {/* Control Bar */}
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 space-y-2">
+                    {/* Progress */}
+                    <input
+                      type="range"
+                      min={0}
+                      max={Math.max(1, duration)}
+                      value={Math.min(currentTime, duration)}
+                      onChange={(e) => {
+                        const v = videoRef.current; if (!v) return; const t = Number(e.target.value); v.currentTime = t; setCurrentTime(t);
+                      }}
+                      className="w-full accent-red-600"
+                    />
+                    <div className="flex items-center gap-3 text-white text-xs">
+                      {/* Play/Pause */}
+                      <button
+                        onClick={() => { const v = videoRef.current; if (!v) return; if (v.paused) { v.play(); setIsPlaying(true); } else { v.pause(); setIsPlaying(false); }}}
+                        className="px-2 py-1 rounded bg-white/10 hover:bg-white/20"
+                      >
+                        {isPlaying ? 'Pause' : 'Play'}
+                      </button>
+
+                      {/* Time */}
+                      <span>{formatTime(canWatchThisVideo ? currentTime : 0)} / {formatTime(duration || activeVideo?.duration || 0)}</span>
+
+                      {/* Volume */}
+                      <button onClick={() => { const v = videoRef.current; if (!v) return; v.muted = !v.muted; setIsMuted(v.muted); }} className="px-2 py-1 rounded bg-white/10 hover:bg-white/20">
+                        {isMuted || volume === 0 ? 'Unmute' : 'Mute'}
+                      </button>
+                      <input type="range" min={0} max={1} step={0.01} value={volume}
+                        onChange={(e)=>{ const v=videoRef.current; if(!v) return; const val=Number(e.target.value); v.volume=val; setVolume(val); if(val>0) { v.muted=false; setIsMuted(false);} }}
+                        className="w-24 accent-red-600"
+                      />
+
+                      {/* Speed */}
+                      <select value={playbackRate} onChange={(e)=>{ const v=videoRef.current; if(!v) return; const rate=Number(e.target.value); v.playbackRate=rate; setPlaybackRate(rate); }} className="bg-white/10 hover:bg-white/20 rounded px-2 py-1">
+                        {[0.5,1,1.25,1.5,2].map(r=> <option key={r} value={r}>{r}x</option>)}
+                      </select>
+
+                      {/* Seek +/- */}
+                      <button onClick={()=>{ const v=videoRef.current; if(!v) return; v.currentTime=Math.max(0, v.currentTime-10); }} className="px-2 py-1 rounded bg-white/10 hover:bg-white/20">-10s</button>
+                      <button onClick={()=>{ const v=videoRef.current; if(!v) return; v.currentTime=Math.min(duration, v.currentTime+10); }} className="px-2 py-1 rounded bg-white/10 hover:bg-white/20">+10s</button>
+
+                      {/* Fullscreen */}
+                      <button onClick={() => { const el=videoRef.current; if(!el) return; if (el.requestFullscreen) el.requestFullscreen(); else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen(); }} className="ml-auto px-2 py-1 rounded bg-white/10 hover:bg-white/20">Fullscreen</button>
+                    </div>
+                  </div>
                 </div>
                 <div className="p-4">
                   <h3 className="font-semibold mb-2">{activeVideo.title}</h3>
@@ -729,10 +840,7 @@ const CourseDetail = () => {
                   <div className="flex items-center gap-2 text-sm text-gray-400">
                     <Clock className="w-4 h-4" />
                     <span>
-                      {activeVideo.duration 
-                        ? `${Math.floor(activeVideo.duration / 60)}:${(activeVideo.duration % 60).toString().padStart(2, '0')}` 
-                        : 'Loading...'
-                      }
+                      {formatTime(activeVideo?.duration || duration || 0)}
                     </span>
                   </div>
                 </div>
@@ -925,7 +1033,17 @@ const CourseDetail = () => {
                                   ? "bg-red-600"
                                   : "bg-gray-800 hover:bg-gray-700"
                               }`}
-                              onClick={() => setActiveVideo(video)}
+                              onClick={() => {
+                                const allowed = canWatchFull || video.isPreview;
+                                if (!allowed) {
+                                  setMessage('Please login and enroll to watch this lesson.');
+                                  return;
+                                }
+                                setActiveVideo(video);
+                                setDuration(video?.duration || 0);
+                                setCurrentTime(0);
+                                setIsPlaying(false);
+                              }}
                             >
                               <div className="flex items-center gap-3">
                                 <Play className="w-4 h-4" />

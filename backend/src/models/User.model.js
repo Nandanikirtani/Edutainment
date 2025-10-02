@@ -23,6 +23,11 @@ const userSchema = new Schema(
       required: true,
     },
 
+    // 🔹 Profile fields
+    avatar: { type: String, default: null }, // URL to profile image
+    phone: { type: String, default: null },
+    rollNo: { type: String, default: null }, // University roll number
+
     refreshToken: { type: String },
 
     // 🔹 OTP fields

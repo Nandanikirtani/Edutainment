@@ -12,6 +12,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaHome,
+  FaChartBar,
 } from "react-icons/fa";
 
 export default function Studentsidebar() {
