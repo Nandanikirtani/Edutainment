@@ -31,6 +31,14 @@ const userSchema = new Schema(
 
     // 🔹 First login verify check
     isVerified: { type: Boolean, default: false },
+
+    // 🔹 Earned badges
+    badges: [{
+      badgeType: { type: String, enum: ['50', '75', '90'], required: true },
+      courseId: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
+      courseName: { type: String, required: true },
+      earnedAt: { type: Date, default: Date.now }
+    }]
   },
   { timestamps: true }
 );

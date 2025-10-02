@@ -17,6 +17,13 @@ export default function AdminDashboard() {
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [uploadingCourse, setUploadingCourse] = useState(false);
   const [myUploadedCourses, setMyUploadedCourses] = useState([]); // New state for admin's uploaded courses
+  const [allCoursesWithStudents, setAllCoursesWithStudents] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [editingStudentId, setEditingStudentId] = useState(null);
+  const [newPoints, setNewPoints] = useState('');
+  const [allFaculty, setAllFaculty] = useState([]);
+  const [editingCourseFaculty, setEditingCourseFaculty] = useState(null);
+  const [newFacultyId, setNewFacultyId] = useState('');
 
   useEffect(() => {
     if (!loading) {
@@ -75,6 +82,32 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchAllCoursesWithStudents = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/v1/videos/admin/courses-with-students', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to fetch courses with students');
+      setAllCoursesWithStudents(data.data);
+    } catch (err) {
+      setMessage(`Error fetching courses with students: ${err.message}`);
+    }
+  };
+
+  const fetchAllFaculty = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/v1/videos/admin/faculty', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to fetch faculty');
+      setAllFaculty(data.data);
+    } catch (err) {
+      setMessage(`Error fetching faculty: ${err.message}`);
+    }
+  };
+
   useEffect(() => {
     if (user && user.role === 'admin') {
       if (activeTab === 'pending') {
@@ -83,6 +116,9 @@ export default function AdminDashboard() {
         fetchRejectedVideos();
       } else if (activeTab === 'myCourses') { // New tab for admin's courses
         fetchAdminUploadedCourses();
+      } else if (activeTab === 'coursesManagement') {
+        fetchAllCoursesWithStudents();
+        fetchAllFaculty();
       }
     }
   }, [user, token, activeTab]);
@@ -113,6 +149,56 @@ export default function AdminDashboard() {
       setMessage(`Video ${status} successfully!`);
     } catch (err) {
       setMessage(`Error: ${err.message}`);
+    }
+  };
+
+  const handleUpdatePoints = async (courseId, studentId, points) => {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/v1/videos/admin/courses/${courseId}/students/${studentId}/points`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ points: parseInt(points) }),
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to update points');
+      setMessage('Student points updated successfully!');
+      setEditingStudentId(null);
+      setNewPoints('');
+      // Refresh the courses data
+      fetchAllCoursesWithStudents();
+    } catch (err) {
+      setMessage(`Error updating points: ${err.message}`);
+    }
+  };
+
+  const handleUpdateCourseFaculty = async (courseId, facultyId) => {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/v1/videos/admin/courses/${courseId}/faculty`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ facultyId }),
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to update faculty');
+      setMessage('Course faculty updated successfully!');
+      setEditingCourseFaculty(null);
+      setNewFacultyId('');
+      // Refresh the courses data
+      fetchAllCoursesWithStudents();
+    } catch (err) {
+      setMessage(`Error updating faculty: ${err.message}`);
     }
   };
 
@@ -215,6 +301,16 @@ export default function AdminDashboard() {
             }`}
           >
             My Uploaded Courses
+          </button>
+          <button
+            onClick={() => setActiveTab('coursesManagement')}
+            className={`px-4 py-2 font-semibold transition-all ${
+              activeTab === 'coursesManagement'
+                ? "text-red-400 border-b-4 border-red-400"
+                : "text-gray-300 hover:text-red-400"
+            }`}
+          >
+            Courses Management
           </button>
         </div>
 
@@ -361,6 +457,149 @@ export default function AdminDashboard() {
                         <a href={course.videoUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block px-3 py-1 bg-red-600 text-white rounded-md text-sm hover:bg-red-700">Watch Video</a>
                       )}
                     </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'coursesManagement' && (
+          <div className="courses-management-section space-y-4">
+            <h2 className="text-2xl font-bold text-white text-center">Courses Management</h2>
+            {allCoursesWithStudents.length === 0 ? (
+              <p className="text-center text-gray-400">No courses available.</p>
+            ) : (
+              <div className="space-y-6">
+                {allCoursesWithStudents.map(course => (
+                  <div key={course._id} className="bg-gray-800 rounded-lg shadow-md p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold text-white">{course.title}</h3>
+                        <p className="text-gray-400 text-sm">{course.description}</p>
+                        <div className="mt-2">
+                          {editingCourseFaculty === course._id ? (
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-300 text-sm">Faculty:</span>
+                              <select
+                                value={newFacultyId}
+                                onChange={(e) => setNewFacultyId(e.target.value)}
+                                className="px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:outline-none focus:border-red-500 text-sm"
+                              >
+                                <option value="">Select Faculty</option>
+                                {allFaculty.map(faculty => (
+                                  <option key={faculty._id} value={faculty._id}>
+                                    {faculty.fullName} ({faculty.role})
+                                  </option>
+                                ))}
+                              </select>
+                              <button
+                                onClick={() => handleUpdateCourseFaculty(course._id, newFacultyId)}
+                                className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingCourseFaculty(null);
+                                  setNewFacultyId('');
+                                }}
+                                className="px-2 py-1 bg-gray-600 text-white rounded hover:bg-gray-500 text-sm"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <p className="text-gray-300 text-sm">
+                              Faculty: 
+                              <span className="text-blue-400 ml-1 cursor-pointer hover:underline" 
+                                onClick={() => {
+                                  setEditingCourseFaculty(course._id);
+                                  setNewFacultyId(course.facultyId?._id || '');
+                                }}>
+                                {course.facultyId?.fullName || 'Unknown'}
+                              </span>
+                              <span className="text-gray-500 ml-1"></span> | 
+                              Category: {course.category} | 
+                              Level: {course.level}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setSelectedCourse(selectedCourse === course._id ? null : course._id)}
+                        className="ml-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                      >
+                        {selectedCourse === course._id ? 'Hide Students' : `View Students (${course.totalEnrolled})`}
+                      </button>
+                    </div>
+
+                    {selectedCourse === course._id && (
+                      <div className="mt-4 border-t border-gray-700 pt-4">
+                        <h4 className="text-lg font-semibold text-white mb-3">Enrolled Students</h4>
+                        {course.enrolledStudents.length === 0 ? (
+                          <p className="text-gray-400 text-sm">No students enrolled yet.</p>
+                        ) : (
+                          <div className="space-y-3">
+                            {course.enrolledStudents.map(student => (
+                              <div
+                                key={student._id}
+                                className="bg-gray-700 rounded-lg p-4 flex justify-between items-center"
+                              >
+                                <div className="flex-1">
+                                  <p className="text-white font-semibold">{student.fullName}</p>
+                                  <p className="text-gray-400 text-sm">{student.email}</p>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  {editingStudentId === student._id ? (
+                                    <>
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        value={newPoints}
+                                        onChange={(e) => setNewPoints(e.target.value)}
+                                        placeholder="Points"
+                                        className="w-24 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:outline-none focus:border-red-500"
+                                      />
+                                      <button
+                                        onClick={() => handleUpdatePoints(course._id, student._id, newPoints)}
+                                        className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                                      >
+                                        Save
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          setEditingStudentId(null);
+                                          setNewPoints('');
+                                        }}
+                                        className="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-500"
+                                      >
+                                        Cancel
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <span className="text-yellow-400 font-semibold">
+                                        {student.points} Points
+                                      </span>
+                                      <button
+                                        onClick={() => {
+                                          setEditingStudentId(student._id);
+                                          setNewPoints(student.points.toString());
+                                        }}
+                                        className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                      >
+                                        Edit
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

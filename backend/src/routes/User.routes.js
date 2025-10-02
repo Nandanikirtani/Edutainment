@@ -32,6 +32,7 @@ router.post("/refresh-token", refreshAccessToken);
 
 // ----------------- Profile -----------------
 router.get("/profile", verifyJWT, getUserProfile);
+router.get("/me", verifyJWT, getUserProfile); // Alias for profile
 router.put("/profile", verifyJWT, updateUserProfile);
 
 // ----------------- Change password -----------------

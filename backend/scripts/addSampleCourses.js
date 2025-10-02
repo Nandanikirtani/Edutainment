@@ -112,8 +112,8 @@ const sampleCourses = [
     category: "AI/ML",
     level: "Beginner",
     price: 149,
-    thumbnailUrl: "https://res.cloudinary.com/dk2idz5gp/image/upload/v1703000000/AI.jpeg",
-    backgroundImage: "https://res.cloudinary.com/dk2idz5gp/image/upload/v1703000000/AI.jpeg",
+    thumbnailUrl: "AI.jpeg",
+    backgroundImage: "AI.jpeg",
     chapters: [
       {
         title: "AI Basics",

@@ -58,8 +58,8 @@ const addSampleCourses = async () => {
         facultyId: "68da0de6d05d2cd205f0e764",
         title: "AI Tutorial",
         description: "Comprehensive AI course covering artificial intelligence fundamentals, machine learning, and deep learning.",
-        thumbnailUrl: "/AI.jpeg",
-        backgroundImage: "/AI.jpeg",
+        thumbnailUrl: "AI.jpeg",
+        backgroundImage: "AI.jpeg",
         category: "AI/ML",
         level: "Beginner",
         duration: 150, // 2.5 hours

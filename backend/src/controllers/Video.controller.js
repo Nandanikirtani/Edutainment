@@ -6,6 +6,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import cloudinary from "../utils/cloudinary.js";
 import fs from "fs";
+import { User } from "../models/User.model.js";
 
 // ===============================================
 //               Original Git Video Functions
@@ -194,6 +195,219 @@ export const getAdminUploadedCourses = asyncHandler(async (req, res) => {
   });
 });
 
+// Admin: Get all courses with enrolled students and their points
+export const getAllCoursesWithStudents = asyncHandler(async (req, res) => {
+  const courses = await Course.find({})
+    .populate('facultyId', 'fullName email')
+    .populate('enrolledStudents', 'fullName email')
+    .sort({ createdAt: -1 });
+
+  // Format data to include student progress/points
+  const coursesWithStudentData = courses.map(course => {
+    const students = course.enrolledStudents.map(student => {
+      const studentProgress = course.progress.find(
+        p => p.studentId.toString() === student._id.toString()
+      );
+      return {
+        _id: student._id,
+        fullName: student.fullName,
+        email: student.email,
+        points: studentProgress ? studentProgress.points : 0
+      };
+    });
+
+    return {
+      _id: course._id,
+      title: course.title,
+      description: course.description,
+      thumbnailUrl: course.thumbnailUrl,
+      facultyId: course.facultyId,
+      category: course.category,
+      level: course.level,
+      enrolledStudents: students,
+      totalEnrolled: students.length
+    };
+  });
+
+  res.status(200).json({
+    success: true,
+    data: coursesWithStudentData,
+    message: "All courses with student data fetched successfully",
+  });
+});
+
+// Admin: Update student points for a course
+export const updateStudentPoints = asyncHandler(async (req, res) => {
+  const { courseId, studentId } = req.params;
+  const { points } = req.body;
+
+  if (typeof points !== 'number' || points < 0) {
+    throw new ApiError(400, "Valid points value is required (must be >= 0)");
+  }
+
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ApiError(404, "Course not found");
+  }
+
+  // Check if student is enrolled
+  const isEnrolled = course.enrolledStudents.some(
+    s => s.toString() === studentId
+  );
+  if (!isEnrolled) {
+    throw new ApiError(404, "Student is not enrolled in this course");
+  }
+
+  // Find or create student progress
+  let studentProgress = course.progress.find(
+    p => p.studentId.toString() === studentId
+  );
+
+  if (!studentProgress) {
+    studentProgress = {
+      studentId,
+      completedVideoIds: [],
+      completedQuizIds: [],
+      points: points
+    };
+    course.progress.push(studentProgress);
+  } else {
+    studentProgress.points = points;
+  }
+
+  await course.save();
+
+  const updatedCourse = await Course.findById(courseId)
+    .populate('enrolledStudents', 'fullName email');
+
+  res.status(200).json({
+    success: true,
+    data: updatedCourse,
+    message: "Student points updated successfully",
+  });
+});
+
+// Admin: Get all faculty/teachers for dropdown
+export const getAllFaculty = asyncHandler(async (req, res) => {
+  const faculty = await User.find({ role: { $in: ['teacher', 'admin'] } })
+    .select('fullName email role')
+    .sort({ fullName: 1 });
+
+  res.status(200).json({
+    success: true,
+    data: faculty,
+    message: "Faculty list fetched successfully",
+  });
+});
+
+// Helper: Check and award badges based on course total points percentage
+const checkAndAwardBadge = async (course, studentId) => {
+  const student = await User.findById(studentId);
+  if (!student) return null;
+
+  // Get student's progress
+  const progress = course.progress.find(p => p.studentId.toString() === studentId.toString());
+  if (!progress) return null;
+
+  // Calculate total possible points in course
+  let totalPoints = 0;
+  course.chapters.forEach(ch => {
+    (ch.quizzes || []).forEach(qz => {
+      // Each quiz awards 20 points per question
+      const questionsCount = (qz.questions || []).length;
+      totalPoints += questionsCount * 20;
+    });
+  });
+  
+  if (totalPoints === 0) return null;
+
+  // Get student's current points
+  const currentPoints = progress.points || 0;
+
+  // Calculate required points for each badge based on course total
+  const badge50Points = Math.ceil(totalPoints * 0.5);  // 50% of total points
+  const badge75Points = Math.ceil(totalPoints * 0.75); // 75% of total points
+  const badge90Points = Math.ceil(totalPoints * 0.9);  // 90% of total points
+
+  // Check which badge to award based on percentage of total course points
+  let badgeToAward = null;
+  if (currentPoints >= badge90Points) badgeToAward = '90';
+  else if (currentPoints >= badge75Points) badgeToAward = '75';
+  else if (currentPoints >= badge50Points) badgeToAward = '50';
+
+  if (!badgeToAward) return null;
+
+  // Check if student already has this badge for this course
+  const alreadyHasBadge = student.badges?.some(
+    b => b.courseId.toString() === course._id.toString() && b.badgeType === badgeToAward
+  );
+
+  if (alreadyHasBadge) return null;
+
+  // Award the badge
+  if (!student.badges) student.badges = [];
+  student.badges.push({
+    badgeType: badgeToAward,
+    courseId: course._id,
+    courseName: course.title,
+    earnedAt: new Date()
+  });
+  await student.save();
+
+  const completionPercentage = Math.floor((currentPoints / totalPoints) * 100);
+
+  return {
+    badgeType: badgeToAward,
+    completionPercentage,
+    courseName: course.title,
+    currentPoints,
+    totalPoints,
+    requiredPoints: {
+      badge50: badge50Points,
+      badge75: badge75Points,
+      badge90: badge90Points
+    }
+  };
+};
+
+// Admin: Update course faculty
+export const updateCourseFaculty = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  const { facultyId } = req.body;
+
+  if (!facultyId) {
+    throw new ApiError(400, "Faculty ID is required");
+  }
+
+  // Verify the new faculty exists and has appropriate role
+  const faculty = await User.findById(facultyId);
+  if (!faculty) {
+    throw new ApiError(404, "Faculty not found");
+  }
+
+  if (!['teacher', 'admin'].includes(faculty.role)) {
+    throw new ApiError(400, "Selected user must be a teacher or admin");
+  }
+
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ApiError(404, "Course not found");
+  }
+
+  course.facultyId = facultyId;
+  await course.save();
+
+  const updatedCourse = await Course.findById(courseId)
+    .populate('facultyId', 'fullName email role')
+    .populate('enrolledStudents', 'fullName email');
+
+  res.status(200).json({
+    success: true,
+    data: updatedCourse,
+    message: "Course faculty updated successfully",
+  });
+});
+
 // ===============================================
 //               Course Management APIs
 // ===============================================
@@ -292,6 +506,221 @@ export const addChapter = asyncHandler(async (req, res) => {
     data: course,
     message: "Chapter added successfully",
   });
+});
+
+// Admin/Faculty: Add quiz to chapter
+export const addQuizToChapter = asyncHandler(async (req, res) => {
+  const { courseId, chapterId } = req.params;
+  const { title, description, questions, points } = req.body;
+
+  if (!title) throw new ApiError(400, "Quiz title is required");
+
+  const course = await Course.findById(courseId);
+  if (!course) throw new ApiError(404, "Course not found");
+
+  if (!canManageCourse(req.user, course)) {
+    throw new ApiError(403, "You can only add quizzes to your own courses");
+  }
+
+  const chapter = course.chapters.id(chapterId);
+  if (!chapter) throw new ApiError(404, "Chapter not found");
+
+  // Validate and sanitize questions
+  const rawQuestions = Array.isArray(questions) ? questions : [];
+  if (rawQuestions.length === 0) {
+    throw new ApiError(400, "At least one question is required with a correct answer");
+  }
+  const sanitizedQuestions = rawQuestions.map((q, idx) => {
+    const text = (q.text || "").trim();
+    const opts = Array.isArray(q.options) ? q.options.map(o => (o || "").trim()) : [];
+    const ci = Number.isInteger(q.correctIndex) ? q.correctIndex : -1;
+    if (!text) throw new ApiError(400, `Question ${idx + 1}: text is required`);
+    if (opts.length < 2) throw new ApiError(400, `Question ${idx + 1}: at least two options are required`);
+    if (opts.some(o => !o)) throw new ApiError(400, `Question ${idx + 1}: options cannot be empty`);
+    if (ci < 0 || ci >= opts.length) throw new ApiError(400, `Question ${idx + 1}: select the correct answer`);
+    return { text, options: opts, correctIndex: ci };
+  });
+
+  // Calculate points: 20 points per question
+  const calculatedPoints = sanitizedQuestions.length * 20;
+
+  const newQuiz = {
+    title,
+    description: description || "",
+    questions: sanitizedQuestions,
+    points: calculatedPoints,
+  };
+
+  chapter.quizzes.push(newQuiz);
+  await course.save();
+
+  const updated = await Course.findById(courseId);
+  res.status(201).json({ success: true, data: updated, message: "Quiz added successfully" });
+});
+
+// Student: Submit quiz answers
+export const submitQuiz = asyncHandler(async (req, res) => {
+  const { courseId, chapterId, quizId } = req.params;
+  const { answers } = req.body; // array of selected option indexes
+
+  const course = await Course.findById(courseId);
+  if (!course) throw new ApiError(404, "Course not found");
+
+  // Must be enrolled
+  if (!course.enrolledStudents.some(s => s.toString() === req.user._id.toString())) {
+    throw new ApiError(403, "Enroll in this course to take quizzes");
+  }
+
+  const chapter = course.chapters.id(chapterId);
+  if (!chapter) throw new ApiError(404, "Chapter not found");
+  const quiz = chapter.quizzes.id(quizId);
+  if (!quiz) throw new ApiError(404, "Quiz not found");
+
+  const qs = quiz.questions || [];
+  const ans = Array.isArray(answers) ? answers : [];
+  let correct = 0;
+  qs.forEach((q, idx) => {
+    if (typeof ans[idx] === 'number' && ans[idx] === q.correctIndex) correct += 1;
+  });
+  const total = qs.length;
+
+  // Helpers for progress
+  const getOrCreateProgress = (course, studentId) => {
+    let progress = course.progress.find(p => p.studentId.toString() === studentId.toString());
+    if (!progress) {
+      progress = { studentId, completedVideoIds: [], completedQuizIds: [], points: 0 };
+      course.progress.push(progress);
+    }
+    return progress;
+  };
+
+  // Award points only when all answers are correct, and only once per quiz
+  const progress = getOrCreateProgress(course, req.user._id);
+  let addedPoints = 0;
+  const alreadyCompleted = progress.completedQuizIds.some(id => id.toString() === quiz._id.toString());
+  if (!alreadyCompleted) {
+    if (total > 0 && correct === total) {
+      progress.completedQuizIds.push(quiz._id);
+      // Always calculate points based on questions count: 20 per question
+      const pts = qs.length * 20;
+      progress.points += pts;
+      addedPoints = pts;
+    }
+  }
+  await course.save();
+
+  // Check for badge award
+  const badgeAwarded = await checkAndAwardBadge(course, req.user._id);
+
+  res.status(200).json({
+    success: true,
+    data: { correct, total, addedPoints, points: progress.points, badgeAwarded },
+    message: "Quiz submitted"
+  });
+});
+
+// Admin/Faculty: Delete quiz from chapter
+export const deleteQuiz = asyncHandler(async (req, res) => {
+  const { courseId, chapterId, quizId } = req.params;
+
+  const course = await Course.findById(courseId);
+  if (!course) throw new ApiError(404, "Course not found");
+
+  if (!canManageCourse(req.user, course)) {
+    throw new ApiError(403, "You can only delete quizzes from your own courses");
+  }
+
+  const chapter = course.chapters.id(chapterId);
+  if (!chapter) throw new ApiError(404, "Chapter not found");
+  const quiz = chapter.quizzes.id(quizId);
+  if (!quiz) throw new ApiError(404, "Quiz not found");
+
+  // Get the actual points that were awarded for this quiz
+  // Use stored points if available, otherwise calculate from questions
+  const quizPoints = quiz.points || ((quiz.questions || []).length * 20);
+
+  // Deduct points from all students who completed this quiz
+  course.progress.forEach(progress => {
+    const completedIndex = progress.completedQuizIds.findIndex(
+      id => id.toString() === quizId.toString()
+    );
+    
+    if (completedIndex !== -1) {
+      // Remove quiz from completed list
+      progress.completedQuizIds.splice(completedIndex, 1);
+      
+      // Deduct points (ensure points don't go negative)
+      progress.points = Math.max(0, (progress.points || 0) - quizPoints);
+    }
+  });
+
+  chapter.quizzes.pull(quizId);
+  await course.save();
+
+  res.status(200).json({ success: true, data: course, message: "Quiz deleted successfully" });
+});
+
+// Student: Mark video complete (no points awarded; points now only from quizzes)
+export const markVideoComplete = asyncHandler(async (req, res) => {
+  const { courseId, chapterId, videoId } = req.params;
+
+  const course = await Course.findById(courseId);
+  if (!course) throw new ApiError(404, "Course not found");
+
+  if (!course.enrolledStudents.some(s => s.toString() === req.user._id.toString())) {
+    throw new ApiError(403, "Enroll in this course to track progress");
+  }
+
+  const chapter = course.chapters.id(chapterId);
+  if (!chapter) throw new ApiError(404, "Chapter not found");
+  const video = chapter.videos.id(videoId);
+  if (!video) throw new ApiError(404, "Video not found");
+
+  // Keep track of completion but don't award points
+  let progress = course.progress.find(p => p.studentId.toString() === req.user._id.toString());
+  if (!progress) {
+    progress = { studentId: req.user._id, completedVideoIds: [], completedQuizIds: [], points: 0 };
+    course.progress.push(progress);
+  }
+  if (!progress.completedVideoIds.some(id => id.toString() === video._id.toString())) {
+    progress.completedVideoIds.push(video._id);
+  }
+  await course.save();
+
+  // Check for badge award
+  const badgeAwarded = await checkAndAwardBadge(course, req.user._id);
+
+  res.status(200).json({ success: true, data: { addedPoints: 0, points: progress.points, badgeAwarded }, message: "Video marked complete (no points)" });
+});
+
+// Student: Get my progress
+export const getMyProgress = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  const course = await Course.findById(courseId);
+  if (!course) throw new ApiError(404, "Course not found");
+
+  const progress = (course.progress || []).find(p => p.studentId.toString() === req.user._id.toString());
+  res.status(200).json({ success: true, data: progress || { points: 0, completedVideoIds: [], completedQuizIds: [] }, message: "Progress fetched" });
+});
+
+// Public: Leaderboard for a course (top 10 by points)
+export const getCourseLeaderboard = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  const course = await Course.findById(courseId);
+  if (!course) throw new ApiError(404, "Course not found");
+
+  const progresses = (course.progress || []).slice().sort((a, b) => (b.points || 0) - (a.points || 0)).slice(0, 10);
+  const userIds = progresses.map(p => p.studentId);
+  const users = await User.find({ _id: { $in: userIds } }).select("fullName email");
+  const userMap = new Map(users.map(u => [u._id.toString(), u]));
+
+  const leaderboard = progresses.map(p => ({
+    studentId: p.studentId,
+    fullName: userMap.get(p.studentId.toString())?.fullName || "Unknown",
+    points: p.points || 0
+  }));
+
+  res.status(200).json({ success: true, data: leaderboard, message: "Leaderboard fetched" });
 });
 
 // Add video to chapter (Admin/Faculty only)

@@ -309,30 +309,30 @@ const BackDesc = styled.p`
 
 /* ================= Data ================= */
 const sliderImages = [
-  { id: 1, url: "1.png", videoId: "rHWQm-dsJ8g" },
-  { id: 2, url: "2.png", videoId: "2HeLWFWPhaw" },
-  { id: 3, url: "3.png", videoId: "s0rQ4wn8Ir8" },
+  { id: 1, url: `${import.meta.env.BASE_URL}1.png`, videoId: "rHWQm-dsJ8g" },
+  { id: 2, url: `${import.meta.env.BASE_URL}2.png`, videoId: "2HeLWFWPhaw" },
+  { id: 3, url: `${import.meta.env.BASE_URL}3.png`, videoId: "s0rQ4wn8Ir8" },
 ];
 
 const coursesData = [
-  { id: "1", title: "AR/VR COURSES", tag: "New / Free", img: "/AR.jpeg" },
-  { id: "2", title: "Machine Learning", tag: "Everybody", img: "/Machine_LEARNING.jpeg" },
-  { id: "3", title: "AI Tutorial", tag: "Simplilearn", img: "/AI.jpeg" },
-  { id: "4", title: "Java", tag: "Pay per view", img: "/java.png" },
+  { id: "1", title: "AR/VR COURSES", tag: "New / Free", img: `${import.meta.env.BASE_URL}AR.jpeg` },
+  { id: "2", title: "Machine Learning", tag: "Everybody", img: `${import.meta.env.BASE_URL}Machine_LEARNING.jpeg` },
+  { id: "3", title: "AI Tutorial", tag: "Simplilearn", img: `${import.meta.env.BASE_URL}AI.jpeg` },
+  { id: "4", title: "Java", tag: "Pay per view", img: `${import.meta.env.BASE_URL}java.png` },
 ];
 
 const artsData = [
-  { id: 1, title: "Entrepreneurship AND Startup", img: "A1.png", videoId: "fmycIrIn9Pk"},
-  { id: 2, title: "Sources of Business Ideas", img: "A2.png" , videoId: "9kMY1Amf1CA" },
-  { id: 3, title: "Literature", img: "A3.png" },
-  { id: 4, title: "Sociology", img: "A4.png" },
+  { id: 1, title: "Entrepreneurship AND Startup", img: `${import.meta.env.BASE_URL}A1.png`, videoId: "fmycIrIn9Pk"},
+  { id: 2, title: "Sources of Business Ideas", img: `${import.meta.env.BASE_URL}A2.png`, videoId: "9kMY1Amf1CA" },
+  { id: 3, title: "Literature", img: `${import.meta.env.BASE_URL}A3.png` },
+  { id: 4, title: "Sociology", img: `${import.meta.env.BASE_URL}A4.png` },
 ];
 
 const extraData = [
-  { id: 1, title: "B.Tech Automobile", tag: "Engineering", img: "C1.jpeg", videoId: "C2ZFWaHOAaQ", desc: "Explore the world of automotive engineering with cutting-edge technology and hands-on learning experiences." },
-  { id: 2, title: "MBA Programs", tag: "Business", img: "C2.jpeg", videoId: "FFbCjEAestA", desc: "Transform your career with our comprehensive MBA programs designed for future business leaders." },
-  { id: 3, title: "Psychology", tag: "Behavioral Science", img: "C3.jpeg", videoId: "_bFV-saB2Uk", desc: "Understand human behavior and mental processes through our advanced psychology curriculum." },
-  { id: 4, title: "Mass Comm.", tag: "Media", img: "C4.jpeg", videoId: "XOZhYijcVBY", desc: "Master the art of communication and media with our industry-focused mass communication program." },
+  { id: 1, title: "B.Tech Automobile", tag: "Engineering", img: `${import.meta.env.BASE_URL}C1.jpeg`, videoId: "C2ZFWaHOAaQ", desc: "Explore the world of automotive engineering with cutting-edge technology and hands-on learning experiences." },
+  { id: 2, title: "MBA Programs", tag: "Business", img: `${import.meta.env.BASE_URL}C2.jpeg`, videoId: "FFbCjEAestA", desc: "Transform your career with our comprehensive MBA programs designed for future business leaders." },
+  { id: 3, title: "Psychology", tag: "Behavioral Science", img: `${import.meta.env.BASE_URL}C3.jpeg`, videoId: "_bFV-saB2Uk", desc: "Understand human behavior and mental processes through our advanced psychology curriculum." },
+  { id: 4, title: "Mass Comm.", tag: "Media", img: `${import.meta.env.BASE_URL}C4.jpeg`, videoId: "XOZhYijcVBY", desc: "Master the art of communication and media with our industry-focused mass communication program." },
 ];
 
 /* ================= Motion Variants ================= */
@@ -520,7 +520,7 @@ const HeroSlider = () => {
         ))}
       </PreviewContainer>
 
-      <style jsx global>{`
+      <style>{`
         @keyframes pulse {
           0% { transform: scale(1); opacity: 1; }
           50% { transform: scale(1.1); opacity: 0.8; }
@@ -559,7 +559,7 @@ const CareerSection = () => {
     <>
       <CareerContainer onClick={handleCareerClick} style={{ cursor: 'pointer' }}>
         <CareerBanner 
-          src="carrer.png" 
+          src={`${import.meta.env.BASE_URL}carrer.png`} 
           alt="Career Banner" 
           style={{ width: '100%', height: 'auto' }}
         />
@@ -723,13 +723,33 @@ const CoursesSection = () => {
       const data = await response.json();
       
       if (response.ok) {
-        setCourses(data.data || []);
+        console.log("✅ Courses fetched from API:", data.data);
+        
+        // Debug: Log first course structure
+        if (data.data && data.data.length > 0) {
+          console.log("First course structure:", {
+            title: data.data[0].title,
+            img: data.data[0].img,
+            thumbnailUrl: data.data[0].thumbnailUrl,
+            backgroundImage: data.data[0].backgroundImage
+          });
+        }
+        
+        // If API returns empty array or no data, use fallback
+        if (data.data && data.data.length > 0) {
+          setCourses(data.data);
+        } else {
+          console.log("⚠️ API returned empty data, using fallback");
+          setCourses(coursesData);
+        }
       } else {
+        console.log("⚠️ API failed, using fallback data");
         // Fallback to hardcoded data if API fails
         setCourses(coursesData);
       }
     } catch (error) {
-      console.error("Error fetching courses:", error);
+      console.error("❌ Error fetching courses:", error);
+      console.log("⚠️ Using fallback hardcoded data");
       // Fallback to hardcoded data
       setCourses(coursesData);
     } finally {
@@ -764,7 +784,17 @@ const CoursesSection = () => {
           >
             <Rank>{index + 1}</Rank>
             <CardImage 
-              src={course.img} 
+              src={
+                course.thumbnailUrl?.startsWith('http') 
+                  ? course.thumbnailUrl 
+                  : course.thumbnailUrl 
+                    ? `${import.meta.env.BASE_URL}${course.thumbnailUrl.replace(/^\//, '')}` 
+                    : course.img?.startsWith('http') 
+                      ? course.img 
+                      : course.img 
+                        ? `${import.meta.env.BASE_URL}${course.img.replace(/^\//, '')}` 
+                        : `${import.meta.env.BASE_URL}course${index + 1}.png`
+              } 
               alt={course.title}
             />
           </CourseCard>
