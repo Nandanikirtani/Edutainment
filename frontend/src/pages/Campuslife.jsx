@@ -1,7 +1,7 @@
 // CampusLife.jsx
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Play, ArrowLeft, Clock, User } from "lucide-react";
+import { Play, User } from "lucide-react";
 import PodcastContent from "../components/PodcastContent";
 
 // ================= Motion Variants =================
@@ -27,32 +27,31 @@ const podcasts = [
     title: "The #1 Thing Industry Wants in Engineers",
     speaker: "Ft. Dr. Venkatesh Radhakrishnan",
     desc: "We unpack the future of engineering talent in this high-stakes conversation where real-world skills meet evolving industry benchmarks, and students transition into true industry-ready professionals.",
-    videoId: "S7IOV-HaVME"
+    videoId: "S7IOV-HaVME",
   },
   {
     img: import.meta.env.BASE_URL + "podcast2.jpg",
     title: "Traditional vs Dynamic Pedagogy",
     speaker: "Ft. Dr. Anadajit Goswami",
     desc: "Discover how India is positioning itself as a global semiconductor hub through major government initiatives like the ₹76,000 crore Semicon India Program, rising investments, and the growing startup ecosystem.",
-    videoId: "8yMwHkDy6ZU"
+    videoId: "8yMwHkDy6ZU",
   },
   {
     img: import.meta.env.BASE_URL + "podcast3.jpg",
     title: "India's Silicon Leap",
     speaker: "Ft. Dr. Ashwini K. Aggarwal",
     desc: "In a riveting conversation with Dr. Anadajit Goswami — Professor and Director at the School of Behavioural and Social Sciences, Research Director at Manav Rachna International Institute of Research and Studies.",
-    videoId: "Gj6XjGR4tU8"
+    videoId: "Gj6XjGR4tU8",
   },
   {
     img: import.meta.env.BASE_URL + "podcast4.jpg",
     title: "Will AI make Engineering Obsolete?",
     speaker: "Ft. Dr. Dipali Bansal",
     desc: "Dr. Dipali Bansal, Professor and Dean, School of Engineering at Manav Rachna University, brings decades of academic and industry experience to the mic.",
-    videoId: "0Gz9wP4eCEs"
+    videoId: "0Gz9wP4eCEs",
   },
 ];
 
-// 🔹 Happenings
 const happenings = [
   { img: import.meta.env.BASE_URL + "mru1.jpg" },
   { img: import.meta.env.BASE_URL + "mru2.jpg" },
@@ -60,55 +59,6 @@ const happenings = [
   { img: import.meta.env.BASE_URL + "mru4.jpg" },
 ];
 
-// 🔹 Icons
-const icons = [
-  { img: import.meta.env.BASE_URL + "icon1.jpg" },
-  { img: import.meta.env.BASE_URL + "icon2.jpg" },
-  { img: import.meta.env.BASE_URL + "icon3.jpg" },
-  { img: import.meta.env.BASE_URL + "icon4.jpg" },
-];
-
-// 🔹 Awards
-const awards = [
-  { img: import.meta.env.BASE_URL + "award1.png" },
-  { img: import.meta.env.BASE_URL + "award2.png" },
-  { img: import.meta.env.BASE_URL + "award3.png" },
-  { img: import.meta.env.BASE_URL + "award4.png" },
-];
-
-// 🔹 Courses
-const courses = [
-  { 
-    img: import.meta.env.BASE_URL + "course1.png", 
-    title: "The #1 Thing Industry Wants in Engineers", 
-    tag: "Engineering", 
-    videoId: "C2ZFWaHOAaQ", 
-    desc: "We unpack the future of engineering talent in this high-stakes conversation where real-world skills meet evolving industry benchmarks, and students transition into true industry-ready professionals." 
-  },
-  { 
-    img: import.meta.env.BASE_URL + "course2.png", 
-    title: "Traditional vs Dynamic Pedagogy", 
-    tag: "Education", 
-    videoId: "FFbCjEAestA", 
-    desc: "Discover how India is positioning itself as a global semiconductor hub through major government initiatives like the ₹76,000 crore Semicon India Program." 
-  },
-  { 
-    img: import.meta.env.BASE_URL + "course3.png", 
-    title: "India's Silicon Leap", 
-    tag: "Technology", 
-    videoId: "_bFV-saB2Uk", 
-    desc: "Exploring India's journey in the semiconductor industry and its impact on the global tech landscape." 
-  },
-  { 
-    img: import.meta.env.BASE_URL + "course4.png", 
-    title: "Will AI make Engineering Obsolete?", 
-    tag: "AI & Future", 
-    videoId: "XOZhYijcVBY", 
-    desc: "A deep dive into how artificial intelligence is reshaping the engineering landscape and what it means for future engineers." 
-  },
-];
-
-// 🔹 Icons of Manav Rachna with video data
 const iconsWithVideos = [
   { 
     img: import.meta.env.BASE_URL + "icon1.jpg", 
@@ -140,371 +90,193 @@ const iconsWithVideos = [
   },
 ];
 
+const courses = [
+  { 
+    img: import.meta.env.BASE_URL + "course1.png", 
+    title: "The #1 Thing Industry Wants in Engineers", 
+    tag: "Engineering", 
+    videoId: "C2ZFWaHOAaQ", 
+    desc: "We unpack the future of engineering talent in this high-stakes conversation where real-world skills meet evolving industry benchmarks, and students transition into true industry-ready professionals." 
+  },
+  { 
+    img: import.meta.env.BASE_URL + "course2.png", 
+    title: "Traditional vs Dynamic Pedagogy", 
+    tag: "Education", 
+    videoId: "FFbCjEAestA", 
+    desc: "Discover how India is positioning itself as a global semiconductor hub through major government initiatives like the ₹76,000 crore Semicon India Program." 
+  },
+  { 
+    img: import.meta.env.BASE_URL + "course3.png", 
+    title: "India's Silicon Leap", 
+    tag: "Technology", 
+    videoId: "_bFV-saB2Uk", 
+    desc: "Exploring India's journey in the semiconductor industry and its impact on the global tech landscape." 
+  },
+  { 
+    img: import.meta.env.BASE_URL + "course4.png", 
+    title: "Will AI make Engineering Obsolete?", 
+    tag: "AI & Future", 
+    videoId: "XOZhYijcVBY", 
+    desc: "A deep dive into how artificial intelligence is reshaping the engineering landscape and what it means for future engineers." 
+  },
+];
+
 export default function CampusLife() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [awardIndex, setAwardIndex] = useState(0);
-  const [showPodcast, setShowPodcast] = useState(false);
-  
-  // Video states for Programs Offered
+  const [activePodcastIndex, setActivePodcastIndex] = useState(0);
+  const [podcastIsPlaying, setPodcastIsPlaying] = useState(false);
+  const [podcastDetailView, setPodcastDetailView] = useState(false);
+
   const [programActiveIndex, setProgramActiveIndex] = useState(0);
   const [programIsPlaying, setProgramIsPlaying] = useState(false);
-  const [programShowDetailView, setProgramShowDetailView] = useState(false);
-  
-  // Video states for Icons of Manav Rachna
+  const [programDetailView, setProgramDetailView] = useState(false);
+
   const [iconActiveIndex, setIconActiveIndex] = useState(0);
   const [iconIsPlaying, setIconIsPlaying] = useState(false);
-  const [iconShowDetailView, setIconShowDetailView] = useState(false);
+  const [iconDetailView, setIconDetailView] = useState(false);
 
-  const activePodcast = podcasts[activeIndex];
+  const activePodcast = podcasts[activePodcastIndex];
   const activeProgram = courses[programActiveIndex];
   const activeIcon = iconsWithVideos[iconActiveIndex];
 
   return (
-    <div className="bg-black text-white min-h-screen overflow-hidden">
-      {/* 🔹 Podcast Section with Background */}
+    <div className="bg-black text-white min-h-screen overflow-x-hidden">
+
+      {/* ================= Podcast Section ================= */}
       <div className="relative min-h-screen flex flex-col items-center justify-center text-center p-6">
-        <motion.div
-          key={activeIndex}
-          initial={{ x: "100%" }}
-          animate={{ x: 0 }}
-          exit={{ x: "-100%" }}
-          transition={{ duration: 1, ease: "easeInOut" }}
+        <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${activePodcast.img})` }}
         >
           <div className="absolute inset-0 bg-black/60" />
-        </motion.div>
+        </div>
 
         <div className="relative z-10">
-          <motion.div
-            key={activeIndex}
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+          <h2 className="text-4xl font-bold">{activePodcast.title}</h2>
+          <button
+            onClick={() => setPodcastIsPlaying(true)}
+            className="mt-6 px-6 py-3 bg-red-600 rounded-full flex items-center gap-2 hover:bg-red-700 transition"
           >
-            <button
-              onClick={() => {
-                setActiveIndex(activeIndex);
-                setShowPodcast(true);
-              }}
-              className="mt-6 px-6 py-3 bg-red-600 rounded-full flex items-center gap-2 hover:bg-red-700 transition"
-            >
-              <Play className="w-5 h-5" /> Play
-            </button>
-          </motion.div>
+            <Play className="w-5 h-5" /> Play
+          </button>
 
-          {/* 🔹 Podcast Thumbnails */}
-          <motion.div
-            variants={gridVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.25 }}
-            className="mt-12 flex gap-6 flex-wrap justify-center"
-          >
+          <div className="mt-12 flex gap-6 flex-wrap justify-center">
             {podcasts.map((p, idx) => (
-              <motion.img
+              <img
                 key={idx}
-                variants={cardVariant}
                 src={p.img}
                 alt={`podcast-${idx}`}
                 onClick={() => {
-                  setActiveIndex(idx);
-                  setShowPodcast(false);
+                  setActivePodcastIndex(idx);
+                  setPodcastDetailView(false);
                 }}
                 className="w-60 h-40 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-red-500 transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
-                whileHover={{ scale: 1.05 }}
               />
             ))}
-          </motion.div>
+          </div>
         </div>
       </div>
 
-      {showPodcast && (
-        <div className="fixed inset-0 z-50">
-          <PodcastContent
-            title={activePodcast.title}
-            speaker={activePodcast.speaker}
-            desc={activePodcast.desc}
-            bgImage={activePodcast.img}
-            videoId={activePodcast.videoId}
-            onBack={() => setShowPodcast(false)}
-          />
-        </div>
-      )}
-
-      {/* 🔹 What's happening @MRU */}
-      <div className="py-12 px-6">
-        <h2 className="text-2xl text-center font-bold mb-6">What's happening @MRU</h2>
-        <motion.div
-          variants={gridVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.25 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
-          {happenings.map((item, idx) => (
-            <motion.img
-              key={idx}
-              variants={cardVariant}
-              src={item.img}
-              alt={`happening-${idx}`}
-              className="w-full h-40 object-cover rounded-lg cursor-pointer transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
-              whileHover={{ scale: 1.05 }}
-            />
-          ))}
-        </motion.div>
-      </div>
-
-      {/* 🔹 Icons of Manav Rachna */}
-      <div className="py-12 px-6">
-        <h2 className="text-2xl text-center font-bold mb-6">Icons of Manav Rachna</h2>
-        <motion.div
-          variants={gridVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.25 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
-          {iconsWithVideos.map((icon, idx) => (
-            <motion.img
-              key={idx}
-              variants={cardVariant}
-              src={icon.img}
-              alt={`icon-${idx}`}
-              onClick={() => {
-                setIconActiveIndex(idx);
-                setIconIsPlaying(true);
-              }}
-              className="w-full h-52 object-cover rounded-md cursor-pointer transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
-              whileHover={{ scale: 1.05 }}
-            />
-          ))}
-        </motion.div>
-      </div>
-
-      {/* 🔹 MRE Awards */}
-      <div className="py-12 px-6">
-        <h2 className="text-2xl text-center font-bold mb-6">MRE Awards</h2>
-        <div className="max-w-6xl mx-auto flex items-center justify-between relative">
-          {/* Left Button */}
+      {/* ================= Mini Player for Podcast ================= */}
+      {podcastIsPlaying && (
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
           <button
-            onClick={() =>
-              setAwardIndex((prev) => (prev === 0 ? awards.length - 1 : prev - 1))
-            }
-            className="absolute -left-10 bg-yellow-500 text-black px-3 py-2 rounded-full z-10"
+            onClick={() => setPodcastIsPlaying(false)}
+            className="absolute top-4 right-4 bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl hover:bg-white/30 transition"
           >
-            ◀
+            ×
           </button>
-
-          {/* Card Layout */}
-          <motion.div
-            key={awardIndex}
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex flex-col md:flex-row items-center gap-6 border-2 border-yellow-500 rounded-2xl p-6 w-full"
-          >
-            {/* Left Text */}
-            <div className="flex-1 text-center md:text-left">
-              <h3 className="text-xl font-semibold mb-2 text-gray-300">
-                Lifetime Achievement Award to Shri Rajan Nanda
-              </h3>
-              <p className="text-gray-400 text-sm">
-                Honored for his exemplary contribution to society and leadership
-                excellence.
-              </p>
-            </div>
-
-            {/* Right Image */}
-            <motion.img
-              src={awards[awardIndex].img}
-              alt={`award-${awardIndex}`}
-              className="flex-1 w-full md:w-80 h-60 object-cover rounded-lg transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,215,0,0.7)]"
-              whileHover={{ scale: 1.05 }}
-            />
-          </motion.div>
-
-          {/* Right Button */}
-          <button
-            onClick={() =>
-              setAwardIndex((prev) => (prev === awards.length - 1 ? 0 : prev + 1))
-            }
-            className="absolute -right-10 bg-yellow-500 text-black px-3 py-2 rounded-full z-10"
-          >
-            ▶
-          </button>
-        </div>
-      </div>
-
-      {/* 🔹 Programs Offered */}
-      <div className="py-12 px-6">
-        <h2 className="text-2xl text-center font-bold mb-6">Programs Offered</h2>
-        <motion.div
-          variants={gridVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.25 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
-          {courses.map((course, idx) => (
-            <motion.img
-              key={idx}
-              variants={cardVariant}
-              src={course.img}
-              alt={`course-${idx}`}
-              onClick={() => {
-                setProgramActiveIndex(idx);
-                setProgramIsPlaying(true);
-              }}
-              className="w-full h-40 object-cover rounded-lg cursor-pointer transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
-              whileHover={{ scale: 1.05 }}
-            />
-          ))}
-        </motion.div>
-      </div>
-
-      {/* 🔹 Programs Offered Video Player */}
-      {programIsPlaying && (
-        <div className="fixed inset-0 w-full h-full bg-black z-50">
-          <iframe
-            className="w-full h-full"
-            src={`https://www.youtube.com/embed/${activeProgram.videoId}?autoplay=1`}
-            title={activeProgram.title}
-            frameBorder="0"
-            allow="accelerometer; autoplay; encrypted-media"
-            allowFullScreen
-          ></iframe>
-        </div>
-      )}
-
-      {/* 🔹 Programs Offered Detail View */}
-      {programShowDetailView && (
-        <div className="fixed inset-0 w-full h-full bg-black z-40">
-          <motion.div
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${activeProgram.img})` }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/40" />
-          </motion.div>
-
-          {/* <button
-            onClick={() => setProgramShowDetailView(false)}
-            className="absolute top-6 left-6 z-50 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full hover:bg-black/70 transition-all duration-300 flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back
-          </button> */}
-
-          <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="max-w-4xl mx-auto"
-            >
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-                {activeProgram.title}
-              </h1>
-              <div className="flex items-center justify-center gap-2 mb-6">
-                <User className="w-5 h-5 text-red-500" />
-                <p className="text-xl text-gray-200">{activeProgram.tag}</p>
-              </div>
-              <p className="text-lg text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto">
-                {activeProgram.desc}
-              </p>
-              <motion.button
-                onClick={() => {
-                  setProgramShowDetailView(false);
-                  setProgramIsPlaying(true);
-                }}
-                className="group relative bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-12 py-4 rounded-full text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-red-500/25"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="bg-white/20 p-2 rounded-full group-hover:bg-white/30 transition-all duration-300">
-                    <Play className="w-6 h-6 fill-white" />
-                  </div>
-                  <span>Watch Program</span>
-                </div>
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
-              </motion.button>
-            </motion.div>
+          <div className="flex flex-col items-center gap-4 w-full max-w-5xl">
+            <h3 className="text-white text-xl font-semibold text-center">
+              {activePodcast.title}
+            </h3>
+            <iframe
+              src={`https://www.youtube.com/embed/${activePodcast.videoId}?autoplay=1`}
+              title={activePodcast.title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-[60vh] rounded-lg shadow-[0_0_25px_rgba(255,0,0,0.5)]"
+            ></iframe>
           </div>
         </div>
       )}
 
-      {/* 🔹 Icons Video Player */}
-      {iconIsPlaying && (
-        <div className="fixed inset-0 w-full h-full bg-black z-50">
-          <iframe
-            className="w-full h-full"
-            src={`https://www.youtube.com/embed/${activeIcon.videoId}?autoplay=1`}
-            title={activeIcon.title}
-            frameBorder="0"
-            allow="accelerometer; autoplay; encrypted-media"
-            allowFullScreen
-          ></iframe>
+      {/* ================= Programs Offered Section ================= */}
+      <div className="py-12 px-6">
+        <h2 className="text-2xl text-center font-bold mb-6">Programs Offered</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {courses.map((course, idx) => (
+            <img
+              key={idx}
+              src={course.img}
+              alt={`course-${idx}`}
+              onClick={() => setProgramIsPlaying(true) || setProgramActiveIndex(idx)}
+              className="w-full h-40 object-cover rounded-lg cursor-pointer transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
+            />
+          ))}
+        </div>
+      </div>
+
+      {programIsPlaying && (
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+          <button
+            onClick={() => setProgramIsPlaying(false)}
+            className="absolute top-4 right-4 bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl hover:bg-white/30 transition"
+          >
+            ×
+          </button>
+          <div className="flex flex-col items-center gap-4 w-full max-w-5xl">
+            <h3 className="text-white text-xl font-semibold text-center">
+              {activeProgram.title}
+            </h3>
+            <iframe
+              src={`https://www.youtube.com/embed/${activeProgram.videoId}?autoplay=1`}
+              title={activeProgram.title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-[60vh] rounded-lg shadow-[0_0_25px_rgba(255,0,0,0.5)]"
+            ></iframe>
+          </div>
         </div>
       )}
 
-      {/* 🔹 Icons Detail View */}
-      {iconShowDetailView && (
-        <div className="fixed inset-0 w-full h-full bg-black z-40">
-          <motion.div
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${activeIcon.img})` }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/40" />
-          </motion.div>
+      {/* ================= Icons of MRU Section ================= */}
+      <div className="py-12 px-6">
+        <h2 className="text-2xl text-center font-bold mb-6">Icons of Manav Rachna</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {iconsWithVideos.map((icon, idx) => (
+            <img
+              key={idx}
+              src={icon.img}
+              alt={`icon-${idx}`}
+              onClick={() => setIconIsPlaying(true) || setIconActiveIndex(idx)}
+              className="w-full h-52 object-cover rounded-md cursor-pointer transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
+            />
+          ))}
+        </div>
+      </div>
 
-          {/* <button
-            onClick={() => setIconShowDetailView(false)}
-            className="absolute top-6 left-6 z-50 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full hover:bg-black/70 transition-all duration-300 flex items-center gap-2"
+      {iconIsPlaying && (
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+          <button
+            onClick={() => setIconIsPlaying(false)}
+            className="absolute top-4 right-4 bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl hover:bg-white/30 transition"
           >
-            <ArrowLeft className="w-4 h-4" /> Back
-          </button> */}
-
-          <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="max-w-4xl mx-auto"
-            >
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-                {activeIcon.title}
-              </h1>
-              <div className="flex items-center justify-center gap-2 mb-6">
-                <User className="w-5 h-5 text-red-500" />
-                <p className="text-xl text-gray-200">{activeIcon.tag}</p>
-              </div>
-              <p className="text-lg text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto">
-                {activeIcon.desc}
-              </p>
-              <motion.button
-                onClick={() => {
-                  setIconShowDetailView(false);
-                  setIconIsPlaying(true);
-                }}
-                className="group relative bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-12 py-4 rounded-full text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-red-500/25"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="bg-white/20 p-2 rounded-full group-hover:bg-white/30 transition-all duration-300">
-                    <Play className="w-6 h-6 fill-white" />
-                  </div>
-                  <span>Watch Story</span>
-                </div>
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
-              </motion.button>
-            </motion.div>
+            ×
+          </button>
+          <div className="flex flex-col items-center gap-4 w-full max-w-5xl">
+            <h3 className="text-white text-xl font-semibold text-center">
+              {activeIcon.title}
+            </h3>
+            <iframe
+              src={`https://www.youtube.com/embed/${activeIcon.videoId}?autoplay=1`}
+              title={activeIcon.title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-[60vh] rounded-lg shadow-[0_0_25px_rgba(255,0,0,0.5)]"
+            ></iframe>
           </div>
         </div>
       )}

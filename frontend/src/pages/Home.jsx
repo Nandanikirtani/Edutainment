@@ -921,27 +921,29 @@ const ExtraSection = () => {
   return (
     <>
       {isPlaying ? (
-        // ✅ Fullscreen Video Player
-        <div className="fixed inset-0 w-full h-full bg-black z-50">
-          {/* Back Button */}
-          {/* <button
-            onClick={() => {
-              setIsPlaying(false);
-              setShowDetailView(true);
-            }}
-            className="absolute top-4 left-4 z-50 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 flex items-center gap-2"
+        // ✅ Mini-Screen Video Player (like Arts section)
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+          {/* Close Button */}
+          <button
+            onClick={() => setIsPlaying(false)}
+            className="absolute top-4 right-4 bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl hover:bg-white/30 transition"
           >
-            <ArrowLeft className="w-4 h-4" /> Back
-          </button> */}
+            ×
+          </button>
 
-          <iframe
-            className="w-full h-full"
-            src={`https://www.youtube.com/embed/${activeProgram.videoId}?autoplay=1`}
-            title={activeProgram.title}
-            frameBorder="0"
-            allow="autoplay; encrypted-media"
-            allowFullScreen
-          ></iframe>
+          <div className="flex flex-col items-center gap-4">
+            <h3 className="text-white text-xl font-semibold">
+              {activeProgram.title}
+            </h3>
+            <iframe
+              src={`https://www.youtube.com/embed/${activeProgram.videoId}?autoplay=1`}
+              title={activeProgram.title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-[90vw] h-[70vh] max-w-5xl rounded-lg shadow-[0_0_25px_rgba(255,0,0,0.5)]"
+            ></iframe>
+          </div>
         </div>
       ) : showDetailView ? (
         // ✅ Detailed View with Background Image and Content
@@ -1005,7 +1007,7 @@ const ExtraSection = () => {
                   </div>
                   <span>Watch Program</span>
                 </div>
-                
+
                 {/* Glow effect */}
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
               </motion.button>
@@ -1024,7 +1026,9 @@ const ExtraSection = () => {
         </div>
       ) : (
         <ExtraSectionContainer>
-          <ExtraSectionTitle className="text-center">Programs Offered</ExtraSectionTitle>
+          <ExtraSectionTitle className="text-center">
+            Programs Offered
+          </ExtraSectionTitle>
           <MotionExtraGrid
             variants={gridVariants}
             initial="hidden"
@@ -1044,7 +1048,7 @@ const ExtraSection = () => {
                   rotateX: -5, // 3D tilt
                   rotateY: 5,
                   boxShadow: "0 0 25px 8px rgba(245, 26, 26, 0.8)", // Glow
-                  border: "3px solid #ff0000"
+                  border: "3px solid #ff0000",
                 }}
                 transition={{
                   type: "spring",

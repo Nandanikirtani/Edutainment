@@ -211,25 +211,57 @@ export default function Alumini() {
       </section>
 
       {/* 🔹 MRU Awards Video Player */}
+      {/* 🔹 MRU Awards Video Player - Mini Popup */}
       {awardIsPlaying && (
-        <div className="fixed inset-0 w-full h-full bg-black z-50">
-          {/* <button
-            onClick={() => {
-              setAwardIsPlaying(false);
-              setAwardShowDetailView(true);
-            }}
-            className="absolute top-4 left-4 z-50 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 flex items-center gap-2"
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+          {/* Close Button */}
+          <button
+            onClick={() => setAwardIsPlaying(false)}
+            className="absolute top-4 right-4 bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl hover:bg-white/30 transition"
           >
-            <ArrowLeft className="w-4 h-4" /> Back
-          </button> */}
-          <iframe
-            className="w-full h-full"
-            src={`https://www.youtube.com/embed/${activeAward.videoId}?autoplay=1`}
-            title={activeAward.title}
-            frameBorder="0"
-            allow="autoplay; encrypted-media"
-            allowFullScreen
-          ></iframe>
+            ×
+          </button>
+
+          <div className="flex flex-col items-center gap-4">
+            <h3 className="text-white text-xl font-semibold">
+              {activeAward.title}
+            </h3>
+            <iframe
+              src={`https://www.youtube.com/embed/${activeAward.videoId}?autoplay=1`}
+              title={activeAward.title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-[90vw] h-[70vh] max-w-5xl rounded-lg shadow-[0_0_25px_rgba(255,165,0,0.5)]"
+            ></iframe>
+          </div>
+        </div>
+      )}
+
+      {/* 🔹 Icons Video Player - Mini Popup */}
+      {iconIsPlaying && (
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+          {/* Close Button */}
+          <button
+            onClick={() => setIconIsPlaying(false)}
+            className="absolute top-4 right-4 bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl hover:bg-white/30 transition"
+          >
+            ×
+          </button>
+
+          <div className="flex flex-col items-center gap-4">
+            <h3 className="text-white text-xl font-semibold">
+              {activeIcon.name}
+            </h3>
+            <iframe
+              src={`https://www.youtube.com/embed/${activeIcon.videoId}?autoplay=1`}
+              title={activeIcon.name}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-[90vw] h-[70vh] max-w-5xl rounded-lg shadow-[0_0_25px_rgba(255,0,0,0.5)]"
+            ></iframe>
+          </div>
         </div>
       )}
 
@@ -297,29 +329,6 @@ export default function Alumini() {
               </div>
             </motion.div>
           </div>
-        </div>
-      )}
-
-      {/* 🔹 Icons Video Player */}
-      {iconIsPlaying && (
-        <div className="fixed inset-0 w-full h-full bg-black z-50">
-          {/* <button
-            onClick={() => {
-              setIconIsPlaying(false);
-              setIconShowDetailView(true);
-            }}
-            className="absolute top-4 left-4 z-50 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back
-          </button> */}
-          <iframe
-            className="w-full h-full"
-            src={`https://www.youtube.com/embed/${activeIcon.videoId}?autoplay=1`}
-            title={activeIcon.name}
-            frameBorder="0"
-            allow="autoplay; encrypted-media"
-            allowFullScreen
-          ></iframe>
         </div>
       )}
 
