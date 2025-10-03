@@ -1086,7 +1086,7 @@ const CourseDetail = () => {
                       {/* Quizzes panel */}
                       <div className="mt-4 border-t border-gray-700 pt-4">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-md font-semibold flex items-center gap-2"><ListChecks className="w-4 h-4" /> Quizzes (20 pts/question)</h4>
+                          <h4 className="text-md font-semibold flex items-center gap-2"><ListChecks className="w-4 h-4" /> Quizzes</h4>
                           {(isOwner || getUserRole() === "admin") && (
                             <button
                               onClick={() => { setQuizChapter(chapter); setShowAddQuiz(true); }}

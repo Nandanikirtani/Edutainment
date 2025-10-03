@@ -73,7 +73,9 @@ const StudentDashboard = () => {
   };
 
   useEffect(() => {
+    // Fetch once on mount; no auto-refresh
     fetchDashboardData();
+    return () => {};
   }, []);
 
   const fetchDashboardData = async () => {
@@ -150,6 +152,16 @@ const StudentDashboard = () => {
       setLoading(false);
     }
   };
+
+  // Helpers to compute real changes
+  const isSameDay = (d1, d2) => d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+  const now = new Date();
+  const pointsToday = (dashboardData.recentActivity || [])
+    .filter(a => a.type === 'quiz_completed' && a.date && isSameDay(new Date(a.date), now))
+    .reduce((sum, a) => sum + (a.points || 0), 0);
+  const badgesThisWeek = (dashboardData.badges || [])
+    .filter(b => b.earnedAt && (now - new Date(b.earnedAt)) <= 7 * 24 * 60 * 60 * 1000)
+    .length;
 
   const StatCard = ({ icon: Icon, title, value, change, color = 'red', onClick }) => (
     <motion.div 
@@ -421,28 +433,26 @@ const StudentDashboard = () => {
             icon={BookOpen}
             title="Active Courses"
             value={dashboardData.statistics?.activeCourses || dashboardData.enrolledCourses.filter(c => c.status === 'ongoing').length}
-            change="+2 this month"
-            onClick={() => navigate('/courses')}
           />
+         
           <StatCard
             icon={CheckCircle2}
             title="Completed Courses"
             value={dashboardData.statistics?.completedCourses || dashboardData.enrolledCourses.filter(c => c.status === 'completed').length}
-            change="+1 this week"
-            onClick={() => navigate('/courses?filter=completed')}
           />
+          
           <StatCard
             icon={Trophy}
             title="Total Points"
             value={(dashboardData.statistics?.totalPoints || dashboardData.totalPoints || 0).toLocaleString()}
-            change="+50 today"
-            onClick={() => navigate('/profile')}
+            change={pointsToday > 0 ? `+${pointsToday} today` : undefined}
           />
+         
           <StatCard
             icon={Award}
             title="Badges Earned"
             value={dashboardData.statistics?.badgesEarned || dashboardData.badges.length}
-            change="+1 this week"
+            change={badgesThisWeek > 0 ? `+${badgesThisWeek} this week` : undefined}
             onClick={() => setShowBadgesModal(true)}
           />
         

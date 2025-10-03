@@ -48,12 +48,33 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const init = async () => {
       try {
-        if (!user) return;
+        if (!user) return setLoading(false);
         const profile = await getProfile();
-        setUser((prev) => ({ ...prev, ...profile }));
+
+        // Merge profile without overwriting existing values with null/undefined
+        const filteredProfile = Object.fromEntries(
+          Object.entries(profile || {}).filter(([_, v]) => v !== undefined && v !== null)
+        );
+
+        // Merge persisted local userProfile (e.g., avatar) with higher priority than empty backend fields
+        const savedProfileRaw = localStorage.getItem('userProfile');
+        const savedProfile = savedProfileRaw ? JSON.parse(savedProfileRaw) : {};
+
+        setUser((prev) => ({
+          ...prev,
+          ...filteredProfile,
+          // Only apply saved avatar if backend didn't provide one
+          avatar: (filteredProfile.avatar ?? prev?.avatar ?? savedProfile.avatar) || null,
+          fullName: filteredProfile.fullName ?? prev?.fullName ?? savedProfile.fullName ?? prev?.fullName,
+          phone: filteredProfile.phone ?? prev?.phone ?? savedProfile.phone ?? prev?.phone,
+          rollNo: filteredProfile.rollNo ?? prev?.rollNo ?? savedProfile.rollNo ?? prev?.rollNo,
+        }));
       } catch (err) {
         console.error("Auth init failed:", err.message);
-        setUser(null);
+        // Even if backend fails, try to populate from local userProfile
+        const savedProfileRaw = localStorage.getItem('userProfile');
+        const savedProfile = savedProfileRaw ? JSON.parse(savedProfileRaw) : null;
+        if (savedProfile) setUser((prev) => ({ ...prev, ...savedProfile }));
       } finally {
         setLoading(false);
       }
@@ -73,7 +94,16 @@ export const AuthProvider = ({ children }) => {
 
   // Update user data (for profile updates)
   const updateUser = (updatedUserData) => {
-    setUser(prev => ({ ...prev, ...updatedUserData }));
+    setUser(prev => {
+      const merged = { ...prev, ...updatedUserData };
+      // persist to local userProfile as well (for fields like avatar)
+      try {
+        const saved = localStorage.getItem('userProfile');
+        const base = saved ? JSON.parse(saved) : {};
+        localStorage.setItem('userProfile', JSON.stringify({ ...base, ...updatedUserData }));
+      } catch {}
+      return merged;
+    });
   };
 
   return (

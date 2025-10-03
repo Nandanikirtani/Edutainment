@@ -13,6 +13,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [username, setUsername] = useState("");
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
     return savedTheme ? savedTheme === 'dark' : true; // Default to dark mode
@@ -110,10 +111,12 @@ export default function Navbar() {
     { name: "Reels", path: "/reels" }, // 🔥 New Reels Link
   ];
 
+
   const handleLogout = () => {
     logout();
     setShowDropdown(false);
     setIsOpen(false);
+    setProfileMenuOpen(false);
     navigate("#/home");
   };
 
@@ -124,6 +127,18 @@ export default function Navbar() {
     // Log for debugging
     console.log(`Switching to ${!isDarkMode ? 'Dark' : 'Light'} mode`);
   };
+
+  // Items for the animated profile menu (same as dropdown content)
+  const profileMenuItems = [
+    { label: "Dashboard", ariaLabel: "Open dashboard", onClick: () => navigate(getDashboardPath()) },
+    { label: "Profile", ariaLabel: "Profile", onClick: () => navigate("/profile") },
+    { label: "Transactions", ariaLabel: "Transactions", onClick: () => navigate("/transactions") },
+    { label: "Saved Reels", ariaLabel: "Saved Reels", onClick: () => navigate("/saved-reels") },
+    { label: "Subscription", ariaLabel: "Subscription", onClick: () => navigate("/subscription") },
+    { label: "Languages", ariaLabel: "Languages", onClick: () => navigate("/languages") },
+    { label: isDarkMode ? "Light Mode" : "Dark Mode", ariaLabel: "Toggle theme", onClick: handleThemeToggle },
+    { label: "Logout", ariaLabel: "Logout", onClick: handleLogout },
+  ];
 
   return (
     <nav
@@ -181,19 +196,28 @@ export default function Navbar() {
                 </Link>
               ) : (
                 <div className="relative">
-                  <button
-                    onClick={() => setShowDropdown(!showDropdown)}
-                    className="flex items-center gap-2 px-4 py-2 text-gray-900 dark:text-white 
+                    <button
+                      onClick={() => setShowDropdown(!showDropdown)}
+                      className="flex items-center gap-2 px-4 py-2 text-gray-900 dark:text-white 
                                rounded-full hover:bg-gray-200 dark:hover:bg-red-600 transition-all duration-200"
                   >
-                    <FaUser size={22} />
-                  </button>
+                      <FaUser size={22} />
+                    </button>
 
                   {/* Dropdown */}
-                  {showDropdown && (
-                    <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-black/95 backdrop-blur-md rounded-xl shadow-lg transition-all duration-300">
+                  <div 
+                    className={`absolute right-0 mt-2 w-80 bg-white dark:bg-black/95 backdrop-blur-md rounded-xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-all duration-500 ease-out origin-top-right ${
+                      showDropdown 
+                        ? 'opacity-100 scale-100 translate-x-0' 
+                        : 'opacity-0 scale-95 translate-x-4 pointer-events-none'
+                    }`}
+                    style={{
+                      transform: showDropdown ? 'translateX(0)' : 'translateX(20px)',
+                      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+                    }}
+                  >
                       {/* User Info */}
-                      <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-300 dark:border-gray-700">
+                      <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-300 dark:border-gray-700 bg-gradient-to-r from-transparent to-red-500/5">
                         <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-gray-800 dark:text-white">
                           <FaUserCircle size={24} />
                         </div>
@@ -217,10 +241,10 @@ export default function Navbar() {
                           to={getDashboardPath()}
                           onClick={() => setShowDropdown(false)}
                           className="flex items-center gap-3 px-6 py-3 text-gray-900 dark:text-white 
-             hover:bg-gray-200 dark:hover:bg-red-600 transition-all duration-200 text-base"
+                                     hover:bg-red-600 hover:text-white
+                                     transition-all duration-300 text-base rounded-lg"
                         >
-                          <FaColumns />{" "}
-                          {/* replace with FaTachometerAlt if preferred */}
+                          <FaColumns className="transition-transform duration-300 hover:scale-110" />
                           Dashboard
                         </Link>
 
@@ -256,7 +280,8 @@ export default function Navbar() {
                             to={item.path}
                             onClick={() => setShowDropdown(false)}
                             className="flex items-center gap-3 px-6 py-3 text-gray-900 dark:text-white 
-                                       hover:bg-gray-200 dark:hover:bg-red-600 transition-all duration-200 text-base"
+                                       hover:bg-red-600 hover:text-white
+                                       transition-all duration-300 text-base rounded-lg"
                           >
                             {item.icon}
                             {item.name}
@@ -271,22 +296,23 @@ export default function Navbar() {
                         <button
                           onClick={handleThemeToggle}
                           className="w-full flex items-center gap-3 px-6 py-3 text-gray-900 dark:text-white 
-                                     hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 text-base"
+                                     hover:bg-red-600 hover:text-white
+                                     transition-all duration-300 text-base rounded-lg"
                         >
                           {isDarkMode ? <FaSun /> : <FaMoon />}
-                          <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
+                          {isDarkMode ? "Light Mode" : "Dark Mode"}
                         </button>
                         <button
                           onClick={handleLogout}
                           className="w-full flex items-center gap-3 px-6 py-3 text-gray-900 dark:text-white 
-                                     hover:bg-red-600 transition-all duration-200 text-base"
+                                     hover:bg-red-600 hover:text-white
+                                     transition-all duration-300 text-base rounded-lg"
                         >
                           <FaSignOutAlt />
-                          <span>Logout</span>
+                          Logout
                         </button>
                       </div>
                     </div>
-                  )}
                 </div>
               )}
             </div>
@@ -353,6 +379,7 @@ export default function Navbar() {
           {isDarkMode ? "Light Mode" : "Dark Mode"}
         </button>
       </div>
+
     </nav>
   );
 }
