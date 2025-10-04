@@ -50,13 +50,24 @@ export default function ActivityTracker() {
     const onPageHide = () => {
       if (!document.hidden) return;
       const token = localStorage.getItem('token');
-      if (!token || !('sendBeacon' in navigator)) return;
+      if (!token) return;
+      
+      // Use fetch with keepalive instead of sendBeacon to include auth headers
       const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
       const url = `${apiBase}/dashboard/student/activity/ping`;
-      const data = JSON.stringify({ seconds: 5 });
-      const blob = new Blob([data], { type: 'application/json' });
-      // Best-effort; backend validates and is idempotent per 15s cadence overall
-      navigator.sendBeacon(url, blob);
+      
+      // Try to send with proper authorization
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ seconds: 5 }),
+        keepalive: true,
+      }).catch(() => {
+        // Silently ignore errors on page unload
+      });
     };
 
     document.addEventListener('visibilitychange', onPageHide);
