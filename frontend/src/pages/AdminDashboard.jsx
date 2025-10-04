@@ -70,7 +70,7 @@ export default function AdminDashboard() {
 
   const fetchAdminUploadedCourses = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/v1/videos/admin/courses', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/videos/admin/courses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log("Admin Courses API Response:", res); // Debugging line
@@ -84,7 +84,7 @@ export default function AdminDashboard() {
 
   const fetchAllCoursesWithStudents = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/v1/videos/admin/courses-with-students', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/videos/admin/courses-with-students`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -97,7 +97,7 @@ export default function AdminDashboard() {
 
   const fetchAllFaculty = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/v1/videos/admin/faculty', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/videos/admin/faculty`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -130,7 +130,7 @@ export default function AdminDashboard() {
     }
 
     try {
-      const res = await fetch('http://localhost:5000/api/v1/videos/approve-reject', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/videos/approve-reject`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ export default function AdminDashboard() {
   const handleUpdatePoints = async (courseId, studentId, points) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/v1/videos/admin/courses/${courseId}/students/${studentId}/points`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/videos/admin/courses/${courseId}/students/${studentId}/points`,
         {
           method: 'PUT',
           headers: {
@@ -180,7 +180,7 @@ export default function AdminDashboard() {
   const handleUpdateCourseFaculty = async (courseId, facultyId) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/v1/videos/admin/courses/${courseId}/faculty`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/videos/admin/courses/${courseId}/faculty`,
         {
           method: 'PUT',
           headers: {
@@ -221,7 +221,7 @@ export default function AdminDashboard() {
     }
 
     try {
-      const res = await fetch('http://localhost:5000/api/v1/videos/courses/upload', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/videos/courses/upload`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
