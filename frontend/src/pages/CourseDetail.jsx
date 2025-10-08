@@ -58,6 +58,7 @@ const CourseDetail = () => {
   // Handle different user data structures
   const getUserRole = () => {
     if (!user) return null;
+    console.log("User object:", user);
     return user.role || user.data?.role;
   };
 

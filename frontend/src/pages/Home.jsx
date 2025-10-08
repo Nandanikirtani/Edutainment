@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { Play, ArrowLeft, Clock, User } from "lucide-react";
 import { createGlobalStyle } from "styled-components";
 import { useNavigate } from "react-router-dom";
+import DepartmentExplorer from "../components/DepartmentExplorer";
 const GlobalStyle = createGlobalStyle`
   body, html {
     margin: 0;
@@ -102,7 +103,7 @@ const CareerBanner = styled.img`
 
 /* ================= CoursesSection Styles ================= */
 const SectionContainer = styled.div`
-  padding: 50px 20px;
+  padding: 50px 0px;
   background-color: #000;
   color: white;
   font-family: "Arial", sans-serif;
@@ -147,10 +148,12 @@ const Rank = styled.div`
 const CardImage = styled.img.attrs({
   onError: (e) => {
     e.target.onerror = null; // Prevent infinite loop
-    e.target.src = `https://via.placeholder.com/300x200?text=${encodeURIComponent(e.target.alt || 'Image')}`;
-    e.target.style.objectFit = 'contain';
-    e.target.style.backgroundColor = '#f0f0f0';
-  }
+    e.target.src = `https://via.placeholder.com/300x200?text=${encodeURIComponent(
+      e.target.alt || "Image"
+    )}`;
+    e.target.style.objectFit = "contain";
+    e.target.style.backgroundColor = "#f0f0f0";
+  },
 })`
   width: 100%;
   height: 100%;
@@ -198,7 +201,6 @@ const ArtsGrid = styled.div`
   flex-wrap: wrap;
   justify-content: center;
 `;
-
 
 const ArtsCard = styled(motion.div)`
   position: relative;
@@ -315,24 +317,82 @@ const sliderImages = [
 ];
 
 const coursesData = [
-  { id: "1", title: "AR/VR COURSES", tag: "New / Free", img: `${import.meta.env.BASE_URL}AR.jpeg` },
-  { id: "2", title: "Machine Learning", tag: "Everybody", img: `${import.meta.env.BASE_URL}Machine_LEARNING.jpeg` },
-  { id: "3", title: "AI Tutorial", tag: "Simplilearn", img: `${import.meta.env.BASE_URL}AI.jpeg` },
-  { id: "4", title: "Java", tag: "Pay per view", img: `${import.meta.env.BASE_URL}java.png` },
+  {
+    id: "1",
+    title: "AR/VR COURSES",
+    tag: "New / Free",
+    img: `${import.meta.env.BASE_URL}AR.jpeg`,
+  },
+  {
+    id: "2",
+    title: "Machine Learning",
+    tag: "Everybody",
+    img: `${import.meta.env.BASE_URL}Machine_LEARNING.jpeg`,
+  },
+  {
+    id: "3",
+    title: "AI Tutorial",
+    tag: "Simplilearn",
+    img: `${import.meta.env.BASE_URL}AI.jpeg`,
+  },
+  {
+    id: "4",
+    title: "Java",
+    tag: "Pay per view",
+    img: `${import.meta.env.BASE_URL}java.png`,
+  },
 ];
 
 const artsData = [
-  { id: 1, title: "Entrepreneurship AND Startup", img: `${import.meta.env.BASE_URL}A1.png`, videoId: "fmycIrIn9Pk"},
-  { id: 2, title: "Sources of Business Ideas", img: `${import.meta.env.BASE_URL}A2.png`, videoId: "9kMY1Amf1CA" },
+  {
+    id: 1,
+    title: "Entrepreneurship AND Startup",
+    img: `${import.meta.env.BASE_URL}A1.png`,
+    videoId: "fmycIrIn9Pk",
+  },
+  {
+    id: 2,
+    title: "Sources of Business Ideas",
+    img: `${import.meta.env.BASE_URL}A2.png`,
+    videoId: "9kMY1Amf1CA",
+  },
   { id: 3, title: "Literature", img: `${import.meta.env.BASE_URL}A3.png` },
   { id: 4, title: "Sociology", img: `${import.meta.env.BASE_URL}A4.png` },
 ];
 
 const extraData = [
-  { id: 1, title: "B.Tech Automobile", tag: "Engineering", img: `${import.meta.env.BASE_URL}C1.jpeg`, videoId: "C2ZFWaHOAaQ", desc: "Explore the world of automotive engineering with cutting-edge technology and hands-on learning experiences." },
-  { id: 2, title: "MBA Programs", tag: "Business", img: `${import.meta.env.BASE_URL}C2.jpeg`, videoId: "FFbCjEAestA", desc: "Transform your career with our comprehensive MBA programs designed for future business leaders." },
-  { id: 3, title: "Psychology", tag: "Behavioral Science", img: `${import.meta.env.BASE_URL}C3.jpeg`, videoId: "_bFV-saB2Uk", desc: "Understand human behavior and mental processes through our advanced psychology curriculum." },
-  { id: 4, title: "Mass Comm.", tag: "Media", img: `${import.meta.env.BASE_URL}C4.jpeg`, videoId: "XOZhYijcVBY", desc: "Master the art of communication and media with our industry-focused mass communication program." },
+  {
+    id: 1,
+    title: "B.Tech Automobile",
+    tag: "Engineering",
+    img: `${import.meta.env.BASE_URL}C1.jpeg`,
+    videoId: "C2ZFWaHOAaQ",
+    desc: "Explore the world of automotive engineering with cutting-edge technology and hands-on learning experiences.",
+  },
+  {
+    id: 2,
+    title: "MBA Programs",
+    tag: "Business",
+    img: `${import.meta.env.BASE_URL}C2.jpeg`,
+    videoId: "FFbCjEAestA",
+    desc: "Transform your career with our comprehensive MBA programs designed for future business leaders.",
+  },
+  {
+    id: 3,
+    title: "Psychology",
+    tag: "Behavioral Science",
+    img: `${import.meta.env.BASE_URL}C3.jpeg`,
+    videoId: "_bFV-saB2Uk",
+    desc: "Understand human behavior and mental processes through our advanced psychology curriculum.",
+  },
+  {
+    id: 4,
+    title: "Mass Comm.",
+    tag: "Media",
+    img: `${import.meta.env.BASE_URL}C4.jpeg`,
+    videoId: "XOZhYijcVBY",
+    desc: "Master the art of communication and media with our industry-focused mass communication program.",
+  },
 ];
 
 /* ================= Motion Variants ================= */
@@ -343,7 +403,12 @@ const gridVariants = {
 
 const cardVariant = {
   hidden: { opacity: 0, y: -40, scale: 0.98 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+  },
 };
 
 const MotionCoursesGrid = motion(CoursesGrid);
@@ -382,8 +447,8 @@ const HeroSlider = () => {
   return (
     <SliderContainer>
       <AnimatePresence mode="wait">
-        <div 
-          style={{ position: 'relative', width: '100%', height: '100%' }}
+        <div
+          style={{ position: "relative", width: "100%", height: "100%" }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
@@ -396,13 +461,13 @@ const HeroSlider = () => {
             transition={{ duration: 1 }}
           />
           <Overlay />
-          <PlayButton 
+          <PlayButton
             onClick={handlePlayClick}
-            whileHover={{ scale: 1.1 }} 
+            whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             style={{
               opacity: isHovered ? 1 : 0.8,
-              transition: 'opacity 0.3s ease',
+              transition: "opacity 0.3s ease",
             }}
           >
             <Play size={22} /> Play
@@ -412,48 +477,52 @@ const HeroSlider = () => {
 
       {/* Video Modal */}
       {showVideo && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.9)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000,
-        }}>
-          <button 
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.9)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <button
             onClick={closeVideo}
             style={{
-              position: 'absolute',
-              top: '20px',
-              right: '20px',
-              background: 'rgba(0,0,0,0.7)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '50%',
-              width: '40px',
-              height: '40px',
-              fontSize: '20px',
-              cursor: 'pointer',
+              position: "absolute",
+              top: "20px",
+              right: "20px",
+              background: "rgba(0,0,0,0.7)",
+              color: "white",
+              border: "none",
+              borderRadius: "50%",
+              width: "40px",
+              height: "40px",
+              fontSize: "20px",
+              cursor: "pointer",
               zIndex: 1001,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             ✕
           </button>
-          <div style={{
-            width: '90%',
-            maxWidth: '1200px',
-            aspectRatio: '16/9',
-            position: 'relative',
-            borderRadius: '12px',
-            overflow: 'hidden',
-          }}>
+          <div
+            style={{
+              width: "90%",
+              maxWidth: "1200px",
+              aspectRatio: "16/9",
+              position: "relative",
+              borderRadius: "12px",
+              overflow: "hidden",
+            }}
+          >
             <iframe
               width="100%"
               height="100%"
@@ -463,12 +532,12 @@ const HeroSlider = () => {
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               style={{
-                position: 'absolute',
+                position: "absolute",
                 top: 0,
                 left: 0,
-                width: '100%',
-                height: '100%',
-                border: 'none',
+                width: "100%",
+                height: "100%",
+                border: "none",
               }}
             ></iframe>
           </div>
@@ -477,41 +546,45 @@ const HeroSlider = () => {
 
       <PreviewContainer>
         {sliderImages.map((img, index) => (
-          <div key={img.id} style={{ position: 'relative' }}>
+          <div key={img.id} style={{ position: "relative" }}>
             <PreviewImage
               src={img.url}
               whileHover={{ scale: 1.1 }}
-              animate={{ 
-                borderColor: index === current ? "#ff4d4d" : "rgba(0,0,0,0)", 
-                scale: index === current ? 1.05 : 1 
+              animate={{
+                borderColor: index === current ? "#ff4d4d" : "rgba(0,0,0,0)",
+                scale: index === current ? 1.05 : 1,
               }}
               transition={{ duration: 0.3 }}
               onClick={() => handleThumbnailClick(index)}
             />
             {index === current && showVideo && (
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: 'rgba(0,0,0,0.5)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '10px',
-                pointerEvents: 'none',
-              }}>
-                <div style={{
-                  width: '30px',
-                  height: '30px',
-                  background: '#ff4d4d',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  animation: 'pulse 1.5s infinite',
-                }}>
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: "rgba(0,0,0,0.5)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "10px",
+                  pointerEvents: "none",
+                }}
+              >
+                <div
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    background: "#ff4d4d",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    animation: "pulse 1.5s infinite",
+                  }}
+                >
                   <Play size={16} color="white" />
                 </div>
               </div>
@@ -540,7 +613,7 @@ const CareerSection = () => {
   };
 
   const handleConfirm = () => {
-    window.open('https://apply.manavrachna.edu.in/mru', '_blank');
+    window.open("https://apply.manavrachna.edu.in/mru", "_blank");
     setShowModal(false);
   };
 
@@ -557,82 +630,115 @@ const CareerSection = () => {
 
   return (
     <>
-      <CareerContainer onClick={handleCareerClick} style={{ cursor: 'pointer' }}>
-        <CareerBanner 
-          src={`${import.meta.env.BASE_URL}carrer.png`} 
-          alt="Career Banner" 
-          style={{ width: '100%', height: 'auto' }}
+      <CareerContainer
+        onClick={handleCareerClick}
+        style={{ cursor: "pointer" }}
+      >
+        <CareerBanner
+          src={`${import.meta.env.BASE_URL}carrer.png`}
+          alt="Career Banner"
+          style={{ width: "100%", height: "auto" }}
         />
       </CareerContainer>
 
       {/* Custom Modal */}
       {showModal && (
-        <div 
+        <div
           onClick={handleOverlayClick}
           style={{
-            position: 'fixed',
+            position: "fixed",
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
             zIndex: 1000,
-            padding: '20px',
+            padding: "20px",
           }}
         >
-          <div style={{
-            background: '#000000',
-            borderRadius: '24px',
-            overflow: 'hidden',
-            width: '100%',
-            maxWidth: '420px',
-            boxShadow: '0 10px 30px rgba(255, 0, 0, 0.3)',
-            fontFamily: 'Arial, sans-serif',
-            border: '1px solid #FF0000',
-          }}>
+          <div
+            style={{
+              background: "#000000",
+              borderRadius: "24px",
+              overflow: "hidden",
+              width: "100%",
+              maxWidth: "420px",
+              boxShadow: "0 10px 30px rgba(255, 0, 0, 0.3)",
+              fontFamily: "Arial, sans-serif",
+              border: "1px solid #FF0000",
+            }}
+          >
             {/* Header */}
-            <div style={{
-              background: 'linear-gradient(135deg, #FF0000, #990000)',
-              color: 'white',
-              padding: '20px',
-              textAlign: 'center',
-              position: 'relative',
-            }}>
-              <h3 style={{
-                margin: 0,
-                fontSize: '20px',
-                fontWeight: '600',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '10px'
-              }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 8V12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 16H12.01" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <div
+              style={{
+                background: "linear-gradient(135deg, #FF0000, #990000)",
+                color: "white",
+                padding: "20px",
+                textAlign: "center",
+                position: "relative",
+              }}
+            >
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: "20px",
+                  fontWeight: "600",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "10px",
+                }}
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12 8V12"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12 16H12.01"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
                 Confirmation
               </h3>
               <button
                 onClick={handleCancel}
                 style={{
-                  position: 'absolute',
-                  top: '15px',
-                  right: '15px',
-                  background: 'rgba(0, 0, 0, 0.3)',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '30px',
-                  height: '30px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  color: 'white',
+                  position: "absolute",
+                  top: "15px",
+                  right: "15px",
+                  background: "rgba(0, 0, 0, 0.3)",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "30px",
+                  height: "30px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  color: "white",
                 }}
               >
                 ×
@@ -640,42 +746,47 @@ const CareerSection = () => {
             </div>
 
             {/* Body */}
-            <div style={{ padding: '30px 25px' }}>
-              <p style={{
-                color: '#FFFFFF',
-                fontSize: '16px',
-                lineHeight: '1.6',
-                margin: '0 0 25px',
-                textAlign: 'center'
-              }}>
-                Are you sure you want to be redirected to Manav Rachna University application page?
+            <div style={{ padding: "30px 25px" }}>
+              <p
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: "16px",
+                  lineHeight: "1.6",
+                  margin: "0 0 25px",
+                  textAlign: "center",
+                }}
+              >
+                Are you sure you want to be redirected to Manav Rachna
+                University application page?
               </p>
 
-              <div style={{
-                display: 'flex',
-                gap: '15px',
-                justifyContent: 'center',
-                flexWrap: 'wrap'
-              }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "15px",
+                  justifyContent: "center",
+                  flexWrap: "wrap",
+                }}
+              >
                 <button
                   onClick={handleCancel}
                   style={{
-                    padding: '12px 28px',
-                    borderRadius: '8px',
-                    border: '1px solid #FF0000',
-                    background: '#000000',
-                    color: '#FFFFFF',
-                    fontSize: '15px',
+                    padding: "12px 28px",
+                    borderRadius: "8px",
+                    border: "1px solid #FF0000",
+                    background: "#000000",
+                    color: "#FFFFFF",
+                    fontSize: "15px",
                   }}
                   onMouseOver={(e) => {
-                    e.target.style.background = '#1a1a1a';
-                    e.target.style.color = '#FF0000';
-                    e.target.style.borderColor = '#FF0000';
+                    e.target.style.background = "#1a1a1a";
+                    e.target.style.color = "#FF0000";
+                    e.target.style.borderColor = "#FF0000";
                   }}
                   onMouseOut={(e) => {
-                    e.target.style.background = '#000000';
-                    e.target.style.color = '#FF0000';
-                    e.target.style.borderColor = '#FF0000';
+                    e.target.style.background = "#000000";
+                    e.target.style.color = "#FF0000";
+                    e.target.style.borderColor = "#FF0000";
                   }}
                 >
                   Cancel
@@ -683,19 +794,19 @@ const CareerSection = () => {
                 <button
                   onClick={handleConfirm}
                   style={{
-                    padding: '12px 28px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    background: 'linear-gradient(135deg, #FF0000, #990000)',
-                    color: '#FFFFFF',
-                    fontSize: '15px',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    minWidth: '120px',
+                    padding: "12px 28px",
+                    borderRadius: "8px",
+                    border: "none",
+                    background: "linear-gradient(135deg, #FF0000, #990000)",
+                    color: "#FFFFFF",
+                    fontSize: "15px",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                    minWidth: "120px",
                   }}
-                  onMouseOver={(e) => e.target.style.opacity = '0.9'}
-                  onMouseOut={(e) => e.target.style.opacity = '1'}
+                  onMouseOver={(e) => (e.target.style.opacity = "0.9")}
+                  onMouseOut={(e) => (e.target.style.opacity = "1")}
                 >
                   Continue
                 </button>
@@ -719,22 +830,26 @@ const CoursesSection = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/videos/courses`);
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1"
+        }/videos/courses`
+      );
       const data = await response.json();
-      
+
       if (response.ok) {
         console.log("✅ Courses fetched from API:", data.data);
-        
+
         // Debug: Log first course structure
         if (data.data && data.data.length > 0) {
           console.log("First course structure:", {
             title: data.data[0].title,
             img: data.data[0].img,
             thumbnailUrl: data.data[0].thumbnailUrl,
-            backgroundImage: data.data[0].backgroundImage
+            backgroundImage: data.data[0].backgroundImage,
           });
         }
-        
+
         // If API returns empty array or no data, use fallback
         if (data.data && data.data.length > 0) {
           setCourses(data.data);
@@ -764,6 +879,7 @@ const CoursesSection = () => {
   if (loading) {
     return (
       <SectionContainer>
+        <DepartmentExplorer />
         <SectionTitle>Trending Courses</SectionTitle>
         <div className="text-center text-white">Loading courses...</div>
       </SectionContainer>
@@ -772,31 +888,61 @@ const CoursesSection = () => {
 
   return (
     <SectionContainer>
+      <DepartmentExplorer />
       <SectionTitle className="text-center">Trending Courses</SectionTitle>
-      <MotionCoursesGrid variants={gridVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }}>
-        {courses.map((course, index) => (
-          <CourseCard 
-            key={course._id || course.id} 
-            variants={cardVariant} 
-            whileHover={{ scale: 1.08, rotateX: -5, rotateY: 5, boxShadow: "0px 20px 40px rgba(255,0,0,0.5)" }}
+      <MotionCoursesGrid
+        variants={gridVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.25 }}
+      >
+        {courses.slice(0, 4).map((course, index) => (
+          <CourseCard
+            key={course._id || course.id}
+            variants={cardVariant}
+            whileHover={{
+              scale: 1.08,
+              rotateX: -5,
+              rotateY: 5,
+              boxShadow: "0px 20px 40px rgba(255,0,0,0.5)",
+            }}
             onClick={() => handleCourseClick(course._id || course.id)}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           >
             <Rank>{index + 1}</Rank>
-            <CardImage 
+            <CardImage
               src={
-                course.thumbnailUrl?.startsWith('http') 
-                  ? course.thumbnailUrl 
-                  : course.thumbnailUrl 
-                    ? `${import.meta.env.BASE_URL}${course.thumbnailUrl.replace(/^\//, '')}` 
-                    : course.img?.startsWith('http') 
-                      ? course.img 
-                      : course.img 
-                        ? `${import.meta.env.BASE_URL}${course.img.replace(/^\//, '')}` 
-                        : `${import.meta.env.BASE_URL}course${index + 1}.png`
-              } 
+                course.thumbnailUrl?.startsWith("http")
+                  ? course.thumbnailUrl
+                  : course.thumbnailUrl
+                  ? `${import.meta.env.BASE_URL}${course.thumbnailUrl.replace(
+                      /^\//,
+                      ""
+                    )}`
+                  : course.img?.startsWith("http")
+                  ? course.img
+                  : course.img
+                  ? `${import.meta.env.BASE_URL}${course.img.replace(
+                      /^\//,
+                      ""
+                    )}`
+                  : `${import.meta.env.BASE_URL}course${index + 1}.png`
+              }
               alt={course.title}
             />
+            <CardOverlay>
+              <CardTitle>{course.title}</CardTitle>
+              {course.facultyName && (
+                <p className="text-sm text-gray-300 mt-1">
+                  {course.facultyName}
+                </p>
+              )}
+              {course.rating && (
+                <p className="text-sm text-yellow-400 mt-1">
+                  ⭐ {course.rating.toFixed(1)}
+                </p>
+              )}
+            </CardOverlay>
           </CourseCard>
         ))}
       </MotionCoursesGrid>
@@ -816,35 +962,44 @@ const ArtsSection = () => {
   return (
     <ArtsContainer>
       <ArtsTitle>Arts & Humanities</ArtsTitle>
-      <MotionArtsGrid variants={gridVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+      <MotionArtsGrid
+        variants={gridVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+      >
         {artsData.map((item) => (
-          <ArtsCard 
-            key={item.id} 
-            variants={cardVariant} 
-            whileHover={{ 
-              scale: 1.05, 
-              y: -5, 
-              boxShadow: "0px 15px 30px rgba(0,0,0,0.6)"
+          <ArtsCard
+            key={item.id}
+            variants={cardVariant}
+            whileHover={{
+              scale: 1.05,
+              y: -5,
+              boxShadow: "0px 15px 30px rgba(0,0,0,0.6)",
             }}
-            onClick={() => item.videoId && handlePlayVideo(item.videoId, item.title)}
-            style={{ cursor: item.videoId ? 'pointer' : 'default' }}
+            onClick={() =>
+              item.videoId && handlePlayVideo(item.videoId, item.title)
+            }
+            style={{ cursor: item.videoId ? "pointer" : "default" }}
           >
             <ArtsImage src={item.img} alt={item.title} />
             {item.videoId && (
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                background: 'rgba(0, 0, 0, 0.7)',
-                borderRadius: '50%',
-                width: '50px',
-                height: '50px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 2
-              }}>
+              <div
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  background: "rgba(0, 0, 0, 0.7)",
+                  borderRadius: "50%",
+                  width: "50px",
+                  height: "50px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  zIndex: 2,
+                }}
+              >
                 <Play size={24} color="#fff" />
               </div>
             )}
@@ -856,41 +1011,45 @@ const ArtsSection = () => {
       </MotionArtsGrid>
 
       {isPlaying && currentVideo && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.9)',
-          zIndex: 1000,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <button 
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.9)",
+            zIndex: 1000,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <button
             onClick={() => setIsPlaying(false)}
             style={{
-              position: 'absolute',
-              top: '20px',
-              right: '20px',
-              background: 'rgba(255, 255, 255, 0.2)',
-              border: 'none',
-              color: 'white',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              fontSize: '20px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
+              position: "absolute",
+              top: "20px",
+              right: "20px",
+              background: "rgba(255, 255, 255, 0.2)",
+              border: "none",
+              color: "white",
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              fontSize: "20px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             ×
           </button>
-          <h3 style={{ color: 'white', marginBottom: '20px' }}>{currentVideo.title}</h3>
+          <h3 style={{ color: "white", marginBottom: "20px" }}>
+            {currentVideo.title}
+          </h3>
           <iframe
             width="80%"
             height="70%"
@@ -900,8 +1059,8 @@ const ArtsSection = () => {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             style={{
-              borderRadius: '10px',
-              boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)'
+              borderRadius: "10px",
+              boxShadow: "0 0 20px rgba(255, 0, 0, 0.5)",
             }}
           ></iframe>
         </div>
@@ -1073,9 +1232,9 @@ const ExtraSection = () => {
 const HomePage = () => {
   return (
     <>
-      <GlobalStyle /> 
+      <GlobalStyle />
       <HeroSlider />
-      <CareerSection /> 
+      <CareerSection />
       <CoursesSection />
       <ArtsSection />
       <ExtraSection />

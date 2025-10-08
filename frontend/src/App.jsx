@@ -25,6 +25,7 @@ import Dashboard from "./pages/Dashboard";
 import Achievement from "./pages/Achievement";
 import SavedReels from "./pages/SavedReels";
 
+
 import "./App.css";
 
 function AppContent() {
@@ -45,16 +46,22 @@ function AppContent() {
     );
   }
 
-  // Routes where Navbar and Footer should be hidden
-  const hideLayoutRoutes = ["/student"];
-  const hideLayout = hideLayoutRoutes.includes(location.pathname);
+ // Routes where Navbar should be hidden
+const hideNavbarRoutes = ["/student"];
+
+// Routes where Footer should be hidden
+const hideFooterRoutes = ["/courses", "/student"];
+
+const hideNavbar = hideNavbarRoutes.includes(location.pathname);
+const hideFooter = hideFooterRoutes.includes(location.pathname);
+
 
   return (
     <>
       {/* Global activity tracker runs on all pages to record active, visible time */}
       <ActivityTracker />
-      {!hideLayout && <Navbar />}
-      <div className={hideLayout ? "" : "pt-20"}>
+      {!hideNavbar && <Navbar />}
+      <div className={hideNavbar ? "" : "pt-20"}>
         <Routes>
           {/* Core Pages */}
           <Route path="/" element={<Home />} />
@@ -99,9 +106,10 @@ function AppContent() {
 
           {/* 💾 Saved Reels */}
           <Route path="/saved-reels" element={<SavedReels />} />
+      
         </Routes>
       </div>
-      {!hideLayout && <Footer />}
+      {!hideFooter && <Footer />}
     </>
   );
 }

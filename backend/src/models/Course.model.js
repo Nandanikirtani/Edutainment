@@ -39,12 +39,12 @@ const progressSchema = new Schema({
 
 const courseSchema = new Schema(
   {
-    facultyId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    facultyName: { type: String, required: true }, 
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true },
-    thumbnailUrl: { type: String }, // Course thumbnail
+    thumbnailUrl: { type: String,required:true }, // Course thumbnail
     backgroundImage: { type: String }, // Background image for course detail page
-    category: { type: String, default: "General" },
+    department: { type: String, enum: ["Engineering", "Science", "Law","Management & Commerce","Education & Humanities"], default: "Engineering" ,required:true},
     level: { type: String, enum: ["Beginner", "Intermediate", "Advanced"], default: "Beginner" },
     duration: { type: Number, default: 0 }, // Total duration in minutes
     price: { type: Number, default: 0 }, // Course price
@@ -52,7 +52,6 @@ const courseSchema = new Schema(
     chapters: [chapterSchema],
     enrolledStudents: [{ type: Schema.Types.ObjectId, ref: "User" }],
     rating: { type: Number, default: 0 },
-    totalRatings: { type: Number, default: 0 },
     progress: { type: [progressSchema], default: [] },
   },
   { timestamps: true }

@@ -129,9 +129,34 @@ export const getRejectedVideos = asyncHandler(async (req, res) => {
 
 // Admin: Upload Course Video
 export const uploadCourseVideo = asyncHandler(async (req, res) => {
-  const { title, description } = req.body;
+  console.log("req.files:", req.files);
+  console.log("REQ.BODY:", req.body);
+
+  const { title, description,facultyName,department,rating } = req.body;
   const videoFile = req.files?.videoFile?.[0];
-  const thumbnailFile = req.files?.thumbnailFile?.[0];
+ let thumbnailUrl = null;
+
+// If a file is uploaded
+const thumbnailFile = req.files?.thumbnailFile?.[0];
+if (thumbnailFile) {
+  const thumbnailResult = await cloudinary.uploader.upload(thumbnailFile.path, {
+    resource_type: "image",
+    folder: "course_thumbnails",
+  });
+  thumbnailUrl = thumbnailResult.secure_url;
+
+  // Remove local file
+  if (fs.existsSync(thumbnailFile.path)) fs.unlinkSync(thumbnailFile.path);
+}
+// If frontend sends a direct URL
+else if (req.body.thumbnailUrl) {
+  thumbnailUrl = req.body.thumbnailUrl;
+}
+
+// Throw error if no thumbnail
+if (!thumbnailUrl) throw new ApiError(400, "Thumbnail is required");
+
+
 
   if (!title || !description || !videoFile) {
     throw new ApiError(400, "Title, description, and video file are required for course upload");
@@ -142,25 +167,19 @@ export const uploadCourseVideo = asyncHandler(async (req, res) => {
       resource_type: "video",
       folder: "course_videos",
     });
-    let thumbnailUrl = null;
-    if (thumbnailFile) {
-      const thumbnailResult = await cloudinary.uploader.upload(thumbnailFile.path, {
-        resource_type: "image",
-        folder: "course_thumbnails",
-      });
-      thumbnailUrl = thumbnailResult.secure_url;
-    }
 
     const newCourse = await Course.create({
-      facultyId: req.user._id,
+      facultyName,
       title,
       description,
+      department,
+      rating,
       videoUrl: videoResult.secure_url,
       thumbnailUrl,
     });
 
     if (fs.existsSync(videoFile.path)) fs.unlinkSync(videoFile.path);
-    if (thumbnailFile && fs.existsSync(thumbnailFile.path)) fs.unlinkSync(thumbnailFile.path);
+    if (thumbnailUrl && fs.existsSync(thumbnailUrl.path)) fs.unlinkSync(thumbnailUrl.path);
 
     res.status(201).json({
       success: true,
@@ -169,7 +188,7 @@ export const uploadCourseVideo = asyncHandler(async (req, res) => {
     });
   } catch (err) {
     if (videoFile && fs.existsSync(videoFile.path)) fs.unlinkSync(videoFile.path);
-    if (thumbnailFile && fs.existsSync(thumbnailFile.path)) fs.unlinkSync(thumbnailFile.path);
+    if (thumbnailUrl && fs.existsSync(thumbnailUrl.path)) fs.unlinkSync(thumbnailUrl.path);
     console.error("Course upload error:", err);
     throw new ApiError(500, "Course video upload failed", [err.message]);
   }
@@ -177,7 +196,7 @@ export const uploadCourseVideo = asyncHandler(async (req, res) => {
 
 // Public: Get All Courses
 export const getAllCourses = asyncHandler(async (req, res) => {
-  const courses = await Course.find({}).populate('facultyId', 'fullName').sort({ createdAt: -1 });
+  const courses = await Course.find({});
   res.status(200).json({
     success: true,
     data: courses,
@@ -222,7 +241,7 @@ export const getAllCoursesWithStudents = asyncHandler(async (req, res) => {
       description: course.description,
       thumbnailUrl: course.thumbnailUrl,
       facultyId: course.facultyId,
-      category: course.category,
+      department: course.department,
       level: course.level,
       enrolledStudents: students,
       totalEnrolled: students.length
@@ -413,17 +432,16 @@ export const updateCourseFaculty = asyncHandler(async (req, res) => {
 // ===============================================
 
 // Helper function to check if user can manage course
-const canManageCourse = (user, course) => {
+
+
+const canManageCourse = (user) => {
   console.log("🔍 Course Management Check:");
   console.log("User ID:", user._id);
   console.log("User Role:", user.role);
-  console.log("Course Faculty ID:", course.facultyId.toString());
-  console.log("Is Owner:", course.facultyId.toString() === user._id.toString());
-  console.log("Is Admin:", user.role === "admin");
-  
-  const canManage = course.facultyId.toString() === user._id.toString() || user.role === "admin";
+
+  const canManage = user.role === "admin";
   console.log("Can Manage:", canManage);
-  
+
   return canManage;
 };
 
@@ -448,19 +466,20 @@ export const getCourseById = asyncHandler(async (req, res) => {
 
 // Create new course (Admin/Faculty only)
 export const createCourse = asyncHandler(async (req, res) => {
-  const { title, description, category, level, price, backgroundImage } = req.body;
+  const {facultyName, title, description, department, level, price, backgroundImage,rating } = req.body;
   
   if (!title || !description) {
     throw new ApiError(400, "Title and description are required");
   }
   
   const course = await Course.create({
-    facultyId: req.user._id,
+    facultyName,    
     title,
     description,
-    category: category || "General",
+    department: department || "General",
     level: level || "Beginner",
     price: price || 0,
+    rating: rating || 0,
     backgroundImage,
   });
   
@@ -906,34 +925,45 @@ export const deleteChapter = asyncHandler(async (req, res) => {
 // Delete video from chapter (Admin/Faculty only)
 export const deleteVideo = asyncHandler(async (req, res) => {
   const { courseId, chapterId, videoId } = req.params;
-  
+
   const course = await Course.findById(courseId);
-  if (!course) {
-    throw new ApiError(404, "Course not found");
-  }
-  
-  // Check if user can manage the course
+  if (!course) throw new ApiError(404, "Course not found");
+
   if (!canManageCourse(req.user, course)) {
     throw new ApiError(403, "You can only delete videos from your own courses");
   }
-  
+
   const chapter = course.chapters.id(chapterId);
-  if (!chapter) {
-    throw new ApiError(404, "Chapter not found");
-  }
-  
+  if (!chapter) throw new ApiError(404, "Chapter not found");
+
   const video = chapter.videos.id(videoId);
-  if (!video) {
-    throw new ApiError(404, "Video not found");
+  if (!video) throw new ApiError(404, "Video not found");
+
+  // Remove video from Cloudinary
+  try {
+    // Extract public_id from the video URL
+    const publicId = video.videoUrl
+      .split('/')
+      .pop()
+      .split('.')[0]; // e.g., "course_videos/filename" without extension
+
+    // You may need to include folder name if stored in a folder
+    await cloudinary.uploader.destroy(`course_videos/${publicId}`, {
+      resource_type: "video",
+    });
+  } catch (err) {
+    console.error("Cloudinary delete error:", err);
+    // Optional: you can decide whether to continue deletion in DB if Cloudinary fails
   }
-  
-  // Remove video
+
+  // Remove video from database
   chapter.videos.pull(videoId);
   await course.save();
-  
+
   res.status(200).json({
     success: true,
     data: course,
     message: "Video deleted successfully",
   });
 });
+
