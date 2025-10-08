@@ -310,10 +310,8 @@ const DepartmentTitle = styled.h2`
   font-size: 32px;
   font-weight: bold;
   margin-bottom: 40px;
-  background: linear-gradient(135deg, #ff0000, #ff6666);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 `;
 
 const DepartmentGrid = styled.div`
