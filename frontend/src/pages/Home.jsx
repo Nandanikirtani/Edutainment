@@ -297,6 +297,86 @@ const BackTitle = styled.h3`
   color: #fff;
 `;
 
+/* ================= Department Section Styles ================= */
+const DepartmentContainer = styled.div`
+  padding: 50px 20px;
+  background: linear-gradient(135deg, #000 0%, #1a0000 100%);
+  color: white;
+  font-family: "Arial", sans-serif;
+  text-align: center;
+`;
+
+const DepartmentTitle = styled.h2`
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 40px;
+  background: linear-gradient(135deg, #ff0000, #ff6666);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+`;
+
+const DepartmentGrid = styled.div`
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1400px;
+  margin: 0 auto;
+`;
+
+const DepartmentCard = styled(motion.div)`
+  position: relative;
+  width: 380px;
+  height: 220px;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  background-color: #ffffff;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.7);
+  transition: all 0.3s ease-in-out;
+  border: 2px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    border-color: #ff0000;
+    box-shadow: 0px 15px 40px rgba(255, 0, 0, 0.5);
+  }
+`;
+
+const DepartmentImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  transition: transform 0.3s ease;
+  
+  ${DepartmentCard}:hover & {
+    transform: scale(1.02);
+  }
+`;
+
+const DepartmentOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 15px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+  color: white;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+`;
+
+const DepartmentName = styled.h3`
+  font-size: 20px;
+  margin: 0;
+  font-weight: 600;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+`;
+
 const BackTag = styled.span`
   font-size: 14px;
   color: #ffd700;
@@ -395,6 +475,34 @@ const extraData = [
   },
 ];
 
+const departmentData = [
+  {
+    id: 1,
+    name: "School of Engineering",
+    img: `${import.meta.env.BASE_URL}Department1.jpg`,
+  },
+  {
+    id: 2,
+    name: "School of Law",
+    img: `${import.meta.env.BASE_URL}Department2.jpg`,
+  },
+  {
+    id: 3,
+    name: "School of Education and Humanities",
+    img: `${import.meta.env.BASE_URL}Department3.jpg`,
+  },
+  {
+    id: 4,
+    name: "School of Management & Commerce",
+    img: `${import.meta.env.BASE_URL}Department4.jpg`,
+  },
+  {
+    id: 5,
+    name: "School of Sciences",
+    img: `${import.meta.env.BASE_URL}Department5.jpg`,
+  },
+];
+
 /* ================= Motion Variants ================= */
 const gridVariants = {
   hidden: {},
@@ -414,6 +522,7 @@ const cardVariant = {
 const MotionCoursesGrid = motion(CoursesGrid);
 const MotionArtsGrid = motion(ArtsGrid);
 const MotionExtraGrid = motion(ExtraGrid);
+const MotionDepartmentGrid = motion(DepartmentGrid);
 
 /* ================= Components ================= */
 const HeroSlider = () => {
@@ -1069,6 +1178,45 @@ const ArtsSection = () => {
   );
 };
 
+/* ================= Department Section Component ================= */
+const DepartmentSection = () => {
+  return (
+    <DepartmentContainer>
+      <DepartmentTitle>Our Departments</DepartmentTitle>
+      <MotionDepartmentGrid
+        variants={gridVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+      >
+        {departmentData.map((dept) => (
+          <DepartmentCard
+            key={dept.id}
+            variants={cardVariant}
+            whileHover={{
+              scale: 1.08,
+              y: -8,
+              rotateY: 5,
+              boxShadow: "0px 20px 40px rgba(255, 0, 0, 0.6)",
+              borderColor: "#ff0000",
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 20,
+            }}
+          >
+            <DepartmentImage src={dept.img} alt={dept.name} />
+            <DepartmentOverlay>
+              <DepartmentName>{dept.name}</DepartmentName>
+            </DepartmentOverlay>
+          </DepartmentCard>
+        ))}
+      </MotionDepartmentGrid>
+    </DepartmentContainer>
+  );
+};
+
 /* ================= ExtraSection Component ================= */
 const ExtraSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -1235,6 +1383,7 @@ const HomePage = () => {
       <GlobalStyle />
       <HeroSlider />
       <CareerSection />
+      <DepartmentSection />
       <CoursesSection />
       <ArtsSection />
       <ExtraSection />
