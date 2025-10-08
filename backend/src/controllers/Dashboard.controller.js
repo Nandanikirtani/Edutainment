@@ -3,6 +3,7 @@ import { Course } from "../models/Course.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { apiResponse } from "../utils/apiResponse.js";
+import { Activity } from "../models/Activity.model.js";
 
 // Get comprehensive dashboard data for student
 export const getStudentDashboard = asyncHandler(async (req, res) => {
@@ -190,6 +191,31 @@ export const getStudentDashboard = asyncHandler(async (req, res) => {
         downloadUrl: `/api/certificates/${course.id}/${studentId}`,
       }));
 
+    // Build weekly activity from tracking (last 7 days)
+    const today = new Date();
+    const start = new Date(today);
+    start.setHours(0,0,0,0);
+    // Generate past 7 days keys
+    const days = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(start);
+      d.setDate(start.getDate() - (6 - i));
+      return d;
+    });
+    const dayKeys = days.map(d => d.toISOString().split('T')[0]);
+
+    const activities = await Activity.find({ userId: student._id, day: { $in: dayKeys } }).lean();
+    const byDay = new Map(dayKeys.map(k => [k, 0]));
+    activities.forEach(a => { byDay.set(a.day, (byDay.get(a.day) || 0) + (a.secondsSpent || 0)); });
+    const maxSeconds = Math.max(1, ...Array.from(byDay.values()));
+    const weeklyActivity = dayKeys.map((k, idx) => {
+      const secs = byDay.get(k) || 0;
+      const hours = +(secs / 3600).toFixed(1);
+      // Normalize to percentage against the max of the week
+      const activity = Math.round((secs / maxSeconds) * 100);
+      const dayName = days[idx].toLocaleDateString(undefined, { weekday: 'long' });
+      return { day: dayName, activity, hoursSpent: hours };
+    });
+
     // Prepare dashboard data
     const dashboardData = {
       student: {
@@ -212,7 +238,7 @@ export const getStudentDashboard = asyncHandler(async (req, res) => {
       upcomingDeadlines,
       announcements,
       certificates,
-      weeklyActivity: generateWeeklyActivity(coursesWithProgress), // Live weekly activity data
+      weeklyActivity: weeklyActivity, // Use real tracked weekly activity based on Activity model
     };
 
     res.status(200).json(
@@ -328,6 +354,29 @@ export const getStudentAnnouncements = asyncHandler(async (req, res) => {
   res.status(200).json(
     new apiResponse(200, announcements, "Announcements fetched successfully")
   );
+});
+
+// Track activity ping (e.g., from video heartbeat)
+export const recordStudentActivityPing = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { seconds = 15, courseId = null } = req.body || {};
+  const sec = Number(seconds) || 0;
+  if (sec <= 0) return res.status(400).json(new apiResponse(400, null, 'Invalid seconds'));
+
+  const now = new Date();
+  const day = now.toISOString().split('T')[0];
+
+  try {
+    const doc = await Activity.findOneAndUpdate(
+      { userId, day, courseId },
+      { $inc: { secondsSpent: sec } },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+    return res.status(200).json(new apiResponse(200, { day: doc.day, secondsSpent: doc.secondsSpent }, 'Activity recorded'));
+  } catch (e) {
+    console.error('Activity ping error:', e);
+    throw new ApiError(500, 'Failed to record activity');
+  }
 });
 
 // Helper function to generate weekly activity data based on user engagement

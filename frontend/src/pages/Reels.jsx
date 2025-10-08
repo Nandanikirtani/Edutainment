@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import Reel from "../components/Reel";
 import { getAcceptedVideosAPI } from "../api/api";
+import { useAuth } from "../context/AuthContext";
 
 export default function Reels() {
   const [videos, setVideos] = useState([]);
   const containerRef = useRef(null);
-  const userId = "YOUR_LOGGED_IN_USER_ID"; // Replace with actual logged-in user ID
+  const { user } = useAuth();
+  const userId = user?._id || user?.data?._id || user?.user?._id || user?.id || "guest";
 
   useEffect(() => {
     const fetchVideos = async () => {

@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { HashRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { AuthProvider } from "./context/AuthContext";
+import ActivityTracker from "./components/ActivityTracker";
+import SplashScreen from "./components/SplashScreen";
 
 import Home from "./pages/Home";
 import FAQS from "./pages/FAQS";
@@ -20,11 +23,27 @@ import AdminDashboard from "./pages/AdminDashboard";
 import CourseDetail from "./pages/CourseDetail";
 import Dashboard from "./pages/Dashboard";
 import Achievement from "./pages/Achievement";
+import SavedReels from "./pages/SavedReels";
 
 import "./App.css";
 
 function AppContent() {
   const location = useLocation();
+  const [showSplash, setShowSplash] = useState(true);
+
+  if (showSplash) {
+    // Show splash screen on initial app load, then reveal app
+    return (
+      <SplashScreen
+        onFinished={() => setShowSplash(false)}
+        showDurationMs={2200}
+        exitDurationMs={700}
+        beamsIntensity="high"
+        enableSound={true}
+        soundSrc={`${import.meta.env.BASE_URL}splash.mp3`}
+      />
+    );
+  }
 
   // Routes where Navbar and Footer should be hidden
   const hideLayoutRoutes = ["/student"];
@@ -32,6 +51,8 @@ function AppContent() {
 
   return (
     <>
+      {/* Global activity tracker runs on all pages to record active, visible time */}
+      <ActivityTracker />
       {!hideLayout && <Navbar />}
       <div className={hideLayout ? "" : "pt-20"}>
         <Routes>
@@ -75,6 +96,9 @@ function AppContent() {
 
           {/* 📚 Course Detail */}
           <Route path="/course/:courseId" element={<CourseDetail />} />
+
+          {/* 💾 Saved Reels */}
+          <Route path="/saved-reels" element={<SavedReels />} />
         </Routes>
       </div>
       {!hideLayout && <Footer />}

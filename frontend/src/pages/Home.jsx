@@ -482,7 +482,7 @@ const HeroSlider = () => {
               src={img.url}
               whileHover={{ scale: 1.1 }}
               animate={{ 
-                borderColor: index === current ? "#ff4d4d" : "transparent", 
+                borderColor: index === current ? "#ff4d4d" : "rgba(0,0,0,0)", 
                 scale: index === current ? 1.05 : 1 
               }}
               transition={{ duration: 0.3 }}
