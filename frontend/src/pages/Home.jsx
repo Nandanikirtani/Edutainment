@@ -5,7 +5,6 @@ import styled from "styled-components";
 import { Play, ArrowLeft, Clock, User } from "lucide-react";
 import { createGlobalStyle } from "styled-components";
 import { useNavigate } from "react-router-dom";
-import DepartmentExplorer from "../components/DepartmentExplorer";
 const GlobalStyle = createGlobalStyle`
   body, html {
     margin: 0;
@@ -551,6 +550,8 @@ const HeroSlider = () => {
     setShowVideo(false);
   };
 
+  
+
   return (
     <SliderContainer>
       <AnimatePresence mode="wait">
@@ -986,7 +987,6 @@ const CoursesSection = () => {
   if (loading) {
     return (
       <SectionContainer>
-        <DepartmentExplorer />
         <SectionTitle>Trending Courses</SectionTitle>
         <div className="text-center text-white">Loading courses...</div>
       </SectionContainer>
@@ -995,7 +995,6 @@ const CoursesSection = () => {
 
   return (
     <SectionContainer>
-      <DepartmentExplorer />
       <SectionTitle className="text-center">Trending Courses</SectionTitle>
       <MotionCoursesGrid
         variants={gridVariants}
@@ -1178,6 +1177,19 @@ const ArtsSection = () => {
 
 /* ================= Department Section Component ================= */
 const DepartmentSection = () => {
+  const deptName = {
+    "All Departments": null,
+    "School of Engineering": "Engineering",
+    "School of Sciences": "Sciences",
+    "School of Law": "Law",
+    "School of Management & Commerce": "Management & Commerce",
+    "School of Education & Humanities": "Education & Humanities",
+  };
+  const navigate = useNavigate();
+  const handleDepartmentClick = (deptId) => {
+    // Navigate to courses page and pass the department id
+    navigate(`/courses?department=${encodeURIComponent(deptName)}`);
+  };
   return (
     <DepartmentContainer>
       <DepartmentTitle>Our Departments</DepartmentTitle>
@@ -1203,6 +1215,7 @@ const DepartmentSection = () => {
               stiffness: 300,
               damping: 20,
             }}
+            onClick={() => handleDepartmentClick(dept.name)}
           >
             <DepartmentImage src={dept.img} alt={dept.name} />
             <DepartmentOverlay>

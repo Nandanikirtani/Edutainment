@@ -510,8 +510,8 @@ const CourseDetail = () => {
   const isEnrolled = course && user && course.enrolledStudents.some(student => student._id === getUserId());
 
   // Permissions: only students watching their enrolled course get full videos; others only preview
-  const isStudent = user && getUserRole() === 'student';
-  const canWatchFull = isStudent && isEnrolled;
+  const isStudent = user && (getUserRole() === 'student'||getUserRole() === 'admin');
+  const canWatchFull = isStudent || isEnrolled;
   const canWatchThisVideo = canWatchFull || (!!activeVideo && activeVideo.isPreview);
 
   if (loading) {
