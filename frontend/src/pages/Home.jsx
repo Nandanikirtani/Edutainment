@@ -1,8 +1,8 @@
 // HomePage.jsx
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import styled from "styled-components";
-import { Play, ArrowLeft, Clock, User } from "lucide-react";
+import { Play, Clock, User, Volume2, VolumeX } from "lucide-react";
 import { createGlobalStyle } from "styled-components";
 import { useNavigate } from "react-router-dom";
 const GlobalStyle = createGlobalStyle`
@@ -17,8 +17,8 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-/* ================= HeroSlider Styles ================= */
-const SliderContainer = styled.div`
+/* ================= Hero Video Styles ================= */
+const VideoContainer = styled.div`
   position: relative;
   height: 100vh;
   width: 100%;
@@ -27,64 +27,48 @@ const SliderContainer = styled.div`
   background: black;
 `;
 
-const MainImage = styled(motion.img)`
-  margin: 0;
-  padding: 0;
+const VideoElement = styled.video`
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  cursor: pointer;
 `;
-const Overlay = styled.div`
+
+const VideoOverlay = styled.div`
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
   width: 100%;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
 `;
 
-const PlayButton = styled(motion.button)`
+const VolumeButton = styled(motion.div)`
   position: absolute;
-  top: 25%;
-  left: 10%;
-  background: linear-gradient(135deg, #ff078, #ff4d4d);
-  color: white;
-  font-size: 22px;
-  font-weight: bold;
-  padding: 16px 32px;
-  border-radius: 50px;
-  border: none;
+  bottom: 30px;
+  right: 30px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
   cursor: pointer;
   z-index: 10;
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
 
   &:hover {
-    background: linear-gradient(135deg, #e60000, #ff6666);
-    transform: scale(1.08);
+    background: rgba(255, 0, 0, 0.7);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.1);
   }
-`;
-
-const PreviewContainer = styled.div`
-  position: absolute;
-  bottom: 100px;
-  display: flex;
-  gap: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-`;
-
-const PreviewImage = styled(motion.img)`
-  width: 250px;
-  height: 150px;
-  border-radius: 14px;
-  object-fit: cover;
-  border: 3px solid transparent;
-  cursor: pointer;
 `;
 
 // ============ CHANGE 1: ADDED THIS CONTAINER AND UPDATED THE BANNER STYLE ============
@@ -387,11 +371,6 @@ const BackDesc = styled.p`
 `;
 
 /* ================= Data ================= */
-const sliderImages = [
-  { id: 1, url: `${import.meta.env.BASE_URL}1.png`, videoId: "rHWQm-dsJ8g" },
-  { id: 2, url: `${import.meta.env.BASE_URL}2.png`, videoId: "2HeLWFWPhaw" },
-  { id: 3, url: `${import.meta.env.BASE_URL}3.png`, videoId: "s0rQ4wn8Ir8" },
-];
 
 const coursesData = [
   {
@@ -522,193 +501,46 @@ const MotionExtraGrid = motion(ExtraGrid);
 const MotionDepartmentGrid = motion(DepartmentGrid);
 
 /* ================= Components ================= */
-const HeroSlider = () => {
-  const [current, setCurrent] = useState(0);
-  const [showVideo, setShowVideo] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+const HeroVideo = () => {
+  const [isMuted, setIsMuted] = useState(true);
+  const videoRef = React.useRef(null);
 
-  useEffect(() => {
-    let interval;
-    if (!showVideo) {
-      interval = setInterval(() => {
-        setCurrent((prev) => (prev + 1) % sliderImages.length);
-      }, 4000);
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(!isMuted);
     }
-    return () => clearInterval(interval);
-  }, [showVideo]);
-
-  const handlePlayClick = () => {
-    setShowVideo(true);
   };
-
-  const closeVideo = () => {
-    setShowVideo(false);
-  };
-
-  const handleThumbnailClick = (index) => {
-    setCurrent(index);
-    setShowVideo(false);
-  };
-
-  
 
   return (
-    <SliderContainer>
-      <AnimatePresence mode="wait">
-        <div
-          style={{ position: "relative", width: "100%", height: "100%" }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          <MainImage
-            key={sliderImages[current].id}
-            src={sliderImages[current].url}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
-          />
-          <Overlay />
-          <PlayButton
-            onClick={handlePlayClick}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            style={{
-              opacity: isHovered ? 1 : 0.8,
-              transition: "opacity 0.3s ease",
-            }}
-          >
-            <Play size={22} /> Play
-          </PlayButton>
-        </div>
-      </AnimatePresence>
-
-      {/* Video Modal */}
-      {showVideo && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0,0,0,0.9)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 1000,
-          }}
-        >
-          <button
-            onClick={closeVideo}
-            style={{
-              position: "absolute",
-              top: "20px",
-              right: "20px",
-              background: "rgba(0,0,0,0.7)",
-              color: "white",
-              border: "none",
-              borderRadius: "50%",
-              width: "40px",
-              height: "40px",
-              fontSize: "20px",
-              cursor: "pointer",
-              zIndex: 1001,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            ✕
-          </button>
-          <div
-            style={{
-              width: "90%",
-              maxWidth: "1200px",
-              aspectRatio: "16/9",
-              position: "relative",
-              borderRadius: "12px",
-              overflow: "hidden",
-            }}
-          >
-            <iframe
-              width="100%"
-              height="100%"
-              src={`https://www.youtube.com/embed/${sliderImages[current].videoId}?autoplay=1&modestbranding=1&rel=0`}
-              title="Video Player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                border: "none",
-              }}
-            ></iframe>
-          </div>
-        </div>
-      )}
-
-      <PreviewContainer>
-        {sliderImages.map((img, index) => (
-          <div key={img.id} style={{ position: "relative" }}>
-            <PreviewImage
-              src={img.url}
-              whileHover={{ scale: 1.1 }}
-              animate={{
-                borderColor: index === current ? "#ff4d4d" : "rgba(0,0,0,0)",
-                scale: index === current ? 1.05 : 1,
-              }}
-              transition={{ duration: 0.3 }}
-              onClick={() => handleThumbnailClick(index)}
-            />
-            {index === current && showVideo && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background: "rgba(0,0,0,0.5)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: "10px",
-                  pointerEvents: "none",
-                }}
-              >
-                <div
-                  style={{
-                    width: "30px",
-                    height: "30px",
-                    background: "#ff4d4d",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    animation: "pulse 1.5s infinite",
-                  }}
-                >
-                  <Play size={16} color="white" />
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-      </PreviewContainer>
-
-      <style>{`
-        @keyframes pulse {
-          0% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.1); opacity: 0.8; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-      `}</style>
-    </SliderContainer>
+    <VideoContainer onClick={toggleMute}>
+      <VideoElement
+        ref={videoRef}
+        autoPlay
+        loop
+        muted
+        playsInline
+      >
+        <source src={`${import.meta.env.BASE_URL}Home.MP4`} type="video/mp4" />
+        Your browser does not support the video tag.
+      </VideoElement>
+      <VideoOverlay />
+      
+      <VolumeButton
+        onClick={toggleMute}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        whileHover={{ scale: 1.15 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        {isMuted ? (
+          <VolumeX size={28} color="white" />
+        ) : (
+          <Volume2 size={28} color="white" />
+        )}
+      </VolumeButton>
+    </VideoContainer>
   );
 };
 
@@ -1392,7 +1224,7 @@ const HomePage = () => {
   return (
     <>
       <GlobalStyle />
-      <HeroSlider />
+      <HeroVideo />
       <CareerSection />
       <DepartmentSection />
       <CoursesSection />
