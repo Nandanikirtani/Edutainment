@@ -28,8 +28,8 @@ const CourseCard = styled(motion.div)`
   justify-content: center;
 
   &:hover {
-    border-color: #ff0000;
-    box-shadow: 0px 15px 40px rgba(255, 0, 0, 0.5);
+    border-color: #4DB3A7;
+    box-shadow: 0px 15px 40px rgba(77, 179, 167, 0.5);
   }
 `;
 
@@ -168,7 +168,7 @@ function Courses() {
             placeholder="Search courses..."
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-red-500 text-white rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full pl-10 pr-4 py-2 border border-[#4DB3A7] text-white rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4DB3A7]"
           />
         </div>
       </div>
@@ -187,8 +187,8 @@ function Courses() {
                       onClick={() => setEngineeringOpen(!engineeringOpen)}
                       className={`cursor-pointer px-3 py-2 rounded-md transition flex justify-between items-center ${
                         selectedDept === dept
-                          ? "bg-red-600"
-                          : "hover:bg-red-500 hover:text-black"
+                          ? "bg-[#4DB3A7]"
+                          : "hover:bg-[#4DB3A7] hover:text-black"
                       }`}
                     >
                       {dept}
@@ -218,8 +218,8 @@ function Courses() {
                               }}
                               className={`cursor-pointer px-3 py-1 rounded-md transition ${
                                 selectedSubDept === sub.key
-                                  ? "bg-red-500 text-white"
-                                  : "hover:bg-red-500 hover:text-black"
+                                  ? "bg-[#4DB3A7] text-white"
+                                  : "hover:bg-[#4DB3A7] hover:text-black"
                               }`}
                             >
                               {sub.name}
@@ -240,8 +240,8 @@ function Courses() {
                     }}
                     className={`cursor-pointer px-3 py-2 text-white rounded-md transition ${
                       selectedDept === dept
-                        ? "bg-red-600 text-white"
-                        : "hover:bg-red-500 hover:text-black"
+                        ? "bg-[#4DB3A7] text-white"
+                        : "hover:bg-[#4DB3A7] hover:text-black"
                     }`}
                   >
                     {dept}
@@ -262,7 +262,7 @@ function Courses() {
                   whileHover={{
                     scale: 1.05,
                     y: -5,
-                    boxShadow: "0px 15px 40px rgba(255,0,0,0.5)",
+                    boxShadow: "0px 15px 40px rgba(77,179,167,0.5)",
                   }}
                   onClick={() => handleCourseClick(course._id)}
                 >
