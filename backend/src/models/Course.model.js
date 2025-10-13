@@ -39,13 +39,36 @@ const progressSchema = new Schema({
 
 const courseSchema = new Schema(
   {
-    facultyName: { type: String, required: true }, 
+    facultyName: { type: String, required: true },
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true },
-    thumbnailUrl: { type: String,required:true }, // Course thumbnail
+    thumbnailUrl: { type: String, required: true }, // Course thumbnail
     backgroundImage: { type: String }, // Background image for course detail page
-    department: { type: String, enum: ["Engineering", "Science", "Law","Management & Commerce","Education & Humanities"], default: "Engineering" ,required:true},
-    level: { type: String, enum: ["Beginner", "Intermediate", "Advanced"], default: "Beginner" },
+
+    department: {
+      type: String,
+      enum: [
+        "Engineering",
+        "Science",
+        "Law",
+        "Management & Commerce",
+        "Education & Humanities",
+      ],
+      default: "Engineering",
+      required: true,
+    },
+
+    subDepartment: {
+      type: String,
+      enum: ["CST", "ECE", "Mechanical", null], // ✅ include null explicitly
+      default: null,
+    },
+
+    level: {
+      type: String,
+      enum: ["Beginner", "Intermediate", "Advanced"],
+      default: "Beginner",
+    },
     duration: { type: Number, default: 0 }, // Total duration in minutes
     price: { type: Number, default: 0 }, // Course price
     isPublished: { type: Boolean, default: false },
@@ -56,5 +79,6 @@ const courseSchema = new Schema(
   },
   { timestamps: true }
 );
+
 
 export const Course = mongoose.model("Course", courseSchema);

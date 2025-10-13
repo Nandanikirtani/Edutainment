@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import styled from "styled-components";
 
@@ -89,6 +89,14 @@ function Courses() {
     "School of Education & Humanities": "Education & Humanities",
   };
 
+  const engineeringSubDepts = [
+    { name: "Department of Computer Science & Technology", key: "CST" },
+    { name: "Department of Electronics and Communication", key: "ECE" },
+    { name: "Department of Mechanical Engineering", key: "Mechanical" },
+  ];
+
+  const [engineeringOpen, setEngineeringOpen] = useState(false);
+  const [selectedSubDept, setSelectedSubDept] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedDept, setSelectedDept] = useState("All Departments");
@@ -133,12 +141,20 @@ function Courses() {
   };
 
   const filteredCourses = courses.filter((course) => {
+    // Department filter
     const matchesDept =
       !deptMap[selectedDept] || course.department === deptMap[selectedDept];
+
+    // SubDepartment filter (only if selected)
+    const matchesSubDept =
+      !selectedSubDept || course.subDepartment === selectedSubDept;
+
+    // Search filter
     const matchesSearch =
       course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.facultyName.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesDept && matchesSearch;
+
+    return matchesDept && matchesSubDept && matchesSearch;
   });
 
   return (
@@ -163,19 +179,76 @@ function Courses() {
         <div className="hidden lg:flex flex-col bg-gray-900 border-r shadow-md p-6 w-72 fixed top-20 left-0 bottom-0 z-20">
           <h2 className="text-xl font-semibold text-white mb-4">Departments</h2>
           <ul className="space-y-2">
-            {departments.map((dept, idx) => (
-              <li
-                key={idx}
-                onClick={() => setSelectedDept(dept)}
-                className={`cursor-pointer px-3 py-2 text-white rounded-md transition ${
-                  selectedDept === dept
-                    ? "bg-red-600 text-white"
-                    : "hover:bg-red-500 hover:text-black"
-                }`}
-              >
-                {dept}
-              </li>
-            ))}
+            {departments.map((dept, idx) => {
+              if (dept === "School of Engineering") {
+                return (
+                  <li key={idx} className="text-white">
+                    <div
+                      onClick={() => setEngineeringOpen(!engineeringOpen)}
+                      className={`cursor-pointer px-3 py-2 rounded-md transition flex justify-between items-center ${
+                        selectedDept === dept
+                          ? "bg-red-600"
+                          : "hover:bg-red-500 hover:text-black"
+                      }`}
+                    >
+                      {dept}
+                      {engineeringOpen ? (
+                        <FaChevronUp className="ml-2" />
+                      ) : (
+                        <FaChevronDown className="ml-2" />
+                      )}
+                    </div>
+
+                    {/* Animate accordion */}
+                    <AnimatePresence>
+                      {engineeringOpen && (
+                        <motion.ul
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                          className="ml-4 mt-2 space-y-1 overflow-hidden"
+                        >
+                          {engineeringSubDepts.map((sub, sidx) => (
+                            <li
+                              key={sidx}
+                              onClick={() => {
+                                setSelectedSubDept(sub.key);
+                                setSelectedDept(dept);
+                              }}
+                              className={`cursor-pointer px-3 py-1 rounded-md transition ${
+                                selectedSubDept === sub.key
+                                  ? "bg-red-500 text-white"
+                                  : "hover:bg-red-500 hover:text-black"
+                              }`}
+                            >
+                              {sub.name}
+                            </li>
+                          ))}
+                        </motion.ul>
+                      )}
+                    </AnimatePresence>
+                  </li>
+                );
+              } else {
+                return (
+                  <li
+                    key={idx}
+                    onClick={() => {
+                      setSelectedDept(dept);
+                      setSelectedSubDept(null); // Reset subDept filter
+                    }}
+                    className={`cursor-pointer px-3 py-2 text-white rounded-md transition ${
+                      selectedDept === dept
+                        ? "bg-red-600 text-white"
+                        : "hover:bg-red-500 hover:text-black"
+                    }`}
+                  >
+                    {dept}
+                  </li>
+                );
+              }
+            })}
           </ul>
         </div>
 
