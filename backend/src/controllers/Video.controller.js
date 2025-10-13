@@ -132,7 +132,7 @@ export const uploadCourseVideo = asyncHandler(async (req, res) => {
   console.log("req.files:", req.files);
   console.log("REQ.BODY:", req.body);
 
-  const { title, description,facultyName,department,rating } = req.body;
+  const { title, description,facultyName,department,subDepartment,rating } = req.body;
   const videoFile = req.files?.videoFile?.[0];
  let thumbnailUrl = null;
 
@@ -162,6 +162,12 @@ if (!thumbnailUrl) throw new ApiError(400, "Thumbnail is required");
     throw new ApiError(400, "Title, description, and video file are required for course upload");
   }
 
+  const validSubDepts = ["CST", "ECE", "Mechanical"];
+  let finalSubDept = null;
+  if (department === "Engineering" && subDepartment) {
+    const formatted = subDepartment.trim().toUpperCase();
+    if (validSubDepts.includes(formatted)) finalSubDept = formatted;
+  }
   try {
     const videoResult = await cloudinary.uploader.upload(videoFile.path, {
       resource_type: "video",
@@ -174,6 +180,7 @@ if (!thumbnailUrl) throw new ApiError(400, "Thumbnail is required");
       description,
       department,
       rating,
+      subDepartment: finalSubDept,
       videoUrl: videoResult.secure_url,
       thumbnailUrl,
     });
@@ -466,8 +473,9 @@ export const getCourseById = asyncHandler(async (req, res) => {
 
 // Create new course (Admin/Faculty only)
 export const createCourse = asyncHandler(async (req, res) => {
-  const {facultyName, title, description, department, level, price, backgroundImage,rating } = req.body;
-  
+  const {facultyName, title, description, department, level, price, backgroundImage,rating,subDepartment } = req.body;
+
+
   if (!title || !description) {
     throw new ApiError(400, "Title and description are required");
   }
@@ -476,7 +484,8 @@ export const createCourse = asyncHandler(async (req, res) => {
     facultyName,    
     title,
     description,
-    department: department || "General",
+    department: department || "Engineering",
+    subDepartment: department === "Engineering" && subDepartment?.trim() ? subDepartment.trim() : null,
     level: level || "Beginner",
     price: price || 0,
     rating: rating || 0,
