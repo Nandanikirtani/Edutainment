@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-  registerUser,
   sendRegistrationOTP,
   verifyOTPAndRegister,
   loginUser,
@@ -17,9 +16,6 @@ const router = Router();
 // ----------------- Register with OTP -----------------
 router.post("/send-otp", sendRegistrationOTP);
 router.post("/verify-otp", verifyOTPAndRegister);
-
-// ----------------- Register (Legacy) -----------------
-router.post("/register", registerUser);
 
 // ----------------- Login -----------------
 router.post("/login", loginUser);
