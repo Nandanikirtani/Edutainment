@@ -1,4 +1,3 @@
-// Complete Analytics Student Dashboard
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -28,16 +27,14 @@ import {
   Gift,
   MessageSquare,
   FileText,
-  Settings,
-  LogOut,
-  Home,
   ArrowLeft,
+  Home,
   Facebook,
   Linkedin,
   MessageCircle
 } from 'lucide-react';
 
-const Dashboard = () => {
+const StudentDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState({
@@ -175,12 +172,12 @@ const Dashboard = () => {
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
-      className={`bg-gradient-to-br from-black via-red-950/30 to-gray-900 rounded-xl p-6 border border-red-900/50 shadow-lg shadow-red-900/20 hover:shadow-red-900/30${onClick ? ' cursor-pointer' : ''}`}
+      className={`bg-gradient-to-br from-black via-[#4DB3A7]/30 to-gray-900 rounded-xl p-6 border border-[#4DB3A7]/50 shadow-lg shadow-[rgba(77,179,167,0.2)] hover:shadow-[rgba(77,179,167,0.3)]${onClick ? ' cursor-pointer' : ''}`}
     >
       <div className="flex items-center justify-between">
         <div>
           <p className="text-gray-300 text-sm font-medium">{title}</p>
-          <p className="text-3xl font-bold text-red-400 mt-1">{value}</p>
+          <p className="text-3xl font-bold text-[#4DB3A7] mt-1">{value}</p>
           {change && (
             <p className="text-xs text-green-400 mt-1 flex items-center gap-1">
               <TrendingUp className="w-3 h-3" />
@@ -188,8 +185,8 @@ const Dashboard = () => {
             </p>
           )}
         </div>
-        <div className="p-3 bg-red-600/20 rounded-lg border border-red-600/30">
-          <Icon className="w-6 h-6 text-red-400" />
+        <div className="p-3 bg-[#4DB3A7]/20 rounded-lg border border-[#4DB3A7]/30">
+          <Icon className="w-6 h-6 text-[#4DB3A7]" />
         </div>
       </div>
     </motion.div>
@@ -201,8 +198,7 @@ const Dashboard = () => {
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.3 }}
-      onClick={() => navigate(`/course/${course.id}`)}
-      className="bg-gradient-to-br from-black via-red-950/30 to-gray-900 rounded-xl p-6 border border-red-800/50 shadow-lg shadow-red-900/10 hover:shadow-red-900/20 cursor-pointer"
+      className="bg-gradient-to-br from-black via-[#4DB3A7]/30 to-gray-900 rounded-xl p-6 border border-[#4DB3A7]/50 shadow-lg shadow-[rgba(77,179,167,0.1)] hover:shadow-[rgba(77,179,167,0.2)]"
     >
       <div className="flex items-start gap-4">
         <img 
@@ -218,11 +214,11 @@ const Dashboard = () => {
           <div className="mb-3">
             <div className="flex justify-between text-xs mb-1">
               <span className="text-gray-300">Progress</span>
-              <span className="text-red-400 font-semibold">{course.progress}%</span>
+              <span className="text-[#4DB3A7] font-semibold">{course.progress}%</span>
             </div>
             <div className="w-full bg-gray-800 rounded-full h-3 shadow-inner">
               <div 
-                className="bg-gradient-to-r from-red-500 to-red-400 h-3 rounded-full transition-all duration-500 shadow-lg shadow-red-500/20"
+                className="bg-gradient-to-r from-[#4DB3A7] to-[#4DB3A7] h-3 rounded-full transition-all duration-500 shadow-lg shadow-[rgba(77,179,167,0.2)]"
                 style={{ width: `${course.progress}%` }}
               ></div>
             </div>
@@ -231,7 +227,7 @@ const Dashboard = () => {
           {course.status === 'ongoing' ? (
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-400">Next: {course.nextLesson}</span>
-              <button onClick={() => navigate(`/course/${course.id}`)} className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-300 flex items-center gap-1 shadow-lg shadow-red-600/30 hover:shadow-red-600/50">
+              <button onClick={() => navigate(`/course/${course.id}`)} className="bg-gradient-to-r from-[#4DB3A7] to-[#4DB3A7] hover:from-[#4DB3A7] hover:to-[#4DB3A7] px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-300 flex items-center gap-1 shadow-lg shadow-[rgba(77,179,167,0.3)] hover:shadow-[rgba(77,179,167,0.5)]">
                 <PlayCircle className="w-4 h-4" />
                 Resume
               </button>
@@ -309,17 +305,17 @@ const Dashboard = () => {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center">
         <div className="absolute inset-0 bg-black/70" onClick={onClose} />
-        <div className="relative z-10 w-full max-w-3xl mx-4 bg-gray-900 border border-red-800/40 rounded-2xl p-6 text-white">
+        <div className="relative z-10 w-full max-w-3xl mx-4 bg-gray-900 border border-[#4DB3A7]/40 rounded-2xl p-6 text-white">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-bold text-red-400">My Badges</h3>
-            <button onClick={onClose} className="px-3 py-1 rounded bg-red-600/20 border border-red-600/40 hover:bg-red-600/30">Close</button>
+            <h3 className="text-xl font-bold text-[#4DB3A7]">My Badges</h3>
+            <button onClick={onClose} className="px-3 py-1 rounded bg-[#4DB3A7]/20 border border-[#4DB3A7]/40 hover:bg-[#4DB3A7]/30">Close</button>
           </div>
           {(!badges || badges.length === 0) ? (
             <p className="text-gray-400">No badges earned yet.</p>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {badges.map((badge, idx) => (
-                <div key={idx} className="bg-black/40 border border-red-800/30 rounded-xl p-3 flex flex-col items-center gap-2">
+                <div key={idx} className="bg-black/40 border border-[#4DB3A7]/30 rounded-xl p-3 flex flex-col items-center gap-2">
                   <img
                     src={`/Badge-${badge.badgeType}.${(badge.badgeType === '50') ? 'jpeg' : 'jpg'}`}
                     alt={`${badge.badgeType}% Badge`}
@@ -354,7 +350,7 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-500"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#4DB3A7]"></div>
       </div>
     );
   }
@@ -362,7 +358,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-black text-white" style={{backgroundColor: '#000000'}}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-black via-red-950/40 to-black border-b border-red-800/50 shadow-lg shadow-red-900/10">
+      <div className="bg-gradient-to-r from-black via-[#4DB3A7]/40 to-black border-b border-[#4DB3A7]/50 shadow-lg shadow-[rgba(77,179,167,0.1)]">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
@@ -371,7 +367,7 @@ const Dashboard = () => {
                 onClick={() => navigate('/')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-lg text-white font-medium transition-all duration-300 shadow-lg shadow-red-600/30 hover:shadow-red-600/50"
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#4DB3A7] to-[#4DB3A7] hover:from-[#4DB3A7] hover:to-[#4DB3A7] rounded-lg text-white font-medium transition-all duration-300 shadow-lg shadow-[rgba(77,179,167,0.3)] hover:shadow-[rgba(77,179,167,0.5)]"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <Home className="w-4 h-4" />
@@ -382,10 +378,10 @@ const Dashboard = () => {
                   <img
                     src={user.avatar}
                     alt={user?.fullName}
-                    className="w-20 h-20 rounded-full object-cover border-4 border-red-500 shadow-lg shadow-red-500/30"
+                    className="w-20 h-20 rounded-full object-cover border-4 border-[#4DB3A7] shadow-lg shadow-[rgba(77,179,167,0.3)]"
                   />
                 ) : (
-                  <div className="w-20 h-20 rounded-full border-4 border-red-500 shadow-lg shadow-red-500/30 bg-gray-800 flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-full border-4 border-[#4DB3A7] shadow-lg shadow-[rgba(77,179,167,0.3)] bg-gray-800 flex items-center justify-center">
                     <User className="w-10 h-10 text-gray-400" />
                   </div>
                 )}
@@ -394,7 +390,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-white">Welcome back, {user?.fullName}!</h1>
+                <h1 className="text-3xl font-bold text-white">Welcome back, {user?.fullName || user?.data?.fullName || username || "User Name"}!</h1>
                 <p className="text-gray-400 mt-1">Ready to continue your learning journey?</p>
                 <div className="flex items-center gap-4 mt-2">
                   <div className="flex items-center gap-1 text-yellow-400">
@@ -414,7 +410,7 @@ const Dashboard = () => {
               onClick={() => navigate('/profile')}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-red-500 overflow-hidden bg-gray-800 text-white transition-all duration-300 shadow-lg shadow-red-600/30 hover:shadow-red-600/50"
+              className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-[#4DB3A7] overflow-hidden bg-gray-800 text-white transition-all duration-300 shadow-lg shadow-[rgba(77,179,167,0.3)] hover:shadow-[rgba(77,179,167,0.5)]"
             >
               {user?.avatar ? (
                 <img 
@@ -437,20 +433,21 @@ const Dashboard = () => {
             icon={BookOpen}
             title="Active Courses"
             value={dashboardData.statistics?.activeCourses || dashboardData.enrolledCourses.filter(c => c.status === 'ongoing').length}
-            onClick={() => navigate('/courses')}
           />
+         
           <StatCard
             icon={CheckCircle2}
             title="Completed Courses"
             value={dashboardData.statistics?.completedCourses || dashboardData.enrolledCourses.filter(c => c.status === 'completed').length}
-            onClick={() => navigate('/courses?filter=completed')}
           />
+          
           <StatCard
             icon={Trophy}
             title="Total Points"
             value={(dashboardData.statistics?.totalPoints || dashboardData.totalPoints || 0).toLocaleString()}
             change={pointsToday > 0 ? `+${pointsToday} today` : undefined}
           />
+         
           <StatCard
             icon={Award}
             title="Badges Earned"
@@ -458,6 +455,7 @@ const Dashboard = () => {
             change={badgesThisWeek > 0 ? `+${badgesThisWeek} this week` : undefined}
             onClick={() => setShowBadgesModal(true)}
           />
+        
         </div>
 
         {/* Main Content Grid */}
@@ -469,14 +467,14 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="bg-gradient-to-br from-black via-red-950/20 to-gray-900 rounded-xl p-6 border border-red-800/40 shadow-lg shadow-red-900/10"
+              className="bg-gradient-to-br from-black via-[#4DB3A7]/20 to-gray-900 rounded-xl p-6 border border-[#4DB3A7]/40 shadow-lg shadow-[rgba(77,179,167,0.1)]"
             >
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-red-400 flex items-center gap-3">
+                <h2 className="text-2xl font-bold text-[#4DB3A7] flex items-center gap-3">
                   <BookOpen className="w-7 h-7" />
                   My Courses ({dashboardData.enrolledCourses.length})
                 </h2>
-                <button onClick={() => navigate('/courses')} className="text-red-400 hover:text-red-300 text-sm flex items-center gap-1">
+                <button onClick={() => navigate('/courses')} className="text-[#4DB3A7] hover:text-[#4DB3A7] text-sm flex items-center gap-1">
                   View All <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
@@ -492,9 +490,9 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.4 }}
-              className="bg-gradient-to-br from-black via-red-950/15 to-gray-900 rounded-xl p-6 border border-red-800/30 shadow-lg shadow-red-900/10"
+              className="bg-gradient-to-br from-black via-[#4DB3A7]/15 to-gray-900 rounded-xl p-6 border border-[#4DB3A7]/30 shadow-lg shadow-[rgba(77,179,167,0.1)]"
             >
-              <h2 className="text-2xl font-bold text-red-400 flex items-center gap-3 mb-6">
+              <h2 className="text-2xl font-bold text-[#4DB3A7] flex items-center gap-3 mb-6">
                 <BarChart3 className="w-7 h-7" />
                 Progress Analytics
               </h2>
@@ -503,7 +501,7 @@ const Dashboard = () => {
                 {/* Weekly Activity */}
                 <div className="flex flex-col">
                   <div className="flex items-center h-12 mb-6">
-                    <h3 className="text-xl font-bold text-red-400">Weekly Activity</h3>
+                    <h3 className="text-xl font-bold text-[#4DB3A7]">Weekly Activity</h3>
                   </div>
                   <div className="flex-1">
                     <div className="space-y-2">
@@ -514,7 +512,7 @@ const Dashboard = () => {
                             <span className="text-xs text-gray-400 w-8">{dayShort}</span>
                             <div className="flex-1 bg-gray-800 rounded-full h-2 shadow-inner">
                               <div 
-                                className="bg-gradient-to-r from-red-500 to-red-400 h-2 rounded-full transition-all duration-500 shadow-sm shadow-red-500/20"
+                                className="bg-gradient-to-r from-[#4DB3A7] to-[#4DB3A7] h-2 rounded-full transition-all duration-500 shadow-sm shadow-[rgba(77,179,167,0.2)]"
                                 style={{ width: `${dayData.activity || 0}%` }}
                               ></div>
                             </div>
@@ -529,7 +527,7 @@ const Dashboard = () => {
                 {/* Overall Progress - Large Donut Chart */}
                 <div className="flex flex-col">
                   <div className="flex items-center h-12 mb-6">
-                    <h3 className="text-xl font-bold text-red-400">Overall Learning Progress</h3>
+                    <h3 className="text-xl font-bold text-[#4DB3A7]">Overall Learning Progress</h3>
                   </div>
                   <div className="flex-1">
                     <div className="flex justify-center items-center py-4">
@@ -542,7 +540,7 @@ const Dashboard = () => {
                           }
                           size={200}
                           strokeWidth={16}
-                          color="#ef4444"
+                          color="#4DB3A7"
                           label="Overall Progress"
                         />
                         <div className="mt-4">
@@ -567,7 +565,7 @@ const Dashboard = () => {
                               <p className="text-xs text-gray-500">{course.instructor}</p>
                             </div>
                             <div className="text-right">
-                              <span className="text-lg font-bold text-red-400">{course.progress}%</span>
+                              <span className="text-lg font-bold text-[#4DB3A7]">{course.progress}%</span>
                               <p className="text-xs text-gray-500">Complete</p>
                             </div>
                           </div>
@@ -584,16 +582,16 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.4 }}
-              className="bg-gradient-to-br from-black via-red-950/15 to-gray-900 rounded-xl p-6 border border-red-800/30 shadow-lg shadow-red-900/10"
+              className="bg-gradient-to-br from-black via-[#4DB3A7]/15 to-gray-900 rounded-xl p-6 border border-[#4DB3A7]/30 shadow-lg shadow-[rgba(77,179,167,0.1)]"
             >
-              <h2 className="text-2xl font-bold text-red-400 flex items-center gap-3 mb-6">
+              <h2 className="text-2xl font-bold text-[#4DB3A7] flex items-center gap-3 mb-6">
                 <Activity className="w-7 h-7" />
                 Recent Activity
               </h2>
               <div className="space-y-4">
                 {dashboardData.recentActivity.map((activity, index) => (
-                  <div key={index} className="flex items-center gap-4 p-4 bg-gray-800/60 rounded-lg border border-red-800/20 hover:bg-gray-800/80 transition-all duration-300">
-                    <div className="p-2 bg-red-600/20 rounded-lg border border-red-600/30">
+                  <div key={index} className="flex items-center gap-4 p-4 bg-gray-800/60 rounded-lg border border-[#4DB3A7]/20 hover:bg-gray-800/80 transition-all duration-300">
+                    <div className="p-2 bg-[#4DB3A7]/20 rounded-lg border border-[#4DB3A7]/30">
                       {activity.type === 'quiz_completed' && <CheckCircle2 className="w-4 h-4 text-green-400" />}
                       {activity.type === 'badge_earned' && <Award className="w-4 h-4 text-yellow-400" />}
                       {activity.type === 'lesson_completed' && <PlayCircle className="w-4 h-4 text-blue-400" />}
@@ -619,15 +617,15 @@ const Dashboard = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4 }}
-              className="bg-gradient-to-br from-black via-red-950/20 to-gray-900 rounded-xl p-6 border border-red-800/40 shadow-lg shadow-red-900/10"
+              className="bg-gradient-to-br from-black via-[#4DB3A7]/20 to-gray-900 rounded-xl p-6 border border-[#4DB3A7]/40 shadow-lg shadow-[rgba(77,179,167,0.1)]"
             >
-              <h2 className="text-2xl font-bold text-red-400 flex items-center gap-3 mb-6">
+              <h2 className="text-2xl font-bold text-[#4DB3A7] flex items-center gap-3 mb-6">
                 <Trophy className="w-7 h-7" />
                 My Badges ({dashboardData.badges.length})
               </h2>
               <BadgeDisplay badges={dashboardData.badges} />
               <div className="mt-6 text-center">
-                <button onClick={() => setShowBadgesModal(true)} className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-300 shadow-lg shadow-red-600/30 hover:shadow-red-600/50">
+                <button onClick={() => setShowBadgesModal(true)} className="bg-gradient-to-r from-[#4DB3A7] to-[#4DB3A7] hover:from-[#4DB3A7] hover:to-[#4DB3A7] px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-300 shadow-lg shadow-[rgba(77,179,167,0.3)] hover:shadow-[rgba(77,179,167,0.5)]">
                   View All Badges
                 </button>
               </div>
@@ -638,9 +636,9 @@ const Dashboard = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1, duration: 0.4 }}
-              className="bg-gradient-to-br from-black via-red-950/15 to-gray-900 rounded-xl p-6 border border-red-800/30 shadow-lg shadow-red-900/10"
+              className="bg-gradient-to-br from-black via-[#4DB3A7]/15 to-gray-900 rounded-xl p-6 border border-[#4DB3A7]/30 shadow-lg shadow-[rgba(77,179,167,0.1)]"
             >
-              <h2 className="text-2xl font-bold text-red-400 flex items-center gap-3 mb-6">
+              <h2 className="text-2xl font-bold text-[#4DB3A7] flex items-center gap-3 mb-6">
                 <Clock className="w-7 h-7" />
                 Upcoming Deadlines
               </h2>
@@ -648,7 +646,7 @@ const Dashboard = () => {
                 {dashboardData.upcomingDeadlines.map((deadline, index) => (
                   <div key={index} className={`p-3 rounded-lg border-l-4 ${
                     deadline.priority === 'high' 
-                      ? 'bg-red-900/20 border-red-500' 
+                      ? 'bg-[#4DB3A7]/20 border-[#4DB3A7]' 
                       : 'bg-yellow-900/20 border-yellow-500'
                   }`}>
                     <div className="flex items-center justify-between">
@@ -658,7 +656,7 @@ const Dashboard = () => {
                       </div>
                       <span className={`text-xs px-2 py-1 rounded ${
                         deadline.priority === 'high' 
-                          ? 'bg-red-600 text-white' 
+                          ? 'bg-[#4DB3A7] text-white' 
                           : 'bg-yellow-600 text-white'
                       }`}>
                         {deadline.due}
@@ -674,9 +672,9 @@ const Dashboard = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2, duration: 0.4 }}
-              className="bg-gradient-to-br from-black via-red-950/15 to-gray-900 rounded-xl p-6 border border-red-800/30 shadow-lg shadow-red-900/10"
+              className="bg-gradient-to-br from-black via-[#4DB3A7]/15 to-gray-900 rounded-xl p-6 border border-[#4DB3A7]/30 shadow-lg shadow-[rgba(77,179,167,0.1)]"
             >
-              <h2 className="text-2xl font-bold text-red-400 flex items-center gap-3 mb-6">
+              <h2 className="text-2xl font-bold text-[#4DB3A7] flex items-center gap-3 mb-6">
                 <Bell className="w-7 h-7" />
                 Announcements
               </h2>
@@ -684,13 +682,13 @@ const Dashboard = () => {
                 {dashboardData.announcements.map((announcement, index) => (
                   <div key={index} className={`p-3 rounded-lg ${
                     announcement.important 
-                      ? 'bg-red-900/20 border border-red-700/30' 
+                      ? 'bg-[#4DB3A7]/20 border border-[#4DB3A7]/30' 
                       : 'bg-gray-800/50'
                   }`}>
                     <div className="flex items-start gap-3">
                       {announcement.important && (
-                        <div className="p-1 bg-red-600/20 rounded">
-                          <Bell className="w-3 h-3 text-red-400" />
+                        <div className="p-1 bg-[#4DB3A7]/20 rounded">
+                          <Bell className="w-3 h-3 text-[#4DB3A7]" />
                         </div>
                       )}
                       <div className="flex-1">
@@ -709,28 +707,28 @@ const Dashboard = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3, duration: 0.4 }}
-              className="bg-gradient-to-br from-black via-red-950/10 to-gray-900 rounded-xl p-6 border border-red-800/30 shadow-lg shadow-red-900/10"
+              className="bg-gradient-to-br from-black via-[#4DB3A7]/10 to-gray-900 rounded-xl p-6 border border-[#4DB3A7]/30 shadow-lg shadow-[rgba(77,179,167,0.1)]"
             >
-              <h2 className="text-2xl font-bold text-red-400 flex items-center gap-3 mb-6">
+              <h2 className="text-2xl font-bold text-[#4DB3A7] flex items-center gap-3 mb-6">
                 <Target className="w-7 h-7" />
                 Quick Actions
               </h2>
               <div className="grid grid-cols-2 gap-4">
-                <button onClick={() => navigate('/profile')} className="flex flex-col items-center gap-3 p-4 bg-red-600/20 hover:bg-red-600/30 rounded-lg transition-all duration-300 border border-red-600/40 hover:border-red-500/60 group">
-                  <Download className="w-6 h-6 text-red-400 group-hover:text-red-300 transition-colors" />
-                  <span className="text-sm text-red-400 group-hover:text-red-300 font-medium">Certificates</span>
+                <button onClick={() => navigate('/profile')} className="flex flex-col items-center gap-3 p-4 bg-[#4DB3A7]/20 hover:bg-[#4DB3A7]/30 rounded-lg transition-all duration-300 border border-[#4DB3A7]/40 hover:border-[#4DB3A7]/60 group">
+                  <Download className="w-6 h-6 text-[#4DB3A7] group-hover:text-[#4DB3A7] transition-colors" />
+                  <span className="text-sm text-[#4DB3A7] group-hover:text-[#4DB3A7] font-medium">Certificates</span>
                 </button>
-                <button onClick={() => navigate('/faqs')} className="flex flex-col items-center gap-3 p-4 bg-red-700/20 hover:bg-red-700/30 rounded-lg transition-all duration-300 border border-red-700/40 hover:border-red-600/60 group">
-                  <CreditCard className="w-6 h-6 text-red-300 group-hover:text-red-200 transition-colors" />
-                  <span className="text-sm text-red-300 group-hover:text-red-200 font-medium">Payments</span>
+                <button onClick={() => navigate('/faqs')} className="flex flex-col items-center gap-3 p-4 bg-[#4DB3A7]/20 hover:bg-[#4DB3A7]/30 rounded-lg transition-all duration-300 border border-[#4DB3A7]/40 hover:border-[#4DB3A7]/60 group">
+                  <CreditCard className="w-6 h-6 text-[#4DB3A7] group-hover:text-[#4DB3A7] transition-colors" />
+                  <span className="text-sm text-[#4DB3A7] group-hover:text-[#4DB3A7] font-medium">Payments</span>
                 </button>
-                <button onClick={() => navigate('/faqs')} className="flex flex-col items-center gap-3 p-4 bg-red-800/20 hover:bg-red-800/30 rounded-lg transition-all duration-300 border border-red-800/40 hover:border-red-700/60 group">
-                  <MessageSquare className="w-6 h-6 text-red-300 group-hover:text-red-200 transition-colors" />
-                  <span className="text-sm text-red-300 group-hover:text-red-200 font-medium">Support</span>
+                <button onClick={() => navigate('/faqs')} className="flex flex-col items-center gap-3 p-4 bg-[#4DB3A7]/20 hover:bg-[#4DB3A7]/30 rounded-lg transition-all duration-300 border border-[#4DB3A7]/40 hover:border-[#4DB3A7]/60 group">
+                  <MessageSquare className="w-6 h-6 text-[#4DB3A7] group-hover:text-[#4DB3A7] transition-colors" />
+                  <span className="text-sm text-[#4DB3A7] group-hover:text-[#4DB3A7] font-medium">Support</span>
                 </button>
-                <button onClick={() => navigate('/faqs')} className="flex flex-col items-center gap-3 p-4 bg-red-900/20 hover:bg-red-900/30 rounded-lg transition-all duration-300 border border-red-900/40 hover:border-red-800/60 group">
-                  <HelpCircle className="w-6 h-6 text-red-400 group-hover:text-red-300 transition-colors" />
-                  <span className="text-sm text-red-400 group-hover:text-red-300 font-medium">Help Center</span>
+                <button onClick={() => navigate('/faqs')} className="flex flex-col items-center gap-3 p-4 bg-[#4DB3A7]/20 hover:bg-[#4DB3A7]/30 rounded-lg transition-all duration-300 border border-[#4DB3A7]/40 hover:border-[#4DB3A7]/60 group">
+                  <HelpCircle className="w-6 h-6 text-[#4DB3A7] group-hover:text-[#4DB3A7] transition-colors" />
+                  <span className="text-sm text-[#4DB3A7] group-hover:text-[#4DB3A7] font-medium">Help Center</span>
                 </button>
               </div>
             </motion.div>
@@ -744,4 +742,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default StudentDashboard;

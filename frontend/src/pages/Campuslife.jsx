@@ -154,7 +154,7 @@ export default function CampusLife() {
           <h2 className="text-4xl font-bold">{activePodcast.title}</h2>
           <button
             onClick={() => setPodcastIsPlaying(true)}
-            className="mt-6 px-6 py-3 bg-red-600 rounded-full flex items-center gap-2 hover:bg-red-700 transition"
+            className="mt-6 px-6 py-3 bg-[#95F3EA] rounded-full flex items-center gap-2 hover:bg-[#95F3EA]/90 transition"
           >
             <Play className="w-5 h-5" /> Play
           </button>
@@ -169,7 +169,7 @@ export default function CampusLife() {
                   setActivePodcastIndex(idx);
                   setPodcastDetailView(false);
                 }}
-                className="w-60 h-40 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-red-500 transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
+                className="w-60 h-40 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-[#95F3EA] transition hover:scale-105 hover:shadow-[0_0_15px_rgba(149,243,234,0.7)]"
               />
             ))}
           </div>
@@ -195,7 +195,7 @@ export default function CampusLife() {
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              className="w-full h-[60vh] rounded-lg shadow-[0_0_25px_rgba(255,0,0,0.5)]"
+              className="w-full h-[60vh] rounded-lg shadow-[0_0_25px_rgba(149,243,234,0.5)]"
             ></iframe>
           </div>
         </div>
@@ -211,7 +211,7 @@ export default function CampusLife() {
               src={course.img}
               alt={`course-${idx}`}
               onClick={() => setProgramIsPlaying(true) || setProgramActiveIndex(idx)}
-              className="w-full h-40 object-cover rounded-lg cursor-pointer transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
+              className="w-full h-40 object-cover rounded-lg cursor-pointer transition hover:scale-105 hover:shadow-[0_0_15px_rgba(149,243,234,0.7)]"
             />
           ))}
         </div>
@@ -235,7 +235,7 @@ export default function CampusLife() {
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              className="w-full h-[60vh] rounded-lg shadow-[0_0_25px_rgba(255,0,0,0.5)]"
+              className="w-full h-[60vh] rounded-lg shadow-[0_0_25px_rgba(149,243,234,0.5)]"
             ></iframe>
           </div>
         </div>
@@ -251,7 +251,7 @@ export default function CampusLife() {
               src={icon.img}
               alt={`icon-${idx}`}
               onClick={() => setIconIsPlaying(true) || setIconActiveIndex(idx)}
-              className="w-full h-52 object-cover rounded-md cursor-pointer transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
+              className="w-full h-52 object-cover rounded-md cursor-pointer transition hover:scale-105 hover:shadow-[0_0_15px_rgba(149,243,234,0.7)]"
             />
           ))}
         </div>
@@ -275,7 +275,7 @@ export default function CampusLife() {
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              className="w-full h-[60vh] rounded-lg shadow-[0_0_25px_rgba(255,0,0,0.5)]"
+              className="w-full h-[60vh] rounded-lg shadow-[0_0_25px_rgba(149,243,234,0.5)]"
             ></iframe>
           </div>
         </div>

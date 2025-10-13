@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Play, ArrowLeft, Clock, User } from "lucide-react";
@@ -123,7 +122,7 @@ export default function Alumini() {
         {selectedAward && (
           <motion.div
             whileHover={{ scale: 1.1, rotate: 2 }}
-            className="absolute top-10 left-10 z-20 flex items-center gap-3 px-5 py-3 rounded-full bg-red-600 shadow-lg cursor-pointer hover:shadow-red-500/80"
+            className="absolute top-10 left-10 z-20 flex items-center gap-3 px-5 py-3 rounded-full bg-[#4DB3A7] shadow-lg cursor-pointer hover:shadow-[#4DB3A7]/80"
             onClick={() => navigate(`/award/${selectedAward.id}`)}
           >
             <Play size={28} className="text-white" />
@@ -162,7 +161,7 @@ export default function Alumini() {
               whileHover={{ scale: 1.05, rotateY: 3 }}
               whileTap={{ scale: 0.97 }}
               className={`relative bg-gradient-to-r from-yellow-600 to-yellow-500 p-3 rounded-md w-72 h-48 flex flex-col items-center justify-center text-center shadow-xl border border-yellow-400/70 hover:shadow-yellow-400/90 hover:border-yellow-300 cursor-pointer ${
-                selectedAward?.id === award.id ? "ring-4 ring-red-500" : ""
+                selectedAward?.id === award.id ? "ring-4 ring-[#4DB3A7]" : ""
               }`}
               onClick={() => {
                 setSelectedAward(award);
@@ -193,7 +192,7 @@ export default function Alumini() {
               key={i}
               whileHover={{ scale: 1.05, rotateY: -3 }}
               whileTap={{ scale: 0.97 }}
-              className="relative bg-gray-900 p-3 rounded-md w-64 h-44 flex flex-col items-center justify-center text-center shadow-xl border border-red-400/70 hover:shadow-red-500/90 hover:border-red-300 cursor-pointer"
+              className="relative bg-gray-900 p-3 rounded-md w-64 h-44 flex flex-col items-center justify-center text-center shadow-xl border border-[#4DB3A7]/70 hover:shadow-[#4DB3A7]/90 hover:border-[#4DB3A7]/70 cursor-pointer"
               onClick={() => {
                 setIconActiveIndex(i);
                 setIconShowDetailView(true);
@@ -211,10 +210,8 @@ export default function Alumini() {
       </section>
 
       {/* 🔹 MRU Awards Video Player */}
-      {/* 🔹 MRU Awards Video Player - Mini Popup */}
       {awardIsPlaying && (
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
-          {/* Close Button */}
           <button
             onClick={() => setAwardIsPlaying(false)}
             className="absolute top-4 right-4 bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl hover:bg-white/30 transition"
@@ -238,10 +235,9 @@ export default function Alumini() {
         </div>
       )}
 
-      {/* 🔹 Icons Video Player - Mini Popup */}
+      {/* 🔹 Icons Video Player */}
       {iconIsPlaying && (
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
-          {/* Close Button */}
           <button
             onClick={() => setIconIsPlaying(false)}
             className="absolute top-4 right-4 bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl hover:bg-white/30 transition"
@@ -259,7 +255,7 @@ export default function Alumini() {
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              className="w-[90vw] h-[70vh] max-w-5xl rounded-lg shadow-[0_0_25px_rgba(255,0,0,0.5)]"
+              className="w-[90vw] h-[70vh] max-w-5xl rounded-lg shadow-[0_0_25px_rgba(77,179,167,0.5)]"
             ></iframe>
           </div>
         </div>
@@ -277,13 +273,6 @@ export default function Alumini() {
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/40" />
           </motion.div>
-
-          {/* <button
-            onClick={() => setAwardShowDetailView(false)}
-            className="absolute top-6 left-6 z-50 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full hover:bg-black/70 transition-all duration-300 flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back
-          </button> */}
 
           <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6">
             <motion.div
@@ -345,13 +334,6 @@ export default function Alumini() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/40" />
           </motion.div>
 
-          {/* <button
-            onClick={() => setIconShowDetailView(false)}
-            className="absolute top-6 left-6 z-50 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full hover:bg-black/70 transition-all duration-300 flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back
-          </button> */}
-
           <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
@@ -363,7 +345,7 @@ export default function Alumini() {
                 {activeIcon.name}
               </h1>
               <div className="flex items-center justify-center gap-2 mb-6">
-                <User className="w-5 h-5 text-red-500" />
+                <User className="w-5 h-5 text-[#4DB3A7]" />
                 <p className="text-xl text-gray-200">{activeIcon.tag}</p>
               </div>
               <p className="text-lg text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto">
@@ -374,7 +356,7 @@ export default function Alumini() {
                   setIconShowDetailView(false);
                   setIconIsPlaying(true);
                 }}
-                className="group relative bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-12 py-4 rounded-full text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-red-500/25"
+                className="group relative bg-gradient-to-r from-[#4DB3A7] to-[#3AA79D] hover:from-[#3AA79D] hover:to-[#2D8B82] text-white px-12 py-4 rounded-full text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-[#4DB3A7]/25"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -384,7 +366,7 @@ export default function Alumini() {
                   </div>
                   <span>Watch Story</span>
                 </div>
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#4DB3A7] to-[#3AA79D] opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
               </motion.button>
               <div className="mt-8 flex items-center justify-center gap-6 text-gray-400">
                 <div className="flex items-center gap-2">

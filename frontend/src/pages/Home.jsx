@@ -65,7 +65,7 @@ const VolumeButton = styled(motion.div)`
   transition: all 0.3s ease;
 
   &:hover {
-    background: rgba(255, 0, 0, 0.7);
+    background: #397068;
     border-color: rgba(255, 255, 255, 0.6);
     transform: scale(1.1);
   }
@@ -322,8 +322,8 @@ const DepartmentCard = styled(motion.div)`
   justify-content: center;
   
   &:hover {
-    border-color: #ff0000;
-    box-shadow: 0px 15px 40px rgba(255, 0, 0, 0.5);
+    border-color: #397068;
+    box-shadow: 0px 15px 40px rgba(24, 79, 81, 0.5);
   }
 `;
 
@@ -614,7 +614,7 @@ const CareerSection = () => {
             {/* Header */}
             <div
               style={{
-                background: "linear-gradient(135deg, #FF0000, #990000)",
+                background: "linear-gradient(135deg, #397068, #274E48)",
                 color: "white",
                 padding: "20px",
                 textAlign: "center",
@@ -713,20 +713,20 @@ const CareerSection = () => {
                   style={{
                     padding: "12px 28px",
                     borderRadius: "8px",
-                    border: "1px solid #FF0000",
+                    border: "1px solid #397068",
                     background: "#000000",
                     color: "#FFFFFF",
                     fontSize: "15px",
                   }}
                   onMouseOver={(e) => {
                     e.target.style.background = "#1a1a1a";
-                    e.target.style.color = "#FF0000";
-                    e.target.style.borderColor = "#FF0000";
+                    e.target.style.color = "#397068";
+                    e.target.style.borderColor = "#397068";
                   }}
                   onMouseOut={(e) => {
                     e.target.style.background = "#000000";
-                    e.target.style.color = "#FF0000";
-                    e.target.style.borderColor = "#FF0000";
+                    e.target.style.color = "#397068";
+                    e.target.style.borderColor = "#397068";
                   }}
                 >
                   Cancel
@@ -737,7 +737,7 @@ const CareerSection = () => {
                     padding: "12px 28px",
                     borderRadius: "8px",
                     border: "none",
-                    background: "linear-gradient(135deg, #FF0000, #990000)",
+                    background: "linear-gradient(135deg, #397068, #274E48)",
                     color: "#FFFFFF",
                     fontSize: "15px",
                     fontWeight: "500",
@@ -842,7 +842,7 @@ const CoursesSection = () => {
               scale: 1.08,
               rotateX: -5,
               rotateY: 5,
-              boxShadow: "0px 20px 40px rgba(255,0,0,0.5)",
+              boxShadow: "0px 20px 40px rgba(39, 78, 72, 1)",
             }}
             onClick={() => handleCourseClick(course._id || course.id)}
             style={{ cursor: "pointer" }}
@@ -913,7 +913,7 @@ const ArtsSection = () => {
             whileHover={{
               scale: 1.05,
               y: -5,
-              boxShadow: "0px 15px 30px rgba(0,0,0,0.6)",
+              boxShadow: "0px 15px 30px rgba(39, 78, 72, 1",
             }}
             onClick={() =>
               item.videoId && handlePlayVideo(item.videoId, item.title)
@@ -1039,8 +1039,8 @@ const DepartmentSection = () => {
               scale: 1.08,
               y: -8,
               rotateY: 5,
-              boxShadow: "0px 20px 40px rgba(255, 0, 0, 0.6)",
-              borderColor: "#ff0000",
+              boxShadow: "0px 20px 40px #274E48",
+              borderColor: "#397068",
             }}
             transition={{
               type: "spring",
@@ -1197,8 +1197,8 @@ const ExtraSection = () => {
                   scale: 1.1, // Zoom
                   rotateX: -5, // 3D tilt
                   rotateY: 5,
-                  boxShadow: "0 0 25px 8px rgba(245, 26, 26, 0.8)", // Glow
-                  border: "3px solid #ff0000",
+                  boxShadow: "0 0 25px 8px #274E48", // Glow
+                  border: "3px solid #397068",
                 }}
                 transition={{
                   type: "spring",

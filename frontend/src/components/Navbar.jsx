@@ -170,12 +170,12 @@ export default function Navbar() {
                     <Link
                       to={item.path}
                       className={`relative px-4 py-1 rounded-2xl font-['Poppins'] transition-colors duration-300
-                                 ${isActive ? 'text-red-600' : 'text-gray-900 dark:text-white hover:text-red-600'}`}
+                                 ${isActive ? 'text-[#4DB3A7]' : 'text-gray-900 dark:text-white hover:text-[#4DB3A7]'}`}
                     >
                       {item.name}
                     </Link>
                     <div 
-                      className={`h-0.5 mt-1 transition-all duration-300 ${isActive ? 'w-full' : 'w-0 group-hover:w-full'} bg-red-600`}
+                      className={`h-0.5 mt-1 transition-all duration-300 ${isActive ? 'w-full' : 'w-0 group-hover:w-full'} bg-[#4DB3A7]`}
                     ></div>
                   </div>
                 );
@@ -188,7 +188,7 @@ export default function Navbar() {
               {!user ? (
                 <Link
                   to="/login"
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-b from-red-500 to-red-700 
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-b from-[#4DB3A7] to-[#4DB3A7] 
                              text-white rounded-lg hover:scale-105 transition-all duration-200"
                 >
                   <FaSignInAlt />
@@ -199,7 +199,7 @@ export default function Navbar() {
                     <button
                       onClick={() => setShowDropdown(!showDropdown)}
                       className="flex items-center gap-2 px-4 py-2 text-gray-900 dark:text-white 
-                               rounded-full hover:bg-gray-200 dark:hover:bg-red-600 transition-all duration-200"
+                               rounded-full hover:bg-gray-200 dark:hover:bg-[#4DB3A7] transition-all duration-200"
                   >
                       <FaUser size={22} />
                     </button>
@@ -217,7 +217,7 @@ export default function Navbar() {
                     }}
                   >
                       {/* User Info */}
-                      <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-300 dark:border-gray-700 bg-gradient-to-r from-transparent to-red-500/5">
+                      <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-300 dark:border-gray-700 bg-gradient-to-r from-transparent to-[#4DB3A7]/5">
                         <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-gray-800 dark:text-white">
                           <FaUserCircle size={24} />
                         </div>
@@ -241,7 +241,7 @@ export default function Navbar() {
                           to={getDashboardPath()}
                           onClick={() => setShowDropdown(false)}
                           className="flex items-center gap-3 px-6 py-3 text-gray-900 dark:text-white 
-                                     hover:bg-red-600 hover:text-white
+                                     hover:bg-[#4DB3A7] hover:text-white
                                      transition-all duration-300 text-base rounded-lg"
                         >
                           <FaColumns className="transition-transform duration-300 hover:scale-110" />
@@ -280,7 +280,7 @@ export default function Navbar() {
                             to={item.path}
                             onClick={() => setShowDropdown(false)}
                             className="flex items-center gap-3 px-6 py-3 text-gray-900 dark:text-white 
-                                       hover:bg-red-600 hover:text-white
+                                       hover:bg-[#4DB3A7] hover:text-white
                                        transition-all duration-300 text-base rounded-lg"
                           >
                             {item.icon}
@@ -296,7 +296,7 @@ export default function Navbar() {
                         <button
                           onClick={handleThemeToggle}
                           className="w-full flex items-center gap-3 px-6 py-3 text-gray-900 dark:text-white 
-                                     hover:bg-red-600 hover:text-white
+                                     hover:bg-[#4DB3A7] hover:text-white
                                      transition-all duration-300 text-base rounded-lg"
                         >
                           {isDarkMode ? <FaSun /> : <FaMoon />}
@@ -305,7 +305,7 @@ export default function Navbar() {
                         <button
                           onClick={handleLogout}
                           className="w-full flex items-center gap-3 px-6 py-3 text-gray-900 dark:text-white 
-                                     hover:bg-red-600 hover:text-white
+                                     hover:bg-[#4DB3A7] hover:text-white
                                      transition-all duration-300 text-base rounded-lg"
                         >
                           <FaSignOutAlt />
@@ -342,8 +342,8 @@ export default function Navbar() {
             onClick={() => setIsOpen(false)}
             className="relative text-gray-900 dark:text-white text-lg font-semibold
                  after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 
-                 after:h-[2px] after:bg-red-600 after:transition-all after:duration-500 
-                 hover:after:w-full hover:text-red-600 dark:hover:text-red-400"
+                 after:h-[2px] after:bg-[#4DB3A7] after:transition-all after:duration-500 
+                 hover:after:w-full hover:text-[#4DB3A7] dark:hover:text-[#4DB3A7]"
           >
             {item.name}
           </Link>
@@ -353,14 +353,14 @@ export default function Navbar() {
           <Link
             to="/login"
             onClick={() => setIsOpen(false)}
-            className="block px-4 py-2 text-lg bg-red-600 text-white rounded hover:bg-red-700 dark:hover:bg-red-800 transition-all duration-200"
+            className="block px-4 py-2 text-lg bg-[#4DB3A7] text-white rounded hover:bg-[#4DB3A7] dark:hover:bg-[#4DB3A7] transition-all duration-200"
           >
             Login
           </Link>
         ) : (
           <button
             onClick={handleLogout}
-            className="block w-full text-left px-4 py-2 text-lg bg-red-600 text-white rounded hover:bg-red-700 dark:hover:bg-red-800 transition-all duration-200"
+            className="block w-full text-left px-4 py-2 text-lg bg-[#4DB3A7] text-white rounded hover:bg-[#4DB3A7] dark:hover:bg-[#4DB3A7] transition-all duration-200"
           >
             Logout
           </button>
@@ -383,13 +383,3 @@ export default function Navbar() {
     </nav>
   );
 }
-
-
-
-
-
-
-
-
-
-

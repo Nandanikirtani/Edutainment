@@ -85,7 +85,7 @@ export default function Podcast() {
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              className="w-[90vw] h-[70vh] max-w-5xl rounded-lg shadow-[0_0_25px_rgba(255,0,0,0.5)]"
+              className="w-[90vw] h-[70vh] max-w-5xl rounded-lg shadow-[0_0_25px_rgba(77,179,167,0.5)]"
             ></iframe>
           </div>
         </div>
@@ -103,14 +103,6 @@ export default function Podcast() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/40" />
           </motion.div>
 
-          {/* Back Button
-          <button
-            onClick={() => setShowDetailView(false)}
-            className="absolute top-6 left-6 z-50 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full hover:bg-black/70 transition-all duration-300 flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back
-          </button> */}
-
           {/* Content */}
           <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6">
             <motion.div
@@ -126,7 +118,7 @@ export default function Podcast() {
 
               {/* Speaker */}
               <div className="flex items-center justify-center gap-2 mb-6">
-                <User className="w-5 h-5 text-red-500" />
+                <User className="w-5 h-5 text-[#4DB3A7]" />
                 <p className="text-xl text-gray-200">{activePodcast.speaker}</p>
               </div>
 
@@ -141,7 +133,7 @@ export default function Podcast() {
                   setShowDetailView(false);
                   setIsPlaying(true);
                 }}
-                className="group relative bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-12 py-4 rounded-full text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-red-500/25"
+                className="group relative bg-gradient-to-r from-[#4DB3A7] to-[#3AA79D] hover:from-[#3AA79D] hover:to-[#2D8B82] text-white px-12 py-4 rounded-full text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-[#4DB3A7]/25"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -153,7 +145,7 @@ export default function Podcast() {
                 </div>
 
                 {/* Glow effect */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#4DB3A7] to-[#3AA79D] opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
               </motion.button>
 
               {/* Additional Info */}
@@ -202,7 +194,7 @@ export default function Podcast() {
                 </p>
                 <motion.button
                   onClick={() => setShowDetailView(true)}
-                  className="group relative bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-red-500/25"
+                  className="group relative bg-gradient-to-r from-[#4DB3A7] to-[#3AA79D] hover:from-[#3AA79D] hover:to-[#2D8B82] text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-[#4DB3A7]/25"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -214,7 +206,7 @@ export default function Podcast() {
                   </div>
 
                   {/* Glow effect */}
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#4DB3A7] to-[#3AA79D] opacity-0 group-hover:opacity-20 blur-xl transition-all duration-300"></div>
                 </motion.button>
               </motion.div>
 
@@ -236,7 +228,7 @@ export default function Podcast() {
                       setActiveIndex(idx);
                       setShowDetailView(true);
                     }}
-                    className="w-60 h-40 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-red-500 transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
+                    className="w-60 h-40 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-[#4DB3A7] transition hover:scale-105 hover:shadow-[0_0_15px_rgba(77,179,167,0.7)]"
                     whileHover={{ scale: 1.05 }}
                   />
                 ))}
@@ -268,7 +260,7 @@ export default function Podcast() {
                       setActiveIndex(idx);
                       setShowDetailView(true);
                     }}
-                    className="w-72 h-44 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-red-500 transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
+                    className="w-72 h-44 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-[#4DB3A7] transition hover:scale-105 hover:shadow-[0_0_15px_rgba(77,179,167,0.7)]"
                     whileHover={{ scale: 1.05 }}
                   />
                 ))}
@@ -295,7 +287,7 @@ export default function Podcast() {
                       setActiveIndex(podcasts.indexOf(p));
                       setShowDetailView(true);
                     }}
-                    className="w-72 h-44 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-red-500 transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
+                    className="w-72 h-44 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-[#4DB3A7] transition hover:scale-105 hover:shadow-[0_0_15px_rgba(77,179,167,0.7)]"
                     whileHover={{ scale: 1.05 }}
                   />
                 ))}
@@ -322,7 +314,7 @@ export default function Podcast() {
                       setActiveIndex(podcasts.indexOf(p));
                       setShowDetailView(true);
                     }}
-                    className="w-72 h-44 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-red-500 transition hover:scale-105 hover:shadow-[0_0_15px_rgba(255,0,0,0.7)]"
+                    className="w-72 h-44 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-[#4DB3A7] transition hover:scale-105 hover:shadow-[0_0_15px_rgba(77,179,167,0.7)]"
                     whileHover={{ scale: 1.05 }}
                   />
                 ))}
