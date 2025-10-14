@@ -9,7 +9,8 @@ const admins = [
   { email: "gjune0987@gmail.com", password: "khushi123", fullName: "Khushi Admin" },
   { email: "khushirajpal07@gmail.com", password: "khushi123", fullName: "Khushi Admin" },
   { email: "jashankk908@gmail.com", password: "123", fullName: "Khushi Admin" },
-  { email: "anjubala691@gmail.com", password: "123", fullName: "Khushi Admin" }
+  { email: "anjubala691@gmail.com", password: "123", fullName: "Khushi Admin" },
+  { email: "nandanikirtani99@gmail.com", password: "123", fullName: "Nandani Admin" }
 ];
 
 const seedAdmins = async () => {

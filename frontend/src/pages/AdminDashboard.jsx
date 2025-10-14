@@ -251,7 +251,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen p-8 bg-black text-white">
-      <h1 className="text-4xl font-bold mb-6 text-center text-red-500">
+      <h1 className="text-4xl font-bold mb-6 text-center text-[#4DB3A7]">
         Admin Dashboard
       </h1>
       {message && (
@@ -266,8 +266,8 @@ export default function AdminDashboard() {
             onClick={() => setActiveTab('pending')}
             className={`px-4 py-2 font-semibold transition-all ${
               activeTab === 'pending'
-                ? "text-red-400 border-b-4 border-red-400"
-                : "text-gray-300 hover:text-red-400"
+                ? "text-[#4DB3A7] border-b-4 border-[#4DB3A7]"
+                : "text-gray-300 hover:text-[#4DB3A7]"
             }`}
           >
             Pending Videos
@@ -276,8 +276,8 @@ export default function AdminDashboard() {
             onClick={() => setActiveTab('rejected')}
             className={`px-4 py-2 font-semibold transition-all ${
               activeTab === 'rejected'
-                ? "text-red-400 border-b-4 border-red-400"
-                : "text-gray-300 hover:text-red-400"
+                ? "text-[#4DB3A7] border-b-4 border-[#4DB3A7]"
+                : "text-gray-300 hover:text-[#4DB3A7]"
             }`}
           >
             Rejected Videos
@@ -286,8 +286,8 @@ export default function AdminDashboard() {
             onClick={() => setActiveTab('courses')}
             className={`px-4 py-2 font-semibold transition-all ${
               activeTab === 'courses'
-                ? "text-red-400 border-b-4 border-red-400"
-                : "text-gray-300 hover:text-red-400"
+                ? "text-[#4DB3A7] border-b-4 border-[#4DB3A7]"
+                : "text-gray-300 hover:text-[#4DB3A7]"
             }`}
           >
             Upload Course Video
@@ -296,8 +296,8 @@ export default function AdminDashboard() {
             onClick={() => setActiveTab('myCourses')}
             className={`px-4 py-2 font-semibold transition-all ${
               activeTab === 'myCourses'
-                ? "text-red-400 border-b-4 border-red-400"
-                : "text-gray-300 hover:text-red-400"
+                ? "text-[#4DB3A7] border-b-4 border-[#4DB3A7]"
+                : "text-gray-300 hover:text-[#4DB3A7]"
             }`}
           >
             My Uploaded Courses
@@ -306,8 +306,8 @@ export default function AdminDashboard() {
             onClick={() => setActiveTab('coursesManagement')}
             className={`px-4 py-2 font-semibold transition-all ${
               activeTab === 'coursesManagement'
-                ? "text-red-400 border-b-4 border-red-400"
-                : "text-gray-300 hover:text-red-400"
+                ? "text-[#4DB3A7] border-b-4 border-[#4DB3A7]"
+                : "text-gray-300 hover:text-[#4DB3A7]"
             }`}
           >
             Courses Management
@@ -341,7 +341,7 @@ export default function AdminDashboard() {
                     </button>
                     <button
                       onClick={() => handleStatusChange(video._id, 'rejected')}
-                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                      className="px-4 py-2 bg-[#4DB3A7] text-white rounded-lg hover:bg-[#3AA79D] hover:shadow-[0_6px_20px_rgba(77,179,167,0.25)]"
                     >
                       Reject
                     </button>
@@ -366,7 +366,7 @@ export default function AdminDashboard() {
                   <p className="text-gray-300 text-sm">Faculty: {video.facultyId?.fullName || 'Unknown Faculty'}</p>
                   <p className="text-gray-400 text-sm">Description: {video.description}</p>
                   {video.rejectionReason && (
-                    <p className="text-red-400 text-sm mt-2">Reason: {video.rejectionReason}</p>
+                    <p className="text-[#4DB3A7] text-sm mt-2">Reason: {video.rejectionReason}</p>
                   )}
                   {video.videoUrl && (
                     <video controls src={video.videoUrl} className="mt-2 w-full max-h-60 object-contain rounded-md"></video>
@@ -410,7 +410,7 @@ export default function AdminDashboard() {
                   id="videoFile"
                   accept="video/*"
                   onChange={(e) => setVideoFile(e.target.files[0])}
-                  className="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-500 file:text-white hover:file:bg-red-600"
+                  className="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#4DB3A7] file:text-white hover:file:bg-[#3AA79D]"
                   required
                 />
               </div>
@@ -421,12 +421,12 @@ export default function AdminDashboard() {
                   id="thumbnailFile"
                   accept="image/*"
                   onChange={(e) => setThumbnailFile(e.target.files[0])}
-                  className="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-500 file:text-white hover:file:bg-red-600"
+                  className="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#4DB3A7] file:text-white hover:file:bg-[#3AA79D]"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full py-2 rounded-lg bg-red-600 text-white font-semibold shadow-lg hover:bg-red-700"
+                className="w-full py-2 rounded-lg bg-[#4DB3A7] text-white font-semibold hover:bg-[#3AA79D] hover:shadow-[0_8px_30px_rgba(77,179,167,0.18)]"
                 disabled={uploadingCourse}
               >
                 {uploadingCourse ? "Uploading Course..." : "Upload Course Video"}
@@ -454,7 +454,7 @@ export default function AdminDashboard() {
                       <p className="text-gray-300 text-sm">Faculty: {course.facultyId?.fullName || 'Unknown Faculty'}</p>
                       <p className="text-gray-400 text-sm">{course.description}</p>
                       {course.videoUrl && (
-                        <a href={course.videoUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block px-3 py-1 bg-red-600 text-white rounded-md text-sm hover:bg-red-700">Watch Video</a>
+                        <a href={course.videoUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block px-3 py-1 bg-[#4DB3A7] text-white rounded-md text-sm hover:bg-[#3AA79D] hover:shadow-[0_6px_20px_rgba(77,179,167,0.18)]">Watch Video</a>
                       )}
                     </div>
                   </div>
@@ -484,7 +484,7 @@ export default function AdminDashboard() {
                               <select
                                 value={newFacultyId}
                                 onChange={(e) => setNewFacultyId(e.target.value)}
-                                className="px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:outline-none focus:border-red-500 text-sm"
+                                className="px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:outline-none focus:border-[#4DB3A7] text-sm"
                               >
                                 <option value="">Select Faculty</option>
                                 {allFaculty.map(faculty => (
@@ -528,7 +528,7 @@ export default function AdminDashboard() {
                       </div>
                       <button
                         onClick={() => setSelectedCourse(selectedCourse === course._id ? null : course._id)}
-                        className="ml-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                        className="ml-4 px-4 py-2 bg-[#4DB3A7] text-white rounded-lg hover:bg-[#3AA79D] hover:shadow-[0_8px_30px_rgba(77,179,167,0.18)]"
                       >
                         {selectedCourse === course._id ? 'Hide Students' : `View Students (${course.totalEnrolled})`}
                       </button>
@@ -559,7 +559,7 @@ export default function AdminDashboard() {
                                         value={newPoints}
                                         onChange={(e) => setNewPoints(e.target.value)}
                                         placeholder="Points"
-                                        className="w-24 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:outline-none focus:border-red-500"
+                                        className="w-24 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:outline-none focus:border-[#4DB3A7]"
                                       />
                                       <button
                                         onClick={() => handleUpdatePoints(course._id, student._id, newPoints)}
@@ -610,23 +610,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -63,11 +63,21 @@ export const AuthProvider = ({ children }) => {
 
   // Called after login or OTP verification
   const login = (userData) => {
-    if (!userData.accessToken && localStorage.getItem("token")) {
-      userData.accessToken = localStorage.getItem("token");
-    }
-    setUser(userData);
+  const token = userData.accessToken || localStorage.getItem("token");
+
+  // Normalize structure — flatten role & name for consistency
+  const normalizedUser = {
+    ...userData,
+    accessToken: token,
+    role: userData.role || userData?.data?.role || "student", // ✅ ensures role always exists
+    fullName: userData.fullName || userData?.data?.fullName || "User",
   };
+
+  setUser(normalizedUser);
+  localStorage.setItem("user", JSON.stringify(normalizedUser));
+  localStorage.setItem("token", token);
+};
+
 
   const logout = () => {
     setUser(null);
