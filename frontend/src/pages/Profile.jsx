@@ -30,9 +30,18 @@ export default function Profile() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
 
+  // Redirect if not authenticated
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    if (!user) {
+      navigate('/auth');
+    }
+  }, [user, navigate]);
+
+  useEffect(() => {
+    if (user) {
+      fetchProfile();
+    }
+  }, [user]);
 
   const fetchProfile = async () => {
     try {

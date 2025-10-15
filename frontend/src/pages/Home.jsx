@@ -18,19 +18,93 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 /* ================= Hero Video Styles ================= */
+const AnimatedBackground = styled.div`
+  position: absolute;
+  inset: 0;
+  background: #000000;
+  z-index: 0;
+`;
+
+const FloatingParticle = styled.div`
+  position: absolute;
+  width: ${props => props.size || 4}px;
+  height: ${props => props.size || 4}px;
+  background: ${props => props.color || 'rgba(77, 179, 167, 0.6)'};
+  border-radius: 50%;
+  filter: blur(1px);
+  animation: float ${props => props.duration || 20}s linear infinite;
+  animation-delay: ${props => props.delay || 0}s;
+  left: ${props => props.left || 0}%;
+  bottom: 0;
+  box-shadow: 0 0 ${props => props.size * 2 || 8}px ${props => props.color || 'rgba(77, 179, 167, 0.4)'};
+  
+  @keyframes float {
+    0% {
+      transform: translateY(0) translateX(0) scale(1);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-100vh) translateX(${props => props.drift || 50}px) scale(0);
+      opacity: 0;
+    }
+  }
+`;
+
 const VideoContainer = styled.div`
   position: relative;
   height: 100vh;
   width: 100%;
   overflow: hidden;
   font-family: "Arial", sans-serif;
-  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 80px 80px 40px 80px;
+  gap: 60px;
+  
+  @media (max-width: 1024px) {
+    padding: 100px 40px 40px 40px;
+    gap: 40px;
+  }
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    padding: 120px 20px 60px 20px;
+    gap: 40px;
+  }
+`;
+
+const VideoWrapper = styled.div`
+  width: 52%;
+  max-width: 850px;
+  aspect-ratio: 16 / 10;
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+              0 0 0 1px rgba(255, 255, 255, 0.1);
+  
+  @media (max-width: 1024px) {
+    width: 48%;
+  }
+  
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+  }
 `;
 
 const VideoElement = styled.video`
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -46,6 +120,170 @@ const VideoOverlay = styled.div`
   background: rgba(0, 0, 0, 0.3);
   pointer-events: none;
 `;
+
+const WhyChooseSection = styled.div`
+  flex: 1;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+  position: relative;
+  z-index: 2;
+  
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+`;
+
+const WhyTitle = styled(motion.h1)`
+  font-size: 64px;
+  font-weight: 800;
+  margin-bottom: 40px;
+  color: white;
+  line-height: 1.1;
+  letter-spacing: -2px;
+  
+  @media (max-width: 1024px) {
+    font-size: 48px;
+    margin-bottom: 35px;
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 40px;
+    margin-bottom: 30px;
+  }
+`;
+
+const FeatureCard = styled(motion.div)`
+  display: flex;
+  gap: 16px;
+  margin-bottom: 18px;
+  align-items: center;
+  padding: 20px 24px;
+  background: rgba(57, 112, 104, 0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(57, 112, 104, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(57, 112, 104, 0.15) 0%, rgba(77, 179, 167, 0.15) 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  
+  &:hover {
+    transform: translateX(10px) scale(1.02);
+    background: rgba(57, 112, 104, 0.15);
+    border-color: rgba(77, 179, 167, 0.5);
+    box-shadow: 0 8px 32px rgba(57, 112, 104, 0.3),
+                0 0 0 1px rgba(77, 179, 167, 0.5);
+  }
+  
+  &:hover::before {
+    opacity: 1;
+  }
+  
+  @media (max-width: 768px) {
+    margin-bottom: 14px;
+    padding: 16px 20px;
+  }
+`;
+
+const FeatureIcon = styled.div`
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: linear-gradient(135deg, rgba(57, 112, 104, 0.3) 0%, rgba(77, 179, 167, 0.3) 100%);
+  border-radius: 12px;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(135deg, #397068 0%, #4DB3A7 100%);
+    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: -1;
+  }
+  
+  ${FeatureCard}:hover & {
+    transform: rotate(12deg) scale(1.1);
+    box-shadow: 0 0 20px rgba(77, 179, 167, 0.6);
+  }
+  
+  ${FeatureCard}:hover &::before {
+    opacity: 1;
+  }
+`;
+
+const FeatureContent = styled.div`
+  flex: 1;
+  position: relative;
+  z-index: 1;
+`;
+
+const FeatureTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  color: white;
+  letter-spacing: -0.2px;
+  transition: all 0.3s ease;
+  
+  ${FeatureCard}:hover & {
+    color: #4DB3A7;
+    transform: translateX(4px);
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
+`;
+
+const FeatureNumber = styled.div`
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(57, 112, 104, 0.4) 0%, rgba(77, 179, 167, 0.4) 100%);
+  border: 2px solid rgba(77, 179, 167, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #4DB3A7;
+  transition: all 0.4s ease;
+  
+  ${FeatureCard}:hover & {
+    background: linear-gradient(135deg, #397068 0%, #4DB3A7 100%);
+    color: white;
+    transform: translateY(-50%) scale(1.15) rotate(360deg);
+    box-shadow: 0 0 16px rgba(77, 179, 167, 0.8);
+  }
+`;
+
 
 const VolumeButton = styled(motion.div)`
   position: absolute;
@@ -512,34 +750,120 @@ const HeroVideo = () => {
     }
   };
 
+  const features = [
+    { icon: "🎯", title: "Interactive Learning" },
+    { icon: "🚀", title: "Industry-Aligned Curriculum" },
+    { icon: "👨‍🎓", title: "Expert Instructors" },
+    { icon: "📱", title: "Learn Anytime, Anywhere" },
+    { icon: "🏆", title: "Recognized Certifications" }
+  ];
+
+  // Generate particles
+  const particles = React.useMemo(() => {
+    return Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      size: Math.random() * 4 + 2,
+      left: Math.random() * 100,
+      duration: Math.random() * 15 + 15,
+      delay: Math.random() * 10,
+      drift: (Math.random() - 0.5) * 100,
+      color: i % 3 === 0 
+        ? 'rgba(77, 179, 167, 0.6)' 
+        : i % 3 === 1 
+        ? 'rgba(57, 112, 104, 0.5)' 
+        : 'rgba(255, 255, 255, 0.3)'
+    }));
+  }, []);
+
   return (
-    <VideoContainer onClick={toggleMute}>
-      <VideoElement
-        ref={videoRef}
-        autoPlay
-        loop
-        muted
-        playsInline
-      >
-        <source src={`${import.meta.env.BASE_URL}Home.MP4`} type="video/mp4" />
-        Your browser does not support the video tag.
-      </VideoElement>
-      <VideoOverlay />
+    <VideoContainer>
+      {/* Animated Background */}
+      <AnimatedBackground>
+        {particles.map((particle) => (
+          <FloatingParticle
+            key={particle.id}
+            size={particle.size}
+            left={particle.left}
+            duration={particle.duration}
+            delay={particle.delay}
+            drift={particle.drift}
+            color={particle.color}
+          />
+        ))}
+      </AnimatedBackground>
       
-      <VolumeButton
-        onClick={toggleMute}
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        whileHover={{ scale: 1.15 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        {isMuted ? (
-          <VolumeX size={28} color="white" />
-        ) : (
-          <Volume2 size={28} color="white" />
-        )}
-      </VolumeButton>
+      {/* Left Section - Why Choose Edutainment */}
+      <WhyChooseSection>
+        <WhyTitle
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        >
+          Why Choose Edutainment?
+        </WhyTitle>
+        
+        <motion.div>
+          {features.map((feature, index) => (
+            <FeatureCard
+              key={index}
+              initial={{ opacity: 0, x: -50, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              whileInView={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ 
+                delay: 0.3 + index * 0.12, 
+                duration: 0.7,
+                ease: [0.22, 1, 0.36, 1]
+              }}
+            >
+              <FeatureIcon>{feature.icon}</FeatureIcon>
+              <FeatureContent>
+                <FeatureTitle>{feature.title}</FeatureTitle>
+              </FeatureContent>
+              <FeatureNumber>{index + 1}</FeatureNumber>
+            </FeatureCard>
+          ))}
+        </motion.div>
+      </WhyChooseSection>
+      
+      {/* Right Section - Video */}
+      <VideoWrapper onClick={toggleMute}>
+        <motion.div
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          style={{ width: '100%', height: '100%' }}
+        >
+        <VideoElement
+          ref={videoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
+          <source src={`${import.meta.env.BASE_URL}Home.MP4`} type="video/mp4" />
+          Your browser does not support the video tag.
+        </VideoElement>
+        <VideoOverlay />
+        
+        <VolumeButton
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleMute();
+          }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          whileHover={{ scale: 1.15 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {isMuted ? (
+            <VolumeX size={28} color="white" />
+          ) : (
+            <Volume2 size={28} color="white" />
+          )}
+        </VolumeButton>
+        </motion.div>
+      </VideoWrapper>
     </VideoContainer>
   );
 };
@@ -772,7 +1096,7 @@ const CoursesSection = () => {
     try {
       const response = await fetch(
         `${
-          import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1"
+          import.meta.env.VITE_API_URL || "http://localhost:5001/api/v1"
         }/videos/courses`
       );
       const data = await response.json();
@@ -1009,18 +1333,18 @@ const ArtsSection = () => {
 
 /* ================= Department Section Component ================= */
 const DepartmentSection = () => {
-  const deptName = {
-    "All Departments": null,
+  const deptNameMap = {
     "School of Engineering": "Engineering",
-    "School of Sciences": "Sciences",
+    "School of Sciences": "Science",
     "School of Law": "Law",
     "School of Management & Commerce": "Management & Commerce",
-    "School of Education & Humanities": "Education & Humanities",
+    "School of Education and Humanities": "Education & Humanities",
   };
   const navigate = useNavigate();
-  const handleDepartmentClick = (deptId) => {
-    // Navigate to courses page and pass the department id
-    navigate(`/courses?department=${encodeURIComponent(deptName)}`);
+  const handleDepartmentClick = (deptName) => {
+    // Navigate to courses page and pass the department name
+    const mappedName = deptNameMap[deptName] || deptName;
+    navigate(`/courses?department=${encodeURIComponent(mappedName)}`);
   };
   return (
     <DepartmentContainer>

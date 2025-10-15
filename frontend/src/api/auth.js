@@ -1,4 +1,4 @@
-  const API_BASE = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/user`;
+  const API_BASE = `${import.meta.env.VITE_API_URL || 'http://localhost:5001/api/v1'}/user`;
 
   export const loginUser = async ({ email, password }) => {
       console.log("Logging in with:", { email, password });
@@ -31,6 +31,11 @@
         credentials: "include",
       });
 
+      // Silently return null on 401 (not authenticated)
+      if (res.status === 401) {
+        return null;
+      }
+
       const contentType = res.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         const text = await res.text();
@@ -42,6 +47,10 @@
 
       return data.data;
     } catch (err) {
+      // Silently handle network errors when not authenticated
+      if (err.message?.includes('401') || err.message?.includes('Unauthorized')) {
+        return null;
+      }
       throw err;
     }
   };

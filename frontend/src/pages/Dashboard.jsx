@@ -35,7 +35,7 @@ import {
 } from 'lucide-react';
 
 const StudentDashboard = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState({
     enrolledCourses: [],
@@ -73,6 +73,12 @@ const StudentDashboard = () => {
   };
 
   useEffect(() => {
+    // Redirect to login if not authenticated
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
     // Fetch once on mount; no auto-refresh
     fetchDashboardData();
     return () => {};
@@ -84,16 +90,13 @@ const StudentDashboard = () => {
       
       // Fetch dashboard data from API
       const token = localStorage.getItem('token');
-      console.log('🔑 Token from localStorage:', token ? 'Found' : 'Not found');
-      console.log('🔑 Token preview:', token ? token.substring(0, 20) + '...' : 'None');
       
       if (!token) {
-        console.error('❌ No auth token found in localStorage');
+        navigate('/login');
         return;
       }
 
-      const apiUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/dashboard/student`;
-      console.log('📡 API URL:', apiUrl);
+      const apiUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5001/api/v1'}/dashboard/student`;
       
       const response = await fetch(apiUrl, {
         method: 'GET',
@@ -103,17 +106,20 @@ const StudentDashboard = () => {
         }
       });
 
-      console.log('📡 API Response status:', response.status);
-      console.log('📡 API Response ok:', response.ok);
-
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('❌ API Error Response:', errorText);
+        
+        // Auto-logout on 401 (invalid/expired token)
+        if (response.status === 401) {
+          logout();
+          navigate('/login');
+          return;
+        }
+        
         throw new Error(`Failed to fetch dashboard data: ${response.status} ${errorText}`);
       }
 
       const apiData = await response.json();
-      console.log('📊 API Data received:', apiData);
       
       // Transform API data to match component structure
       const transformedData = {
@@ -390,7 +396,7 @@ const StudentDashboard = () => {
                 </div>
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-white">Welcome back, {user?.fullName || user?.data?.fullName || username || "User Name"}!</h1>
+                <h1 className="text-3xl font-bold text-white">Welcome back, {user?.fullName || user?.data?.fullName || "Student"}!</h1>
                 <p className="text-gray-400 mt-1">Ready to continue your learning journey?</p>
                 <div className="flex items-center gap-4 mt-2">
                   <div className="flex items-center gap-1 text-yellow-400">

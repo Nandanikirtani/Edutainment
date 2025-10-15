@@ -88,7 +88,7 @@ const CourseDetail = () => {
   const fetchCourse = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/videos/courses/${courseId}`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5001/api/v1'}/videos/courses/${courseId}`);
       const data = await response.json();
       
       if (!response.ok) {
@@ -108,7 +108,7 @@ const CourseDetail = () => {
       }
       // Fetch my progress
       try {
-        const progRes = await fetch(`${'http://localhost:5000/api/v1'}/videos/courses/${courseId}/progress/me`, {
+        const progRes = await fetch(`${'http://localhost:5001/api/v1'}/videos/courses/${courseId}/progress/me`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
         });
         const progData = await progRes.json();
@@ -120,7 +120,7 @@ const CourseDetail = () => {
       }
       // Fetch leaderboard
       try {
-        const lbRes = await fetch(`${'http://localhost:5000/api/v1'}/videos/courses/${courseId}/leaderboard`);
+        const lbRes = await fetch(`${'http://localhost:5001/api/v1'}/videos/courses/${courseId}/leaderboard`);
         const lbData = await lbRes.json();
         if (lbRes.ok) setLeaderboard(lbData.data || []);
       } catch (e) {
@@ -129,7 +129,7 @@ const CourseDetail = () => {
       // Fetch my badges for this course
       if (user) {
         try {
-          const badgesRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/users/me`, {
+          const badgesRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5001/api/v1'}/user/me`, {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
           });
           const badgesData = await badgesRes.json();
@@ -183,7 +183,7 @@ const CourseDetail = () => {
     console.log("course id",courseId)
 
     try {
-      const response = await fetch(`${'http://localhost:5000/api/v1'}/videos/courses/${courseId}/chapters`, {
+      const response = await fetch(`${'http://localhost:5001/api/v1'}/videos/courses/${courseId}/chapters`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -249,7 +249,7 @@ const CourseDetail = () => {
           reject(new Error('Network error occurred'));
         });
 
-        xhr.open('POST', `${'http://localhost:5000/api/v1'}/videos/courses/${courseId}/chapters/${activeChapter._id}/videos`);
+        xhr.open('POST', `${'http://localhost:5001/api/v1'}/videos/courses/${courseId}/chapters/${activeChapter._id}/videos`);
         xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem("token")}`);
         xhr.send(formData);
       });
@@ -291,7 +291,7 @@ const CourseDetail = () => {
     });
 
     try {
-      const res = await fetch(`${'http://localhost:5000/api/v1'}/videos/courses/${courseId}/chapters/${quizChapter._id}/quizzes`, {
+      const res = await fetch(`${'http://localhost:5001/api/v1'}/videos/courses/${courseId}/chapters/${quizChapter._id}/quizzes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -316,7 +316,7 @@ const CourseDetail = () => {
     e.preventDefault();
     if (!activeQuiz || !activeChapter) return;
     try {
-      const res = await fetch(`${'http://localhost:5000/api/v1'}/videos/courses/${courseId}/chapters/${activeChapter._id}/quizzes/${activeQuiz._id}/submit`, {
+      const res = await fetch(`${'http://localhost:5001/api/v1'}/videos/courses/${courseId}/chapters/${activeChapter._id}/quizzes/${activeQuiz._id}/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ answers })
@@ -361,7 +361,7 @@ const CourseDetail = () => {
   const handleDeleteQuiz = async (chapterId, quizId) => {
     if (!window.confirm("Are you sure you want to delete this quiz?")) return;
     try {
-      const res = await fetch(`${'http://localhost:5000/api/v1'}/videos/courses/${courseId}/chapters/${chapterId}/quizzes/${quizId}`, {
+      const res = await fetch(`${'http://localhost:5001/api/v1'}/videos/courses/${courseId}/chapters/${chapterId}/quizzes/${quizId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
@@ -417,7 +417,7 @@ const CourseDetail = () => {
     }
 
     try {
-      const response = await fetch(`${'http://localhost:5000/api/v1'}/videos/courses/${courseId}/enroll`, {
+      const response = await fetch(`${'http://localhost:5001/api/v1'}/videos/courses/${courseId}/enroll`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -451,7 +451,7 @@ const CourseDetail = () => {
     }
 
     try {
-      const response = await fetch(`${'http://localhost:5000/api/v1'}/videos/courses/${courseId}/chapters/${chapterId}`, {
+      const response = await fetch(`${'http://localhost:5001/api/v1'}/videos/courses/${courseId}/chapters/${chapterId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -482,7 +482,7 @@ const CourseDetail = () => {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/videos/courses/${courseId}/chapters/${chapterId}/videos/${videoId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5001/api/v1'}/videos/courses/${courseId}/chapters/${chapterId}/videos/${videoId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -774,7 +774,7 @@ const CourseDetail = () => {
                           const res = await fetch(
                             `${
                               import.meta.env.VITE_API_URL ||
-                              "http://localhost:5000/api/v1"
+                              "http://localhost:5001/api/v1"
                             }/videos/courses/${courseId}/chapters/${
                               activeChapter._id
                             }/videos/${activeVideo._id}/complete`,

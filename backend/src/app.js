@@ -10,21 +10,20 @@ import dashboardRouter from "./routes/Dashboard.routes.js";
 
 const app = express();
 
-const allowedOrigins = process.env.CORS_ORIGIN.split(",");
-
+// Enable CORS for all origins in development
 app.use(cors({
-    origin: (origin, callback) => {
-        // allow requests with no origin (like Postman)
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    credentials: true, // allow cookies
+    origin: true, // Allow all origins
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    maxAge: 600,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
 }));
+
+// Handle preflight requests explicitly
+app.options('*', cors());
 
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
