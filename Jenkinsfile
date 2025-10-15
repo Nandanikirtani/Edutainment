@@ -5,7 +5,7 @@ pipeline {
         NODEJS_HOME = '/Users/mac/.nvm/versions/node/v22.11.0/bin'
         DOCKER_BIN = '/usr/local/bin'
         PATH = "${NODEJS_HOME}:${DOCKER_BIN}:${env.PATH}"
-        DOCKER_HUB_CREDENTIALS = 'docker-hub-creds'   
+        DOCKER_HUB_CREDENTIALS = 'dockerhub'   
         DOCKER_IMAGE_NAME = 'jashank06/edutainment_1'
         DOCKER_TAG = "latest"
     }
