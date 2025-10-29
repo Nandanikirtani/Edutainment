@@ -171,12 +171,16 @@ export const getUserProfile = asyncHandler(async (req, res) => {
 });
 
 export const updateUserProfile = asyncHandler(async (req, res) => {
-  const { phone, dob } = req.body;
+  const { phone, dob, avatar, rollNo, fullName } = req.body;
   const user = await User.findById(req.user._id);
   if (!user) throw new ApiError(404, "User not found");
 
+  // Update allowed fields
   if (phone !== undefined) user.phone = phone;
   if (dob !== undefined) user.dob = dob;
+  if (avatar !== undefined) user.avatar = avatar;
+  if (rollNo !== undefined) user.rollNo = rollNo;
+  if (fullName !== undefined && fullName.trim()) user.fullName = fullName.trim();
 
   await user.save();
   const updatedUser = await User.findById(user._id).select("-password -refreshToken");

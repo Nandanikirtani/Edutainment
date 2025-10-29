@@ -19,7 +19,7 @@ export default function ActivityTracker() {
       const token = localStorage.getItem('token');
       if (!token) return;
       try {
-        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001/api/v1';
         const res = await fetch(`${apiBase}/dashboard/student/activity/ping`, {
           method: 'POST',
           headers: {
@@ -53,7 +53,7 @@ export default function ActivityTracker() {
       if (!token) return;
       
       // Use fetch with keepalive instead of sendBeacon to include auth headers
-      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001/api/v1';
       const url = `${apiBase}/dashboard/student/activity/ping`;
       
       // Try to send with proper authorization

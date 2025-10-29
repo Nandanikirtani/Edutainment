@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { getProfile } from "../api/auth.js";
 
-const AuthContext = createContext();
+const AuthContext = createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
@@ -26,9 +26,20 @@ export const AuthProvider = ({ children }) => {
     const init = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) return setLoading(false);
+        if (!token) {
+          setLoading(false);
+          return;
+        }
 
         const profile = await getProfile();
+        
+        // If profile is null (401), clear token and return
+        if (!profile) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setLoading(false);
+          return;
+        }
 
         // Filter out null/undefined fields from backend
         const filteredProfile = Object.fromEntries(
@@ -50,7 +61,8 @@ export const AuthProvider = ({ children }) => {
           rollNo: filteredProfile.rollNo ?? prev?.rollNo ?? savedProfile.rollNo ?? prev?.rollNo,
         }));
       } catch (err) {
-        console.error("Auth init failed:", err.message);
+        // Silent fail for 401 (not authenticated) - expected when not logged in
+        // Completely suppress all 401/unauthorized errors
         const savedProfileRaw = localStorage.getItem("userProfile");
         const savedProfile = savedProfileRaw ? JSON.parse(savedProfileRaw) : null;
         if (savedProfile) setUser((prev) => ({ ...prev, ...savedProfile }));
@@ -105,4 +117,10 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};

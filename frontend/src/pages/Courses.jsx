@@ -83,7 +83,7 @@ function Courses() {
   const deptMap = {
     "All Departments": null,
     "School of Engineering": "Engineering",
-    "School of Sciences": "Sciences",
+    "School of Sciences": "Science",
     "School of Law": "Law",
     "School of Management & Commerce": "Management & Commerce",
     "School of Education & Humanities": "Education & Humanities",
@@ -108,14 +108,22 @@ function Courses() {
   const departmentFromURL = searchParams.get("department");
 
   useEffect(() => {
-    if (departmentFromURL) setSelectedDept(departmentFromURL);
+    if (departmentFromURL) {
+      // Find the matching department display name from the backend value
+      const matchingDept = Object.keys(deptMap).find(
+        key => deptMap[key] === departmentFromURL
+      );
+      if (matchingDept) {
+        setSelectedDept(matchingDept);
+      }
+    }
   }, [departmentFromURL]);
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/v1/videos/courses"
+          `${import.meta.env.VITE_API_URL || 'http://localhost:5001/api/v1'}/videos/courses`
         );
         setCourses(res.data.data);
       } catch (err) {

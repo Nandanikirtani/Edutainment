@@ -213,7 +213,7 @@ export const getAllCourses = asyncHandler(async (req, res) => {
 
 // Admin: Get Courses Uploaded by Admin
 export const getAdminUploadedCourses = asyncHandler(async (req, res) => {
-  const adminCourses = await Course.find({ facultyId: req.user._id }).populate('facultyId', 'fullName').sort({ createdAt: -1 });
+  const adminCourses = await Course.find({ facultyName: req.user.fullName }).sort({ createdAt: -1 });
   res.status(200).json({
     success: true,
     data: adminCourses,
@@ -224,7 +224,6 @@ export const getAdminUploadedCourses = asyncHandler(async (req, res) => {
 // Admin: Get all courses with enrolled students and their points
 export const getAllCoursesWithStudents = asyncHandler(async (req, res) => {
   const courses = await Course.find({})
-    .populate('facultyId', 'fullName email')
     .populate('enrolledStudents', 'fullName email')
     .sort({ createdAt: -1 });
 
@@ -247,7 +246,7 @@ export const getAllCoursesWithStudents = asyncHandler(async (req, res) => {
       title: course.title,
       description: course.description,
       thumbnailUrl: course.thumbnailUrl,
-      facultyId: course.facultyId,
+      facultyName: course.facultyName,
       department: course.department,
       level: course.level,
       enrolledStudents: students,
@@ -420,11 +419,11 @@ export const updateCourseFaculty = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Course not found");
   }
 
-  course.facultyId = facultyId;
+  // Update facultyName from the faculty user
+  course.facultyName = faculty.fullName;
   await course.save();
 
   const updatedCourse = await Course.findById(courseId)
-    .populate('facultyId', 'fullName email role')
     .populate('enrolledStudents', 'fullName email');
 
   res.status(200).json({
@@ -457,7 +456,6 @@ export const getCourseById = asyncHandler(async (req, res) => {
   const { courseId } = req.params;
   
   const course = await Course.findById(courseId)
-    .populate('facultyId', 'fullName email')
     .populate('enrolledStudents', 'fullName email');
     
   if (!course) {
@@ -492,11 +490,9 @@ export const createCourse = asyncHandler(async (req, res) => {
     backgroundImage,
   });
   
-  const createdCourse = await Course.findById(course._id).populate('facultyId', 'fullName');
-  
   res.status(201).json({
     success: true,
-    data: createdCourse,
+    data: course,
     message: "Course created successfully",
   });
 });

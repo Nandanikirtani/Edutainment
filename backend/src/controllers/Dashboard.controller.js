@@ -20,7 +20,6 @@ export const getStudentDashboard = asyncHandler(async (req, res) => {
     const enrolledCourses = await Course.find({
       enrolledStudents: studentId,
     })
-      .populate("facultyId", "fullName email")
       .lean();
 
     // Calculate progress and status for each course
@@ -79,7 +78,7 @@ export const getStudentDashboard = asyncHandler(async (req, res) => {
         id: course._id,
         title: course.title,
         description: course.description,
-        instructor: course.facultyId?.fullName || "Unknown",
+        instructor: course.facultyName || "Unknown",
         progress: overallProgress,
         status,
         thumbnail: course.thumbnailUrl,
