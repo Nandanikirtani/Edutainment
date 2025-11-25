@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { FaSearch, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import styled from "styled-components";
 
+// Styled components
 const CourseGrid = styled.div`
   display: flex;
   gap: 25px;
@@ -36,8 +37,7 @@ const CourseCard = styled(motion.div)`
 const CourseImage = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Fills the card fully without leaving margins */
-  object-position: center;
+  object-fit: cover;
   transition: transform 0.3s ease;
 
   ${CourseCard}:hover & {
@@ -53,7 +53,6 @@ const CourseOverlay = styled.div`
   padding: 15px;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
   color: white;
-  transform: translateY(0);
   transition: all 0.3s ease;
 `;
 
@@ -61,7 +60,6 @@ const CourseTitle = styled.h3`
   font-size: 20px;
   margin: 0;
   font-weight: 600;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 `;
 
 const CourseFaculty = styled.p`
@@ -71,6 +69,10 @@ const CourseFaculty = styled.p`
 `;
 
 function Courses() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Sidebar Data
   const departments = [
     "All Departments",
     "School of Engineering",
@@ -81,35 +83,27 @@ function Courses() {
   ];
 
   const deptMap = {
-    "All Departments": null,
     "School of Engineering": "Engineering",
     "School of Sciences": "Science",
     "School of Law": "Law",
     "School of Management & Commerce": "Management & Commerce",
     "School of Education & Humanities": "Education & Humanities",
+    "All Departments": null
   };
 
-  const engineeringSubDepts = [
-    { name: "Department of Computer Science & Technology", key: "CST" },
-    { name: "Department of Electronics and Communication", key: "ECE" },
-    { name: "Department of Mechanical Engineering", key: "Mechanical" },
-  ];
+  const studyLevels = ["UG", "PG", "PhD"];
 
-  const [engineeringOpen, setEngineeringOpen] = useState(false);
-  const [selectedSubDept, setSelectedSubDept] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
   const [selectedDept, setSelectedDept] = useState("All Departments");
+  const [selectedLevel, setSelectedLevel] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const [courses, setCourses] = useState([]);
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const searchParams = new URLSearchParams(location.search);
   const departmentFromURL = searchParams.get("department");
 
+  // Pick Department from URL
   useEffect(() => {
     if (departmentFromURL) {
-      // Find the matching department display name from the backend value
       const matchingDept = Object.keys(deptMap).find(
         key => deptMap[key] === departmentFromURL
       );
@@ -119,6 +113,7 @@ function Courses() {
     }
   }, [departmentFromURL]);
 
+  // Fetch courses
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -133,145 +128,97 @@ function Courses() {
     fetchCourses();
   }, []);
 
-  const handleCourseClick = (courseId) => {
-    navigate(`/course/${courseId}`);
-  };
-
-  const handleSearch = (value) => {
-    setSearchTerm(value);
-    if (value.trim() === "") setSuggestions([]);
-    else
-      setSuggestions(
-        courses.filter((c) =>
-          c.title.toLowerCase().startsWith(value.toLowerCase())
-        )
-      );
-  };
-
+  // Filter logic
   const filteredCourses = courses.filter((course) => {
-    // Department filter
     const matchesDept =
-      !deptMap[selectedDept] || course.department === deptMap[selectedDept];
+      !departmentFromURL || course.department === departmentFromURL;
 
-    // SubDepartment filter (only if selected)
-    const matchesSubDept =
-      !selectedSubDept || course.subDepartment === selectedSubDept;
+    const matchesLevel =
+      !selectedLevel || course.level === selectedLevel;
 
-    // Search filter
     const matchesSearch =
       course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.facultyName.toLowerCase().includes(searchTerm.toLowerCase());
 
-    return matchesDept && matchesSubDept && matchesSearch;
+    return matchesDept && matchesLevel && matchesSearch;
   });
+
+  const handleCourseClick = (courseId) => {
+    navigate(`/course/${courseId}`);
+  };
 
   return (
     <motion.div className="min-h-screen bg-black p-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-center items-center max-w-6xl mx-auto mb-8 gap-4">
-        <div className="relative w-full sm:w-80">
+      {/* Search Bar */}
+      <div className="flex justify-center items-center max-w-4xl mx-auto mb-8">
+        <div className="relative w-full sm:w-96">
           <FaSearch className="absolute top-1/2 left-3 -translate-y-1/2 text-white" />
           <input
             type="text"
             placeholder="Search courses..."
             value={searchTerm}
-            onChange={(e) => handleSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-[#4DB3A7] text-white rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4DB3A7]"
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-[#4DB3A7] text-white rounded-full bg-transparent focus:ring-2 focus:ring-[#4DB3A7]"
           />
         </div>
       </div>
 
-      {/* Layout */}
-      <div className="flex min-h-[calc(100vh-5rem)] bg-black">
+      <div className="flex min-h-[calc(100vh-6rem)]">
         {/* Sidebar */}
-        <div className="hidden lg:flex flex-col bg-gray-900 border-r shadow-md p-6 w-72 fixed top-20 left-0 bottom-0 z-20">
-          <h2 className="text-xl font-semibold text-white mb-4">Departments</h2>
-          <ul className="space-y-2">
-            {departments.map((dept, idx) => {
-              if (dept === "School of Engineering") {
-                return (
-                  <li key={idx} className="text-white">
-                    <div
-                      onClick={() => setEngineeringOpen(!engineeringOpen)}
-                      className={`cursor-pointer px-3 py-2 rounded-md transition flex justify-between items-center ${
-                        selectedDept === dept
-                          ? "bg-[#4DB3A7]"
-                          : "hover:bg-[#4DB3A7] hover:text-black"
-                      }`}
-                    >
-                      {dept}
-                      {engineeringOpen ? (
-                        <FaChevronUp className="ml-2" />
-                      ) : (
-                        <FaChevronDown className="ml-2" />
-                      )}
-                    </div>
+        <div className="hidden lg:flex flex-col bg-gray-900 border-r p-6 w-72 fixed top-20 left-0 bottom-0">
+          <h2 className="text-xl font-semibold text-white mb-4">
+            {departmentFromURL ? `${selectedDept} ` : "Departments"}
+          </h2>
 
-                    {/* Animate accordion */}
-                    <AnimatePresence>
-                      {engineeringOpen && (
-                        <motion.ul
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3, ease: "easeInOut" }}
-                          className="ml-4 mt-2 space-y-1 overflow-hidden"
-                        >
-                          {engineeringSubDepts.map((sub, sidx) => (
-                            <li
-                              key={sidx}
-                              onClick={() => {
-                                setSelectedSubDept(sub.key);
-                                setSelectedDept(dept);
-                              }}
-                              className={`cursor-pointer px-3 py-1 rounded-md transition ${
-                                selectedSubDept === sub.key
-                                  ? "bg-[#4DB3A7] text-white"
-                                  : "hover:bg-[#4DB3A7] hover:text-black"
-                              }`}
-                            >
-                              {sub.name}
-                            </li>
-                          ))}
-                        </motion.ul>
-                      )}
-                    </AnimatePresence>
+          <ul className="space-y-2">
+            {departmentFromURL
+              ? studyLevels.map((level, idx) => (
+                  <li
+                    key={idx}
+                    onClick={() => setSelectedLevel(level)}
+                    className={`cursor-pointer px-3 py-2 text-white rounded-md transition ${
+                      selectedLevel === level
+                        ? "bg-[#4DB3A7]"
+                        : "hover:bg-[#4DB3A7] hover:text-black"
+                    }`}
+                  >
+                    {level}
                   </li>
-                );
-              } else {
-                return (
+                ))
+              : departments.map((dept, idx) => (
                   <li
                     key={idx}
                     onClick={() => {
                       setSelectedDept(dept);
-                      setSelectedSubDept(null); // Reset subDept filter
+                      setSelectedLevel(null);
+                      navigate(`/courses`);
                     }}
                     className={`cursor-pointer px-3 py-2 text-white rounded-md transition ${
                       selectedDept === dept
-                        ? "bg-[#4DB3A7] text-white"
+                        ? "bg-[#4DB3A7]"
                         : "hover:bg-[#4DB3A7] hover:text-black"
                     }`}
                   >
                     {dept}
                   </li>
-                );
-              }
-            })}
+                ))}
           </ul>
         </div>
 
-        {/* Courses Grid */}
-        <div className="flex-1 lg:ml-64 px-6 py-6">
+        {/* Main Content */}
+        <div className="flex-1 lg:ml-72 px-6 py-6">
+          <h1 className="text-2xl font-bold text-center text-white mb-6">
+            {departmentFromURL
+              ? `${departmentFromURL} Courses`
+              : "All Courses"}
+          </h1>
+
           <CourseGrid>
-            {filteredCourses.length > 0 ? (
-              filteredCourses.map((course, idx) => (
+            {filteredCourses.length ? (
+              filteredCourses.map((course) => (
                 <CourseCard
                   key={course._id}
-                  whileHover={{
-                    scale: 1.05,
-                    y: -5,
-                    boxShadow: "0px 15px 40px rgba(77,179,167,0.5)",
-                  }}
+                  whileHover={{ scale: 1.05, y: -5 }}
                   onClick={() => handleCourseClick(course._id)}
                 >
                   <CourseImage
@@ -281,19 +228,11 @@ function Courses() {
                   <CourseOverlay>
                     <CourseTitle>{course.title}</CourseTitle>
                     <CourseFaculty>{course.facultyName}</CourseFaculty>
-                    {course.rating && (
-                      <div className="flex items-center mt-1">
-                        <span className="text-yellow-400 mr-1">★</span>
-                        <span className="text-white text-sm">
-                          {course.rating.toFixed(1)}
-                        </span>
-                      </div>
-                    )}
                   </CourseOverlay>
                 </CourseCard>
               ))
             ) : (
-              <p className="text-center text-gray-500 col-span-full">
+              <p className="text-gray-500 text-center col-span-full">
                 No courses found.
               </p>
             )}
